@@ -1,10 +1,10 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <pthread.h>
-#include <math.h>
-#include <sys/types.h>
-#include <sys/sysinfo.h>
 #include <CL/cl.h>
+#include <math.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/sysinfo.h>
+#include <sys/types.h>
 
 #define PI 3.14159265358979323846
 
@@ -17,8 +17,8 @@
 // #define K_OPENCL_IMPLEMENTATION
 // #include "k_tools/k_opencl.h"
 
-#include "renderer/renderer.h"
 #include "gui/gui.h"
+#include "renderer/renderer.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -46,9 +46,10 @@ int main(void) {
 	Material sun = create_light_source_material(1, 1, 0.8, 10);
 
 	// side walls
-	for(int y = 0; y <= width; ++y) {
-		for(int z = 0; z <= depth; ++z) {
+	for (int y = 0; y <= width; ++y) {
+		for (int z = 0; z <= depth; ++z) {
 			add_voxel(0, y, z, red);
+
 			add_voxel(width, y, z, green);
 		}
 	}
@@ -61,22 +62,22 @@ int main(void) {
 	// }
 
 	// back wall
-	for(int x = 0; x <= width; x++) {
-		for(int y = 0; y <= height; y++) {
+	for (int x = 0; x <= width; x++) {
+		for (int y = 0; y <= height; y++) {
 			add_voxel(x, y, depth, blue);
 		}
 	}
 
 	// celling
-	for(int x = 0; x <= width; x++) {
-		for(int z = 0; z <= depth; z++) {
+	for (int x = 0; x <= width; x++) {
+		for (int z = 0; z <= depth; z++) {
 			add_voxel(x, 0, z, white);
 		}
 	}
 
 	// floor
-	for(int x = 0; x <= width; x++) {
-		for(int z = 0; z <= depth; z++) {
+	for (int x = 0; x <= width; x++) {
+		for (int z = 0; z <= depth; z++) {
 			add_voxel(x, height, z, white);
 		}
 	}
@@ -99,23 +100,17 @@ int main(void) {
 	add_voxel(width * 0.7, height - 1, depth * 0.8, mirror);
 	add_voxel(width * 0.7, height - 2, depth * 0.8, mirror);
 
-	for(int x = -5; x <= 15; x++) {
-		for(int z = -5; z <= 15; z++) {
+	for (int x = -5; x <= 15; x++) {
+		for (int z = -5; z <= 15; z++) {
 			add_voxel(x, -height * 2, z - 5, sun);
 		}
 	}
 
-	set_camera_properties(
-		5.5, -2, -10,
-		-M_PI / 8, 0, 0,
-		1, 1,
-		0.001, 1000
-	);
+	set_camera_properties(5.5, -2, -10, -M_PI / 8, 0, 0, 1, 1, 0.001, 1000);
 
-	
-	if(create_window(SCREEN_WIDTH, SCREEN_HEIGHT) == GUI_SUCCESS)
+	if (create_window(SCREEN_WIDTH, SCREEN_HEIGHT) == GUI_SUCCESS)
 		start_main_loop();
-	
+
 	close_window();
 
 	// render_image_to_file(samples, "render.png");
@@ -124,7 +119,6 @@ int main(void) {
 
 	return 0;
 }
-
 
 /*
 

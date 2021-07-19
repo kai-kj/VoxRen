@@ -1,0 +1,7 @@
+pathtracer
+build
+*.png
+*.jpg
+*.bmp
+log.txt
+.vscode

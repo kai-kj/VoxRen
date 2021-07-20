@@ -66,13 +66,16 @@ typedef struct Camera {
 } Camera;
 
 typedef struct Renderer {
+	int stopRender;
+	int restartRender;
+
+	double dt;
+	double prevTime;
+
 	CLProgram program;
 	CLImage image;
 	Scene scene;
 	Camera camera;
-
-	int stopRender;
-	int restartRender;
 } Renderer;
 
 #endif

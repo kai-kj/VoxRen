@@ -5,8 +5,10 @@
 
 typedef struct SDLState {
 	int quit;
-	float dt;
-	unsigned long int prevFrameTime;
+	
+	double dt;
+	double prevTime;
+	
 	Uint8 *keyState;
 	SDL_Window *window;
 	SDL_Surface *windowSurface;

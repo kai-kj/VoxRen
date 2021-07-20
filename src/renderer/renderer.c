@@ -26,7 +26,6 @@ RendererStatus create_renderer() {
 	r.scene.voxelCount = 0;
 	r.program.voxelBuff = NULL;
 	r.program.imageBuff = NULL;
-	r.program.fastImageBuff = NULL;
 	r.scene.voxels = NULL;
 
 	// TODO: check platform count
@@ -69,7 +68,6 @@ RendererStatus destroy_renderer() {
 	safe_free(r.image.data);
 	safe_clReleaseMemObject(r.program.voxelBuff);
 	safe_clReleaseMemObject(r.program.imageBuff);
-	safe_clReleaseMemObject(r.program.fastImageBuff);
 	clReleaseProgram(r.program.program);
 	clReleaseKernel(r.program.kernel);
 	clReleaseContext(r.program.context);

@@ -123,6 +123,10 @@ RendererStatus _render_frame(int sampleNumber) {
 						sizeof(cl_float3) * r.image.size.x * r.image.size.y,
 						r.image.data, 0, NULL, NULL);
 
+	double currentTime = get_time();
+	r.dt = currentTime - r.prevTime;
+	r.prevTime = currentTime;
+
 	clFinish(r.program.queue);
 
 	return RENDERER_SUCCESS;

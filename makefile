@@ -41,13 +41,13 @@ SRC := src
 
 .PHONY: default run clean
 
-default: clean $(BIN)
+default: $(BIN)
 
-run: clean $(BIN)
+run: $(BIN)
 	./$(BIN)
 
 debug: CC += -g
-debug: clean $(BIN)
+debug: $(BIN)
 
 $(BUILD):
 	$(MKDIR) $(BUILD)

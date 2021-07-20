@@ -25,10 +25,22 @@ SDL_Surface *_get_render_surface() {
 }
 
 void _update_dt() {
-	unsigned long int currentTime = SDL_GetPerformanceCounter();
-	s.dt = ((float)currentTime - (float)s.prevFrameTime) /
-		   (float)SDL_GetPerformanceFrequency();
-	s.prevFrameTime = currentTime;
+	double currentTime = get_time();
+	s.dt = currentTime - s.prevTime;
+	s.prevTime = currentTime;
+}
+
+void print_text(char *string, int x, int y, SDL_Color fg, SDL_Color bg) {
+	SDL_Surface *textSurface = TTF_RenderText(s.font, string, fg, bg);
+
+	if (textSurface == NULL)
+		exit(-1);
+
+	SDL_Rect textLocation = {x, y, 0, 0};
+
+	SDL_BlitSurface(textSurface, NULL, s.windowSurface, &textLocation);
+
+	SDL_FreeSurface(textSurface);
 }
 
 void _procces_events() {
@@ -105,17 +117,13 @@ void _process_kb_input() {
 //---- public ----------------------------------------------------------------//
 
 GUIStatus create_window(int width, int height) {
+	// window
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-		return GUI_FAILURE;
-	if (TTF_Init() < 0)
 		return GUI_FAILURE;
 
 	s.window = NULL;
 	s.windowSurface = NULL;
 	s.renderSurface = NULL;
-	s.prevFrameTime = SDL_GetPerformanceCounter();
-	// s.font = TTF_OpenFont("opensans.ttf", 24);
-	s.keyState = (Uint8 *)SDL_GetKeyboardState(NULL);
 
 	s.window = SDL_CreateWindow("pathtracer", SDL_WINDOWPOS_UNDEFINED,
 								SDL_WINDOWPOS_UNDEFINED, width, height,
@@ -123,7 +131,19 @@ GUIStatus create_window(int width, int height) {
 
 	if (s.window == NULL)
 		return GUI_FAILURE;
+
 	s.windowSurface = SDL_GetWindowSurface(s.window);
+
+	s.keyState = (Uint8 *)SDL_GetKeyboardState(NULL);
+
+	// font
+	if (TTF_Init() < 0)
+		return GUI_FAILURE;
+
+	s.font = TTF_OpenFont("data/assets/opensans.ttf", 24);
+
+	if (s.font == NULL)
+		return GUI_FAILURE;
 
 	return GUI_SUCCESS;
 }
@@ -136,17 +156,18 @@ GUIStatus start_main_loop() {
 		_procces_events();
 		_process_kb_input();
 
-		msg("\r%0.2f fps", 1 / s.dt);
-
 		if (s.renderSurface != NULL) {
 			SDL_FreeSurface(s.renderSurface);
 			s.renderSurface = NULL;
 		}
 
-		// s.renderSurface = _get_fast_surface();
 		s.renderSurface = _get_render_surface();
-
 		SDL_BlitSurface(s.renderSurface, NULL, s.windowSurface, NULL);
+
+		char fps[100];
+		sprintf(fps, "%03d, %03d", (int)(1 / s.dt), (int)(1 / r.dt));
+		print_text(fps, 10, 10, (SDL_Color){255, 255, 255},
+				   (SDL_Color){0, 0, 0});
 
 		SDL_UpdateWindowSurface(s.window);
 	}

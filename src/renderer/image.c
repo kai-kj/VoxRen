@@ -63,16 +63,6 @@ static void _print_kernel_run_error(cl_int ret) {
 	}
 }
 
-static void _gamma_correct_CLImage(CLImage image) {
-	int pixelCount = image.size.x * image.size.y;
-
-	for (int i = 0; i < pixelCount; i++) {
-		image.data[i].x = sqrt(image.data[i].x);
-		image.data[i].y = sqrt(image.data[i].y);
-		image.data[i].z = sqrt(image.data[i].z);
-	}
-}
-
 static k_Image *_CLImage_to_k_Image(CLImage clImage) {
 	k_Image *image = k_create_image(clImage.size.x, clImage.size.y);
 
@@ -99,128 +89,138 @@ static k_Image *_CLImage_to_k_Image(CLImage clImage) {
 	return image;
 }
 
-//---- public ----------------------------------------------------------------//
-
-RendererStatus set_image_properties(int width, int height) {
-	if (r.clImage.data != NULL) {
-		free(r.clImage.data);
-		r.clImage.data = NULL;
-	}
-
-	r.clImage.size = (cl_int2){.x = width, .y = height};
-	r.clImage.data = malloc(sizeof(cl_float3) * width * height);
-
-	return RENDERER_SUCCESS;
+void _set_kernel_arg(cl_uint idx, size_t size, void *arg) {
+	clSetKernelArg(r.program.kernel, idx, size, arg);
 }
 
-RendererStatus begin_image_rendering() {
-	if (r.clProgram.imageBuff != NULL) {
-		clReleaseMemObject(r.clProgram.imageBuff);
-		r.clProgram.imageBuff = NULL;
-	}
-
-	if (r.clProgram.voxelBuff != NULL) {
-		clReleaseMemObject(r.clProgram.voxelBuff);
-		r.clProgram.voxelBuff = NULL;
-	}
-
-	r.clProgram.voxelBuff =
-		clCreateBuffer(r.clProgram.context, CL_MEM_READ_ONLY,
-					   sizeof(Voxel) * r.scene.voxelCount, NULL, NULL);
-
-	r.clProgram.imageBuff = clCreateBuffer(
-		r.clProgram.context, CL_MEM_READ_WRITE,
-		sizeof(cl_float3) * r.clImage.size.x * r.clImage.size.y, NULL, NULL);
-
-	clEnqueueWriteBuffer(r.clProgram.queue, r.clProgram.voxelBuff, CL_TRUE, 0,
-						 sizeof(Voxel) * r.scene.voxelCount, r.scene.voxels, 0,
-						 NULL, NULL);
-
-	// constant arguments
-	clSetKernelArg(r.clProgram.kernel, 0, sizeof(cl_int2), &r.clImage.size);
-
-	clSetKernelArg(r.clProgram.kernel, 1, sizeof(cl_mem),
-				   &r.clProgram.imageBuff);
-
-	clSetKernelArg(r.clProgram.kernel, 2, sizeof(cl_int), &r.scene.voxelCount);
-
-	clSetKernelArg(r.clProgram.kernel, 3, sizeof(cl_mem),
-				   &r.clProgram.voxelBuff);
-
-	clSetKernelArg(r.clProgram.kernel, 4, sizeof(cl_float3), &r.scene.bgColor);
-
-	clSetKernelArg(r.clProgram.kernel, 5, sizeof(cl_float3),
-				   &r.scene.bgBrightness);
-
-	clSetKernelArg(r.clProgram.kernel, 6, sizeof(Camera), &r.camera);
-
-	return RENDERER_SUCCESS;
+cl_mem _create_buffer(size_t size, cl_mem_flags flags) {
+	cl_mem ret = clCreateBuffer(r.program.context, flags, size, NULL, NULL);
+	return ret;
 }
 
-RendererStatus render_sample(int sampleNumber) {
+cl_int _run_kernel(size_t size) {
+	return clEnqueueNDRangeKernel(r.program.queue, r.program.kernel, 1, NULL,
+								  &size, NULL, 0, NULL, NULL);
+}
+
+RendererStatus _render_frame(int sampleNumber) {
 	cl_ulong seed = rand();
+	cl_int preview = !sampleNumber;
 
 	// non-constant arguments
-	clSetKernelArg(r.clProgram.kernel, 7, sizeof(cl_int), &sampleNumber);
-	clSetKernelArg(r.clProgram.kernel, 8, sizeof(cl_ulong), &seed);
+	_set_kernel_arg(7, sizeof(cl_int), &sampleNumber);
+	_set_kernel_arg(8, sizeof(cl_ulong), &seed);
+	_set_kernel_arg(9, sizeof(cl_int), &preview);
 
-	size_t pixelCount = r.clImage.size.x * r.clImage.size.y;
-
-	cl_int ret =
-		clEnqueueNDRangeKernel(r.clProgram.queue, r.clProgram.kernel, 1, NULL,
-							   &pixelCount, NULL, 0, NULL, NULL);
+	cl_int ret = _run_kernel(r.image.size.x * r.image.size.y);
 
 	if (ret != CL_SUCCESS) {
 		_print_kernel_run_error(ret);
 		return RENDERER_FAILURE;
 	}
 
-	clFinish(r.clProgram.queue);
+	clEnqueueReadBuffer(r.program.queue, r.program.imageBuff, CL_TRUE, 0,
+						sizeof(cl_float3) * r.image.size.x * r.image.size.y,
+						r.image.data, 0, NULL, NULL);
+
+	clFinish(r.program.queue);
 
 	return RENDERER_SUCCESS;
 }
 
-RendererStatus read_image() {
-	size_t pixelCount = r.clImage.size.x * r.clImage.size.y;
+void _setup_renderer_args() {
+	int imageSize = r.image.size.x * r.image.size.y;
 
-	clEnqueueReadBuffer(r.clProgram.queue, r.clProgram.imageBuff, CL_TRUE, 0,
-						sizeof(cl_float3) * pixelCount, r.clImage.data, 0, NULL,
-						NULL);
+	safe_clReleaseMemObject(r.program.imageBuff);
+	r.program.imageBuff =
+		_create_buffer(sizeof(cl_float3) * imageSize, CL_MEM_READ_WRITE);
 
-	clFinish(r.clProgram.queue);
+	safe_clReleaseMemObject(r.program.voxelBuff);
+	r.program.voxelBuff =
+		_create_buffer(sizeof(Voxel) * r.scene.voxelCount, CL_MEM_READ_ONLY);
 
-	_gamma_correct_CLImage(r.clImage);
+	clEnqueueWriteBuffer(r.program.queue, r.program.voxelBuff, CL_TRUE, 0,
+						 sizeof(Voxel) * r.scene.voxelCount, r.scene.voxels, 0,
+						 NULL, NULL);
 
-	return RENDERER_SUCCESS;
+	_set_kernel_arg(0, sizeof(cl_int2), &r.image.size);
+	_set_kernel_arg(1, sizeof(cl_mem), &r.program.imageBuff);
+	_set_kernel_arg(2, sizeof(cl_int), &r.scene.voxelCount);
+	_set_kernel_arg(3, sizeof(cl_mem), &r.program.voxelBuff);
+	_set_kernel_arg(4, sizeof(cl_float3), &r.scene.bgColor);
+	_set_kernel_arg(5, sizeof(cl_float3), &r.scene.bgBrightness);
+	_set_kernel_arg(6, sizeof(Camera), &r.camera);
 }
 
-RendererStatus end_image_rendering() {
-	if (r.clProgram.voxelBuff != NULL) {
-		clReleaseMemObject(r.clProgram.voxelBuff);
-		r.clProgram.voxelBuff = NULL;
+void *_start_renderer_loop() {
+	r.restartRender = 1;
+
+	int i;
+	while (!r.stopRender) {
+		if (r.restartRender) {
+			r.restartRender = 0;
+			i = 0;
+			_setup_renderer_args();
+		}
+
+		if (_render_frame(i) == RENDERER_FAILURE) {
+			exit(-1);
+		}
+		i++;
 	}
 
-	read_image();
+	r.stopRender = 0;
+
+	pthread_exit(NULL);
+}
+
+//---- public ----------------------------------------------------------------//
+
+RendererStatus set_output_properties(int width, int height) {
+	safe_free(r.image.data);
+	r.image.size = (cl_int2){.x = width, .y = height};
+	r.image.data = malloc(sizeof(cl_float3) * width * height);
 
 	return RENDERER_SUCCESS;
 }
 
-RendererStatus render_image_to_file(int samples, char *fileName) {
-	begin_image_rendering();
+RendererStatus begin_rendering() {
+	r.restartRender = 1;
+	r.stopRender = 0;
 
-	for (int i = 0; i < samples; i++) {
-		msg("%d/%d\n", i, samples);
-		if (render_sample(i) == RENDERER_FAILURE)
-			return RENDERER_FAILURE;
-	}
-
-	end_image_rendering();
-
-	k_Image *image = _CLImage_to_k_Image(r.clImage);
-
-	k_write_image(image, fileName);
-
-	k_destroy_image(image);
+	pthread_t thread;
+	pthread_create(&thread, NULL, _start_renderer_loop, NULL);
 
 	return RENDERER_SUCCESS;
 }
+
+RendererStatus end_rendering() {
+	r.stopRender = 1;
+	return RENDERER_SUCCESS;
+}
+
+k_Image *get_image() {
+	k_Image *image = _CLImage_to_k_Image(r.image);
+	k_gamma_correct_image(image);
+	return image;
+}
+
+/*
+	---- priv ----
+	- begin_renderer (loop)
+	  restart render when scene changes
+	- begin_fast_renderer (loop)
+	  only render one frame when scene changes
+
+	---- pub ----
+	- begin_rendering
+	  start gpu rendering (pt and fast) in new threads
+	- end_rendering
+	  stop gpu rendering threads
+	- get_image
+	  get pathtraced image (stop pathtracer while reading)
+	- get_fast_image
+	  get fast image after rendering has finished
+
+	save_render_to_file
+*/

@@ -25,6 +25,8 @@ int k_write_image(
 	const char *fileName
 );
 
+int k_gamma_correct_image(k_Image *image);
+
 int k_destroy_image(
 	k_Image *image
 );
@@ -93,6 +95,16 @@ int k_write_image(const k_Image *image, const char *fileName) {
 
 	} else {
 		return -1;
+	}
+
+	return 0;
+}
+
+int k_gamma_correct_image(k_Image *image) {
+	for(int i = 0; i < image->width * image->height; i++) {
+		image->data[i * 3 + 0] = sqrt((float)image->data[i * 3 + 0] / 255) * 255;
+		image->data[i * 3 + 1] = sqrt((float)image->data[i * 3 + 1] / 255) * 255;
+		image->data[i * 3 + 2] = sqrt((float)image->data[i * 3 + 2] / 255) * 255;
 	}
 
 	return 0;

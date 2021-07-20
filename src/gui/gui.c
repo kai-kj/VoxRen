@@ -2,39 +2,13 @@
 
 //---- private ---------------------------------------------------------------//
 
-static k_Image *_CLImage_to_k_Image(CLImage clImage) {
-	k_Image *image = k_create_image(clImage.size.x, clImage.size.y);
-
-	for (int i = 0; i < image->width * image->height; i++) {
-		if (clImage.data[i].x < 0)
-			clImage.data[i].x = 0;
-		if (clImage.data[i].y < 0)
-			clImage.data[i].y = 0;
-		if (clImage.data[i].z < 0)
-			clImage.data[i].z = 0;
-
-		if (clImage.data[i].x > 1)
-			clImage.data[i].x = 1;
-		if (clImage.data[i].y > 1)
-			clImage.data[i].y = 1;
-		if (clImage.data[i].z > 1)
-			clImage.data[i].z = 1;
-
-		image->data[i * 3 + 0] = (int)(clImage.data[i].x * 255);
-		image->data[i * 3 + 1] = (int)(clImage.data[i].y * 255);
-		image->data[i * 3 + 2] = (int)(clImage.data[i].z * 255);
-	}
-
-	return image;
-}
-
 SDL_Surface *_get_render_surface() {
 	if (s.renderSurface != NULL) {
 		SDL_FreeSurface(s.renderSurface);
 		s.renderSurface = NULL;
 	}
 
-	k_Image *kImage = _CLImage_to_k_Image(r.clImage);
+	k_Image *kImage = get_image();
 
 	SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(
 		(void *)kImage->data, kImage->width, kImage->height, 24,
@@ -141,7 +115,7 @@ GUIStatus create_window(int width, int height) {
 	s.renderSurface = NULL;
 	s.prevFrameTime = SDL_GetPerformanceCounter();
 	// s.font = TTF_OpenFont("opensans.ttf", 24);
-	s.keyState = SDL_GetKeyboardState(NULL);
+	s.keyState = (Uint8 *)SDL_GetKeyboardState(NULL);
 
 	s.window = SDL_CreateWindow("pathtracer", SDL_WINDOWPOS_UNDEFINED,
 								SDL_WINDOWPOS_UNDEFINED, width, height,
@@ -155,39 +129,29 @@ GUIStatus create_window(int width, int height) {
 }
 
 GUIStatus start_main_loop() {
-	begin_image_rendering();
-
-	int frame = 0;
+	begin_rendering();
 
 	while (!s.quit) {
 		_update_dt();
 		_procces_events();
 		_process_kb_input();
 
-		if (r.restartRender) {
-			r.restartRender = 0;
-			frame = 0;
-			begin_image_rendering();
-		}
-
-		render_sample(frame);
-		read_image();
+		msg("\r%0.2f fps", 1 / s.dt);
 
 		if (s.renderSurface != NULL) {
 			SDL_FreeSurface(s.renderSurface);
 			s.renderSurface = NULL;
 		}
 
+		// s.renderSurface = _get_fast_surface();
 		s.renderSurface = _get_render_surface();
 
 		SDL_BlitSurface(s.renderSurface, NULL, s.windowSurface, NULL);
 
 		SDL_UpdateWindowSurface(s.window);
-
-		frame++;
 	}
 
-	end_image_rendering();
+	end_rendering();
 
 	return GUI_SUCCESS;
 }

@@ -3,8 +3,11 @@
 
 #include "structs.h"
 #include <k_tools/k_image.h>
+#include <k_tools/k_opencl_util.h>
 #include <k_tools/k_util.h>
 #include <math.h>
+#include <pthread.h>
+#include <string.h>
 #include <time.h>
 
 typedef char RendererStatus;
@@ -20,12 +23,10 @@ RendererStatus destroy_renderer();
 
 //---- image -----------------------------------------------------------------//
 
-RendererStatus set_image_properties(int width, int height);
-RendererStatus begin_image_rendering();
-RendererStatus render_sample(int sampleNumber);
-RendererStatus read_image();
-RendererStatus end_image_rendering();
-RendererStatus render_image_to_file(int samples, char *fileName);
+RendererStatus set_output_properties(int width, int height);
+RendererStatus begin_rendering();
+RendererStatus end_rendering();
+k_Image *get_image();
 
 //---- scene -----------------------------------------------------------------//
 

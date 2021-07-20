@@ -12,7 +12,7 @@ INC := -I include/
 LIB := -L lib/
 
 # libraries 
-LIBS := -lOpenCL -lm -lSDL2 -lSDL2_ttf
+LIBS := -lOpenCL -lm -lSDL2 -lSDL2_ttf -pthread
 
 # flags 
 FLAGS := -Wall -Wno-missing-braces

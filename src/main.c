@@ -11,6 +11,9 @@
 #define K_UTIL_IMPLEMENTATION
 #include <k_tools/k_util.h>
 
+#define K_OPENCL_UTIL_IMPLEMENTATION
+#include <k_tools/k_opencl_util.h>
+
 #define K_IMAGE_IMPLEMENTATION
 #include <k_tools/k_image.h>
 
@@ -26,10 +29,9 @@
 int main(void) {
 	create_renderer();
 
-	set_image_properties(800, 600);
+	set_output_properties(800, 600);
 
 	int size = 10;
-	int samples = 100;
 
 	int width = size;
 	int height = size;
@@ -53,13 +55,6 @@ int main(void) {
 			add_voxel(width, y, z, green);
 		}
 	}
-
-	// front wall
-	// for(int x = 0; x <= width; x++) {
-	// 	for(int y = 0; y <= height; y++) {
-	// 		add_voxel(x, y, 0, white);
-	// 	}
-	// }
 
 	// back wall
 	for (int x = 0; x <= width; x++) {

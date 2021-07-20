@@ -1,9 +1,8 @@
 #include "renderer.h"
 
 #define FILE_NAME "data/kernel/pathtracer.cl"
-#define KERNEL_NAME "renderer"
-#define PROGRAM_ARGS                                                           \
-	"-Werror -cl-mad-enable -cl-no-signed-zeros -cl-fast-relaxed-math"
+#define KERNEL_NAME "pathtracer"
+#define ARGS "-Werror -cl-mad-enable -cl-no-signed-zeros -cl-fast-relaxed-math"
 
 //---- private  --------------------------------------------------------------//
 
@@ -25,21 +24,22 @@ RendererStatus create_renderer() {
 	srand(time(NULL));
 
 	r.scene.voxelCount = 0;
-	r.clProgram.voxelBuff = NULL;
-	r.clProgram.imageBuff = NULL;
+	r.program.voxelBuff = NULL;
+	r.program.imageBuff = NULL;
+	r.program.fastImageBuff = NULL;
 	r.scene.voxels = NULL;
 
 	// TODO: check platform count
 	cl_uint platformNum;
-	clGetPlatformIDs(1, &r.clProgram.platform, &platformNum);
+	clGetPlatformIDs(1, &r.program.platform, &platformNum);
 	cl_uint deviceNum;
-	clGetDeviceIDs(r.clProgram.platform, CL_DEVICE_TYPE_GPU, 2,
-				   &r.clProgram.device, &deviceNum);
+	clGetDeviceIDs(r.program.platform, CL_DEVICE_TYPE_GPU, 2, &r.program.device,
+				   &deviceNum);
 
-	r.clProgram.context =
-		clCreateContext(0, 1, &r.clProgram.device, NULL, NULL, NULL);
-	r.clProgram.queue = clCreateCommandQueueWithProperties(
-		r.clProgram.context, r.clProgram.device, 0, NULL);
+	r.program.context =
+		clCreateContext(0, 1, &r.program.device, NULL, NULL, NULL);
+	r.program.queue = clCreateCommandQueueWithProperties(
+		r.program.context, r.program.device, 0, NULL);
 
 	char *source = read_file(FILE_NAME);
 
@@ -48,49 +48,31 @@ RendererStatus create_renderer() {
 		return RENDERER_FAILURE;
 	}
 
-	r.clProgram.program = clCreateProgramWithSource(
-		r.clProgram.context, 1, (const char **)&source, NULL, NULL);
+	r.program.program = clCreateProgramWithSource(
+		r.program.context, 1, (const char **)&source, NULL, NULL);
 
 	free(source);
 
-	if (clBuildProgram(r.clProgram.program, 0, NULL, PROGRAM_ARGS, NULL,
-					   NULL) != CL_SUCCESS) {
-		_print_program_build_error(r.clProgram.device, r.clProgram.program);
+	if (clBuildProgram(r.program.program, 0, NULL, ARGS, NULL, NULL) !=
+		CL_SUCCESS) {
+		_print_program_build_error(r.program.device, r.program.program);
 		return RENDERER_FAILURE;
 	}
 
-	r.clProgram.kernel = clCreateKernel(r.clProgram.program, KERNEL_NAME, NULL);
+	r.program.kernel = clCreateKernel(r.program.program, KERNEL_NAME, NULL);
 
 	return RENDERER_SUCCESS;
 }
 
 RendererStatus destroy_renderer() {
-	clReleaseMemObject(r.clProgram.imageBuff);
-
-	if (r.scene.voxels != NULL) {
-		free(r.scene.voxels);
-		r.scene.voxels = NULL;
-	}
-
-	if (r.clImage.data != NULL) {
-		free(r.clImage.data);
-		r.clImage.data = NULL;
-	}
-
-	if (r.clProgram.voxelBuff != NULL) {
-		clReleaseMemObject(r.clProgram.voxelBuff);
-		r.clProgram.voxelBuff = NULL;
-	}
-
-	if (r.clProgram.imageBuff != NULL) {
-		clReleaseMemObject(r.clProgram.imageBuff);
-		r.clProgram.imageBuff = NULL;
-	}
-
-	clReleaseProgram(r.clProgram.program);
-	clReleaseKernel(r.clProgram.kernel);
-	clReleaseCommandQueue(r.clProgram.queue);
-	clReleaseContext(r.clProgram.context);
+	safe_free(r.scene.voxels);
+	safe_free(r.image.data);
+	safe_clReleaseMemObject(r.program.voxelBuff);
+	safe_clReleaseMemObject(r.program.imageBuff);
+	safe_clReleaseMemObject(r.program.fastImageBuff);
+	clReleaseProgram(r.program.program);
+	clReleaseKernel(r.program.kernel);
+	clReleaseContext(r.program.context);
 
 	return RENDERER_SUCCESS;
 }

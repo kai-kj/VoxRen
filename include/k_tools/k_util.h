@@ -22,6 +22,7 @@ int sec_to_min(int seconds);
 int sec_to_h(int seconds);
 char *read_file(char *fileName);
 char *get_file_ext(char *filename);
+void safe_free(void *ptr);
 void msg(char *format, ...);
 
 //----------------------------------------------------------------------------//
@@ -30,14 +31,13 @@ void msg(char *format, ...);
 
 #ifdef K_UTIL_IMPLEMENTATION
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
 #include <string.h>
 #include <sys/time.h>
 
 //---- private functions -----------------------------------------------------//
-
 
 //---- public functions ------------------------------------------------------//
 
@@ -48,13 +48,9 @@ double get_time() {
 	return (double)time.tv_sec + (double)time.tv_usec / 1000000;
 }
 
-int sec_to_min(int seconds) {
-	return seconds / 60;
-}
+int sec_to_min(int seconds) { return seconds / 60; }
 
-int sec_to_h(int seconds) {
-	return sec_to_min(seconds) / 60;
-}
+int sec_to_h(int seconds) { return sec_to_min(seconds) / 60; }
 
 char *read_file(char *fileName) {
 	char *source = NULL;
@@ -68,8 +64,10 @@ char *read_file(char *fileName) {
 
 			size_t newLen = fread(source, sizeof(char), bufsize, fp);
 
-			if (ferror(fp) != 0) return NULL;
-			else source[newLen++] = '\0';
+			if (ferror(fp) != 0)
+				return NULL;
+			else
+				source[newLen++] = '\0';
 		}
 
 		fclose(fp);
@@ -80,27 +78,35 @@ char *read_file(char *fileName) {
 
 char *get_file_ext(char *filename) {
 	char *dot = strrchr(filename, '.');
-	if(!dot || dot == filename) return "";
+	if (!dot || dot == filename)
+		return "";
 	return dot + 1;
+}
+
+void safe_free(void *ptr) {
+	if (ptr != NULL) {
+		free(ptr);
+		ptr = NULL;
+	}
 }
 
 void msg(char *format, ...) {
 	va_list args;
 
-	#ifdef K_LOG_PRINT_TO_SCREEN
-	 	va_start(args, format);
-		vprintf(format, args);
-		fflush(stdout);
-		va_end(args);
-	#endif
+#ifdef K_LOG_PRINT_TO_SCREEN
+	va_start(args, format);
+	vprintf(format, args);
+	fflush(stdout);
+	va_end(args);
+#endif
 
-	#ifdef K_LOG_PRINT_TO_FILE
-		va_start(args, format);
-		FILE *fp = fopen(K_LOG_FILE, "a");
-		vfprintf(fp, format, args);
-		fclose(fp);
-		va_end(args);
-	#endif
+#ifdef K_LOG_PRINT_TO_FILE
+	va_start(args, format);
+	FILE *fp = fopen(K_LOG_FILE, "a");
+	vfprintf(fp, format, args);
+	fclose(fp);
+	va_end(args);
+#endif
 }
 
 #endif

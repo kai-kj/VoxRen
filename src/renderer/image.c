@@ -93,24 +93,24 @@ void _set_kernel_arg(cl_uint idx, size_t size, void *arg) {
 	clSetKernelArg(r.program.kernel, idx, size, arg);
 }
 
-cl_mem _create_buffer(size_t size, cl_mem_flags flags) {
+static cl_mem _create_buffer(size_t size, cl_mem_flags flags) {
 	cl_mem ret = clCreateBuffer(r.program.context, flags, size, NULL, NULL);
 	return ret;
 }
 
-cl_int _run_kernel(size_t size) {
+static cl_int _run_kernel(size_t size) {
 	return clEnqueueNDRangeKernel(r.program.queue, r.program.kernel, 1, NULL,
 								  &size, NULL, 0, NULL, NULL);
 }
 
-RendererStatus _render_frame(int sampleNumber) {
+static RendererStatus _render_frame(int sampleNumber) {
 	cl_ulong seed = rand();
 	cl_int preview = !sampleNumber;
 
 	// non-constant arguments
-	_set_kernel_arg(7, sizeof(cl_int), &sampleNumber);
-	_set_kernel_arg(8, sizeof(cl_ulong), &seed);
-	_set_kernel_arg(9, sizeof(cl_int), &preview);
+	_set_kernel_arg(10, sizeof(cl_int), &sampleNumber);
+	_set_kernel_arg(11, sizeof(cl_ulong), &seed);
+	_set_kernel_arg(12, sizeof(cl_int), &preview);
 
 	cl_int ret = _run_kernel(r.image.size.x * r.image.size.y);
 
@@ -132,7 +132,7 @@ RendererStatus _render_frame(int sampleNumber) {
 	return RENDERER_SUCCESS;
 }
 
-void _setup_renderer_args() {
+static void _setup_renderer_args() {
 	int imageSize = r.image.size.x * r.image.size.y;
 
 	safe_clReleaseMemObject(r.program.imageBuff);
@@ -147,16 +147,27 @@ void _setup_renderer_args() {
 						 sizeof(Voxel) * r.scene.voxelCount, r.scene.voxels, 0,
 						 NULL, NULL);
 
+	safe_clReleaseMemObject(r.program.chunkBuff);
+	r.program.chunkBuff =
+		_create_buffer(sizeof(Chunk) * r.scene.chunkCount, CL_MEM_READ_ONLY);
+
+	clEnqueueWriteBuffer(r.program.queue, r.program.chunkBuff, CL_TRUE, 0,
+						 sizeof(Chunk) * r.scene.chunkCount, r.scene.chunks, 0,
+						 NULL, NULL);
+
 	_set_kernel_arg(0, sizeof(cl_int2), &r.image.size);
 	_set_kernel_arg(1, sizeof(cl_mem), &r.program.imageBuff);
 	_set_kernel_arg(2, sizeof(cl_int), &r.scene.voxelCount);
 	_set_kernel_arg(3, sizeof(cl_mem), &r.program.voxelBuff);
-	_set_kernel_arg(4, sizeof(cl_float3), &r.scene.bgColor);
-	_set_kernel_arg(5, sizeof(cl_float3), &r.scene.bgBrightness);
-	_set_kernel_arg(6, sizeof(Camera), &r.camera);
+	_set_kernel_arg(4, sizeof(cl_int), &r.scene.chunkSize);
+	_set_kernel_arg(5, sizeof(cl_int), &r.scene.chunkCount);
+	_set_kernel_arg(6, sizeof(cl_mem), &r.program.chunkBuff);
+	_set_kernel_arg(7, sizeof(cl_float3), &r.scene.bgColor);
+	_set_kernel_arg(8, sizeof(cl_float3), &r.scene.bgBrightness);
+	_set_kernel_arg(9, sizeof(Camera), &r.camera);
 }
 
-void *_start_renderer_loop() {
+static void *_start_renderer_loop() {
 	r.restartRender = 1;
 
 	int i;
@@ -204,27 +215,9 @@ RendererStatus end_rendering() {
 }
 
 k_Image *get_image() {
+	// msg("(%f, %f, %f)\n", r.image.data[0].x, r.image.data[0].y,
+	// 	r.image.data[0].z);
 	k_Image *image = _CLImage_to_k_Image(r.image);
 	k_gamma_correct_image(image);
 	return image;
 }
-
-/*
-	---- priv ----
-	- begin_renderer (loop)
-	  restart render when scene changes
-	- begin_fast_renderer (loop)
-	  only render one frame when scene changes
-
-	---- pub ----
-	- begin_rendering
-	  start gpu rendering (pt and fast) in new threads
-	- end_rendering
-	  stop gpu rendering threads
-	- get_image
-	  get pathtraced image (stop pathtracer while reading)
-	- get_fast_image
-	  get fast image after rendering has finished
-
-	save_render_to_file
-*/

@@ -45,35 +45,33 @@ int main(void) {
 	Material blue = create_lambertian_material(0, 0, 1);
 	Material mirror = create_metal_material(0, 0, 0, 0.5, 0);
 	Material light = create_light_source_material(1, 1, 0.5, 2);
-	Material sun = create_light_source_material(1, 1, 0.8, 10);
 
 	// side walls
-	for (int y = 0; y <= width; ++y) {
-		for (int z = 0; z <= depth; ++z) {
+	for (int y = 0; y < width; ++y) {
+		for (int z = 0; z < depth; ++z) {
 			add_voxel(0, y, z, red);
-
-			add_voxel(width, y, z, green);
+			add_voxel(width - 1, y, z, green);
 		}
 	}
 
 	// back wall
-	for (int x = 0; x <= width; x++) {
-		for (int y = 0; y <= height; y++) {
-			add_voxel(x, y, depth, blue);
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
+			add_voxel(x, y, depth - 1, blue);
 		}
 	}
 
 	// celling
-	for (int x = 0; x <= width; x++) {
-		for (int z = 0; z <= depth; z++) {
+	for (int x = 0; x < width; x++) {
+		for (int z = 0; z < depth; z++) {
 			add_voxel(x, 0, z, white);
 		}
 	}
 
 	// floor
-	for (int x = 0; x <= width; x++) {
-		for (int z = 0; z <= depth; z++) {
-			add_voxel(x, height, z, white);
+	for (int x = 0; x < width; x++) {
+		for (int z = 0; z < depth; z++) {
+			add_voxel(x, height - 1, z, white);
 		}
 	}
 
@@ -84,24 +82,9 @@ int main(void) {
 	add_voxel(width * 0.3, height - 1, depth * 0.3, white);
 	add_voxel(width * 0.3, height - 2, depth * 0.3, white);
 
-	add_voxel(width * 0.3, height - 1, depth * 0.8, mirror);
-	add_voxel(width * 0.3, height - 2, depth * 0.8, mirror);
-	add_voxel(width * 0.4, height - 1, depth * 0.8, mirror);
-	add_voxel(width * 0.4, height - 2, depth * 0.8, mirror);
-	add_voxel(width * 0.5, height - 1, depth * 0.8, mirror);
-	add_voxel(width * 0.5, height - 2, depth * 0.8, mirror);
-	add_voxel(width * 0.6, height - 1, depth * 0.8, mirror);
-	add_voxel(width * 0.6, height - 2, depth * 0.8, mirror);
-	add_voxel(width * 0.7, height - 1, depth * 0.8, mirror);
-	add_voxel(width * 0.7, height - 2, depth * 0.8, mirror);
-
-	for (int x = -5; x <= 15; x++) {
-		for (int z = -5; z <= 15; z++) {
-			add_voxel(x, -height * 2, z - 5, sun);
-		}
-	}
-
 	set_camera_properties(5.5, -2, -10, -M_PI / 8, 0, 0, 1, 1, 0.001, 1000);
+
+	print_scene_state();
 
 	if (create_window(SCREEN_WIDTH, SCREEN_HEIGHT) == GUI_SUCCESS)
 		start_main_loop();
@@ -114,16 +97,3 @@ int main(void) {
 
 	return 0;
 }
-
-/*
-
-renderer
-	renderer.h
-
-	renderer.c
-	scene.c
-	camera.c
-	material.c
-	image.c
-
-*/

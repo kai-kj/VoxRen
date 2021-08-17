@@ -1,4 +1,7 @@
+// built-in opencl constants don't seem to work
 #define PI 3.14159265359f
+#define BIG_NUM 2147483647.0f
+#define SMALL_NUM 0.00001f
 
 #define MATERIAL_TYPE_EMPTY 0
 #define MATERIAL_TYPE_LIGHT_SOURCE 1
@@ -50,6 +53,12 @@ typedef struct Camera {
 	float exposure;
 } Camera;
 
+typedef struct Chunk {
+	int3 pos;
+	int firstVoxel;
+	int voxelCount;
+} Chunk;
+
 typedef struct Voxel {
 	int3 pos;
 	Material material;
@@ -58,10 +67,17 @@ typedef struct Voxel {
 typedef struct Renderer {
 	int2 imageSize;
 	global float3 *image;
+
 	int voxelCount;
 	global Voxel *voxels;
+
+	int chunkSize;
+	int chunkCount;
+	global Chunk *chunks;
+
 	float3 bgColor;
 	float bgBrightness;
+
 	Camera camera;
 	ulong *rng;
 } Renderer;
@@ -147,13 +163,13 @@ float get_reflectance(float cosTheta, float relativeRefIdx) {
 	return r + (1 - r) * pow((1 - cosTheta), 5);
 }
 
-bool ray_voxel(Ray ray, Voxel voxel, float3 dirFrac, float *tMin) {
+bool ray_voxel(Ray ray, global Voxel *voxel, float3 dirFrac, float *tMin) {
 	float t[6];
-	t[0] = (voxel.pos.x - ray.origin.x) * dirFrac.x;
+	t[0] = (voxel->pos.x - ray.origin.x) * dirFrac.x;
 	t[1] = t[0] + dirFrac.x;
-	t[2] = (voxel.pos.y - ray.origin.y) * dirFrac.y;
+	t[2] = (voxel->pos.y - ray.origin.y) * dirFrac.y;
 	t[3] = t[2] + dirFrac.y;
-	t[4] = (voxel.pos.z - ray.origin.z) * dirFrac.z;
+	t[4] = (voxel->pos.z - ray.origin.z) * dirFrac.z;
 	t[5] = t[4] + dirFrac.z;
 
 	*tMin = max(max(min(t[0], t[1]), min(t[2], t[3])), min(t[4], t[5]));
@@ -166,14 +182,14 @@ constant int3 returnValues[6] = {(int3){-1, 0, 0}, (int3){1, 0, 0},
 								 (int3){0, -1, 0}, (int3){0, 1, 0},
 								 (int3){0, 0, -1}, (int3){0, 0, 1}};
 
-int3 get_ray_voxel_normal(Ray ray, Voxel voxel, float3 dirFrac) {
+int3 get_ray_voxel_normal(Ray ray, global Voxel *voxel, float3 dirFrac) {
 	float t[6];
 
-	t[0] = (voxel.pos.x - ray.origin.x) * dirFrac.x;
+	t[0] = (voxel->pos.x - ray.origin.x) * dirFrac.x;
 	t[1] = t[0] + dirFrac.x;
-	t[2] = (voxel.pos.y - ray.origin.y) * dirFrac.y;
+	t[2] = (voxel->pos.y - ray.origin.y) * dirFrac.y;
 	t[3] = t[2] + dirFrac.y;
-	t[4] = (voxel.pos.z - ray.origin.z) * dirFrac.z;
+	t[4] = (voxel->pos.z - ray.origin.z) * dirFrac.z;
 	t[5] = t[4] + dirFrac.z;
 
 	int tMinIdx = get_max_idx(
@@ -183,27 +199,49 @@ int3 get_ray_voxel_normal(Ray ray, Voxel voxel, float3 dirFrac) {
 	return returnValues[tMinIdx];
 }
 
+bool ray_chunk(Ray ray, global Chunk *chunk, int chunkSize, float3 dirFrac) {
+	float t[6];
+	t[0] = (chunk->pos.x * chunkSize - ray.origin.x) * dirFrac.x;
+	t[1] = t[0] + dirFrac.x * chunkSize;
+	t[2] = (chunk->pos.y * chunkSize - ray.origin.y) * dirFrac.y;
+	t[3] = t[2] + dirFrac.y * chunkSize;
+	t[4] = (chunk->pos.z * chunkSize - ray.origin.z) * dirFrac.z;
+	t[5] = t[4] + dirFrac.z * chunkSize;
+
+	float tMin = max(max(min(t[0], t[1]), min(t[2], t[3])), min(t[4], t[5]));
+	float tMax = min(min(max(t[0], t[1]), max(t[2], t[3])), max(t[4], t[5]));
+
+	return tMax > tMin && tMax >= 0;
+}
+
 //---- ray -------------------------------------------------------------------//
 
 bool cast_ray(Renderer *r, Ray ray, float3 *hitPos, int3 *normal,
 			  Voxel *voxel) {
 	bool hit = false;
 	float minDist;
-	int minIdx = -1;
+	int minIdx;
 
 	float3 dirFrac =
-		(float3){(ray.direction.x != 0) ? (1.0f / ray.direction.x) : FLT_MAX,
-				 (ray.direction.y != 0) ? (1.0f / ray.direction.y) : FLT_MAX,
-				 (ray.direction.z != 0) ? (1.0f / ray.direction.z) : FLT_MAX};
+		(float3){(ray.direction.x != 0) ? (1.0f / ray.direction.x) : BIG_NUM,
+				 (ray.direction.y != 0) ? (1.0f / ray.direction.y) : BIG_NUM,
+				 (ray.direction.z != 0) ? (1.0f / ray.direction.z) : BIG_NUM};
 
-	for (uint i = 0; i < r->voxelCount; i++) {
-		float t;
+	for (uint i = 0; i < r->chunkCount; i++) {
+		global Chunk *chunk = &r->chunks[i];
 
-		if (ray_voxel(ray, r->voxels[i], dirFrac, &t)) {
-			if (!hit || t < minDist) {
-				hit = true;
-				minDist = t;
-				minIdx = i;
+		if (ray_chunk(ray, chunk, r->chunkSize, dirFrac)) {
+			int lastVoxel = chunk->firstVoxel + chunk->voxelCount;
+
+			for (uint j = chunk->firstVoxel; j < lastVoxel; j++) {
+				float t;
+				if (ray_voxel(ray, &r->voxels[j], dirFrac, &t)) {
+					if (!hit || t < minDist) {
+						hit = true;
+						minDist = t;
+						minIdx = j;
+					}
+				}
 			}
 		}
 	}
@@ -212,7 +250,7 @@ bool cast_ray(Renderer *r, Ray ray, float3 *hitPos, int3 *normal,
 		return false;
 
 	*hitPos = ray.origin + ray.direction * minDist;
-	*normal = get_ray_voxel_normal(ray, r->voxels[minIdx], dirFrac);
+	*normal = get_ray_voxel_normal(ray, &r->voxels[minIdx], dirFrac);
 	*voxel = r->voxels[minIdx];
 
 	return true;
@@ -234,7 +272,7 @@ float3 get_color(Renderer *r, Ray ray, int maxDepth) {
 		if (cast_ray(r, ray, &hitPos, &iNormal, &voxel)) {
 			Material material = voxel.material;
 			float3 fNormal = convert_float3(iNormal);
-			hitPos += fNormal * 0.01f;
+			hitPos += fNormal * SMALL_NUM;
 
 			// TODO: dielectric material
 			switch (material.type) {
@@ -336,14 +374,16 @@ float3 adjust_color(Renderer *r, float3 color) {
 }
 
 kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount,
-					   global Voxel *voxels, float3 bgColor, float bgBrightness,
+					   global Voxel *voxels, int chunkSize, int chunkCount,
+					   global Chunk *chunks, float3 bgColor, float bgBrightness,
 					   Camera camera, int sampleNumber, ulong seed,
 					   int preview) {
 	int id = get_global_id(0);
 	ulong rng = init_rng_2(id, seed);
 
-	Renderer r = (Renderer){imageSize, image,		 voxelCount, voxels,
-							bgColor,   bgBrightness, camera,	 &rng};
+	Renderer r = (Renderer){imageSize,	  image,	  voxelCount, voxels,
+							chunkSize,	  chunkCount, chunks,	  bgColor,
+							bgBrightness, camera,	  &rng};
 
 	Ray ray = get_first_ray(&r, id);
 
@@ -358,5 +398,11 @@ kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount,
 
 	if (sampleNumber == 1)
 		sampleNumber = 0;
+
 	image[id] = (image[id] * sampleNumber + color) / (sampleNumber + 1);
+
+	if (id == 0) {
+		image[id] = (float3){(float)r.chunkCount, r.chunks[1].firstVoxel,
+							 r.chunks[1].voxelCount};
+	}
 }

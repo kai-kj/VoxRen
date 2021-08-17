@@ -32,9 +32,9 @@ k_Image *get_image();
 
 RendererStatus set_background_properties(float red, float green, float blue,
 										 float brightness);
-RendererStatus create_scene();
-RendererStatus destroy_scene();
 RendererStatus add_voxel(int x, int y, int z, Material material);
+RendererStatus remove_voxel(int x, int y, int z);
+RendererStatus print_scene_state();
 
 //---- camera ----------------------------------------------------------------//
 

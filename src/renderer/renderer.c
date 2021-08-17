@@ -3,6 +3,7 @@
 #define FILE_NAME "data/kernel/pathtracer.cl"
 #define KERNEL_NAME "pathtracer"
 #define ARGS "-Werror -cl-mad-enable -cl-no-signed-zeros -cl-fast-relaxed-math"
+#define CHUNK_SIZE 3
 
 //---- private  --------------------------------------------------------------//
 
@@ -24,9 +25,13 @@ RendererStatus create_renderer() {
 	srand(time(NULL));
 
 	r.scene.voxelCount = 0;
+	r.scene.chunkCount = 0;
 	r.program.voxelBuff = NULL;
 	r.program.imageBuff = NULL;
 	r.scene.voxels = NULL;
+	r.scene.chunks = NULL;
+
+	r.scene.chunkSize = CHUNK_SIZE;
 
 	// TODO: check platform count
 	cl_uint platformNum;

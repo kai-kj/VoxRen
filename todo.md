@@ -13,7 +13,7 @@
   * [x] Render to SDL window
   * [x] Keyboard movement
   * [ ] Integrate command system to GUI
-  * Mouse right drag to change view angle
+  * [x] Mouse right drag to change view angle
   * [ ] Place voxels anywhere on the screen with mouse
 * [ ] Command system (LUA)
   * [ ] Get lua working

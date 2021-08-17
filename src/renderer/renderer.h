@@ -1,7 +1,6 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "structs.h"
 #include <k_tools/k_image.h>
 #include <k_tools/k_opencl_util.h>
 #include <k_tools/k_util.h>
@@ -10,6 +9,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+
+#include "structs.h"
 
 typedef char RendererStatus;
 #define RENDERER_SUCCESS 0

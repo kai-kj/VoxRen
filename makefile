@@ -61,7 +61,10 @@ $(BIN): $(BUILD)
 	$(CC) -c $(SRC)/renderer/camera.c -o $(BUILD)/renderer/camera.a
 	$(CC) -c $(SRC)/renderer/material.c -o $(BUILD)/renderer/material.a
 	$(CC) -c $(SRC)/renderer/global.c -o $(BUILD)/renderer/global.a
-	$(CC) -c $(SRC)/gui/gui.c -o $(BUILD)/gui/gui.a
+	$(CC) -c $(SRC)/gui/window.c -o $(BUILD)/gui/window.a
+	$(CC) -c $(SRC)/gui/main_loop.c -o $(BUILD)/gui/main_loop.a
+	$(CC) -c $(SRC)/gui/input.c -o $(BUILD)/gui/input.a
+	$(CC) -c $(SRC)/gui/place_voxel.c -o $(BUILD)/gui/place_voxel.a
 	$(CC) -c $(SRC)/gui/global.c -o $(BUILD)/gui/global.a
 	$(CC) -c $(SRC)/main.c -o $(BUILD)/main.o
 

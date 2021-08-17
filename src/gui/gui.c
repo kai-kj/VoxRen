@@ -15,7 +15,7 @@ SDL_Surface *_get_render_surface() {
 		3 * kImage->width, 0x0000ff, 0x00ff00, 0xff0000, 0x000000);
 
 	if (surface == NULL) {
-		msg("%s\n", SDL_GetError());
+		msg("%s", SDL_GetError());
 		exit(-1);
 	}
 
@@ -118,37 +118,49 @@ void _process_kb_input() {
 
 GUIStatus create_window(int width, int height) {
 	// window
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+		err("Failed to initialise SDL");
 		return GUI_FAILURE;
+	}
 
 	s.window = NULL;
 	s.windowSurface = NULL;
 	s.renderSurface = NULL;
 
+	msg("Creating window");
+
 	s.window = SDL_CreateWindow("pathtracer", SDL_WINDOWPOS_UNDEFINED,
 								SDL_WINDOWPOS_UNDEFINED, width, height,
 								SDL_WINDOW_SHOWN);
 
-	if (s.window == NULL)
+	if (s.window == NULL) {
+		err("Failed to crate window");
 		return GUI_FAILURE;
+	}
 
 	s.windowSurface = SDL_GetWindowSurface(s.window);
 
 	s.keyState = (Uint8 *)SDL_GetKeyboardState(NULL);
 
 	// font
-	if (TTF_Init() < 0)
+	if (TTF_Init() < 0) {
+		err("Failed to initialise SDL_TTF");
 		return GUI_FAILURE;
+	}
 
 	s.font = TTF_OpenFont("data/assets/opensans.ttf", 24);
 
-	if (s.font == NULL)
+	if (s.font == NULL) {
+		err("Failed to load font");
 		return GUI_FAILURE;
+	}
 
 	return GUI_SUCCESS;
 }
 
 GUIStatus start_main_loop() {
+	msg("Starting main loop");
+
 	begin_rendering();
 
 	while (!s.quit) {
@@ -178,6 +190,8 @@ GUIStatus start_main_loop() {
 }
 
 GUIStatus close_window() {
+	msg("Closing window");
+
 	if (s.renderSurface != NULL) {
 		SDL_FreeSurface(s.renderSurface);
 		s.renderSurface = NULL;

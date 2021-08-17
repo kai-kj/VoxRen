@@ -7,21 +7,21 @@
 
 //---- private  --------------------------------------------------------------//
 
-static void _print_source_read_error() { msg("Failed to read source file\n"); }
+static void _print_source_read_error() { err("Failed to read source file"); }
 
 static void _print_program_build_error(cl_device_id device,
 									   cl_program program) {
-	msg("Failed to build program\n");
-
-	char buffer[0x100000];
-	clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, sizeof(buffer),
-						  buffer, NULL);
-	msg("%s\n", buffer);
+	char buff[0x100000];
+	clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, sizeof(buff),
+						  buff, NULL);
+	err("Failed to build program: %s", buff);
 }
 
 //---- public ----------------------------------------------------------------//
 
 RendererStatus create_renderer() {
+	msg("creating renderer");
+
 	srand(time(NULL));
 
 	r.scene.voxelCount = 0;
@@ -49,6 +49,7 @@ RendererStatus create_renderer() {
 
 	if (source == NULL) {
 		_print_source_read_error();
+		destroy_renderer();
 		return RENDERER_FAILURE;
 	}
 
@@ -60,6 +61,7 @@ RendererStatus create_renderer() {
 	if (clBuildProgram(r.program.program, 0, NULL, ARGS, NULL, NULL) !=
 		CL_SUCCESS) {
 		_print_program_build_error(r.program.device, r.program.program);
+		destroy_renderer();
 		return RENDERER_FAILURE;
 	}
 
@@ -69,6 +71,8 @@ RendererStatus create_renderer() {
 }
 
 RendererStatus destroy_renderer() {
+	msg("Destroying renderer");
+
 	safe_free(r.scene.voxels);
 	safe_free(r.image.data);
 	safe_clReleaseMemObject(r.program.voxelBuff);

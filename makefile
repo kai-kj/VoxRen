@@ -18,7 +18,7 @@ LIBS := -lOpenCL -lm -lSDL2 -lSDL2_ttf -pthread
 FLAGS := -Wall -Wno-missing-braces
 
 # defines
-DEFS := -D CL_TARGET_OPENCL_VERSION=300
+DEFS := -D CL_TARGET_OPENCL_VERSION=300 -D K_UTIL_DEBUG
 #------------------------------------------------------------------------------#
 # other variables                                                              #
 #------------------------------------------------------------------------------#

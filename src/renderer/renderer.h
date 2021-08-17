@@ -34,7 +34,6 @@ RendererStatus set_background_properties(float red, float green, float blue,
 										 float brightness);
 RendererStatus add_voxel(int x, int y, int z, Material material);
 RendererStatus remove_voxel(int x, int y, int z);
-RendererStatus print_scene_state();
 
 //---- camera ----------------------------------------------------------------//
 

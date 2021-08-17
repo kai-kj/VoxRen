@@ -2,9 +2,7 @@
 // k_util.h                                                                //
 //============================================================================//
 
-#define K_LOG_PRINT_TO_SCREEN
-#define K_LOG_PRINT_TO_FILE
-#define K_LOG_FILE "log.txt"
+#define K_UTIL_MAX_LOG_LENGTH 256
 
 //----------------------------------------------------------------------------//
 // interface                                                                  //
@@ -13,10 +11,6 @@
 #ifndef K_UTIL_H
 #define K_UTIL_H
 
-// #define K_LOG_FILE "log.txt"
-// #define K_LOG_PRINT_TO_SCREEN
-// #define K_LOG_PRINT_TO_FILE
-
 double get_time();
 int sec_to_min(int seconds);
 int sec_to_h(int seconds);
@@ -24,6 +18,9 @@ char *read_file(char *fileName);
 char *get_file_ext(char *filename);
 void safe_free(void *ptr);
 void msg(char *format, ...);
+void dbg(char *format, ...);
+void err(char *format, ...);
+void panic(char *format, ...);
 
 //----------------------------------------------------------------------------//
 // implementation                                                             //
@@ -91,22 +88,55 @@ void safe_free(void *ptr) {
 }
 
 void msg(char *format, ...) {
+	char buff[K_UTIL_MAX_LOG_LENGTH];
+
 	va_list args;
-
-#ifdef K_LOG_PRINT_TO_SCREEN
 	va_start(args, format);
-	vprintf(format, args);
+	vsnprintf(buff, K_UTIL_MAX_LOG_LENGTH, format, args);
+	va_end(args);
+
+	printf("[\e[1m\e[32mMSG\e[0m] %s\n", buff);
 	fflush(stdout);
-	va_end(args);
-#endif
+}
 
-#ifdef K_LOG_PRINT_TO_FILE
+void dbg(char *format, ...) {
+#ifdef K_UTIL_DEBUG
+	char buff[K_UTIL_MAX_LOG_LENGTH];
+
+	va_list args;
 	va_start(args, format);
-	FILE *fp = fopen(K_LOG_FILE, "a");
-	vfprintf(fp, format, args);
-	fclose(fp);
+	vsnprintf(buff, K_UTIL_MAX_LOG_LENGTH, format, args);
 	va_end(args);
+
+	printf("[\e[1m\e[33mDBG\e[0m] %s\n", buff);
+	fflush(stdout);
 #endif
+}
+
+void err(char *format, ...) {
+	char buff[K_UTIL_MAX_LOG_LENGTH];
+
+	va_list args;
+	va_start(args, format);
+	vsnprintf(buff, K_UTIL_MAX_LOG_LENGTH, format, args);
+	va_end(args);
+
+	printf("[\e[1m\e[31mERR\e[0m] %s\n", buff);
+	fflush(stdout);
+}
+
+void panic(char *format, ...) {
+	char buff[K_UTIL_MAX_LOG_LENGTH];
+
+	va_list args;
+	va_start(args, format);
+	vsnprintf(buff, K_UTIL_MAX_LOG_LENGTH, format, args);
+	va_end(args);
+
+	printf("[\e[1m\e[31mPANIC!\e[0m] %s\n", buff);
+	fflush(stdout);
+
+	exit(-1);
 }
 
 #endif

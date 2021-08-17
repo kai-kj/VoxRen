@@ -3,64 +3,66 @@
 //---- private ---------------------------------------------------------------//
 
 static void _print_kernel_run_error(cl_int ret) {
-	msg("Failed to run kernel: ");
+	char buff[0x100000];
 
 	switch (ret) {
 	case CL_INVALID_PROGRAM_EXECUTABLE:
-		msg("INVALID_PROGRAM_EXECUTABLE\n");
+		sprintf(buff, "INVALID_PROGRAM_EXECUTABLE");
 		break;
 	case CL_INVALID_COMMAND_QUEUE:
-		msg("INVALID_COMMAND_QUEUE\n");
+		sprintf(buff, "INVALID_COMMAND_QUEUE");
 		break;
 	case CL_INVALID_KERNEL:
-		msg("INVALID_KERNEL\n");
+		sprintf(buff, "INVALID_KERNEL");
 		break;
 	case CL_INVALID_CONTEXT:
-		msg("INVALID_CONTEXT\n");
+		sprintf(buff, "INVALID_CONTEXT");
 		break;
 	case CL_INVALID_KERNEL_ARGS:
-		msg("INVALID_KERNEL_ARGS\n");
+		sprintf(buff, "INVALID_KERNEL_ARGS");
 		break;
 	case CL_INVALID_WORK_DIMENSION:
-		msg("INVALID_WORK_DIMENSION\n");
+		sprintf(buff, "INVALID_WORK_DIMENSION");
 		break;
 	case CL_INVALID_GLOBAL_WORK_SIZE:
-		msg("INVALID_GLOBAL_WORK_SIZE\n");
+		sprintf(buff, "INVALID_GLOBAL_WORK_SIZE");
 		break;
 	case CL_INVALID_GLOBAL_OFFSET:
-		msg("INVALID_GLOBAL_OFFSET\n");
+		sprintf(buff, "INVALID_GLOBAL_OFFSET");
 		break;
 	case CL_INVALID_WORK_GROUP_SIZE:
-		msg("INVALID_WORK_GROUP_SIZE\n");
+		sprintf(buff, "INVALID_WORK_GROUP_SIZE");
 		break;
 	case CL_MISALIGNED_SUB_BUFFER_OFFSET:
-		msg("MISALIGNED_SUB_BUFFER_OFFSET\n");
+		sprintf(buff, "MISALIGNED_SUB_BUFFER_OFFSET");
 		break;
 	case CL_INVALID_IMAGE_SIZE:
-		msg("INVALID_IMAGE_SIZE\n");
+		sprintf(buff, "INVALID_IMAGE_SIZE");
 		break;
 	case CL_IMAGE_FORMAT_NOT_SUPPORTED:
-		msg("IMAGE_FORMAT_NOT_SUPPORTED\n");
+		sprintf(buff, "IMAGE_FORMAT_NOT_SUPPORTED");
 		break;
 	case CL_OUT_OF_RESOURCES:
-		msg("OUT_OF_RESOURCES\n");
+		sprintf(buff, "OUT_OF_RESOURCES");
 		break;
 	case CL_MEM_OBJECT_ALLOCATION_FAILURE:
-		msg("MEM_OBJECT_ALLOCATION_FAILURE\n");
+		sprintf(buff, "MEM_OBJECT_ALLOCATION_FAILURE");
 		break;
 	case CL_INVALID_EVENT_WAIT_LIST:
-		msg("INVALID_EVENT_WAIT_LIST\n");
+		sprintf(buff, "INVALID_EVENT_WAIT_LIST");
 		break;
 	case CL_INVALID_OPERATION:
-		msg("INVALID_OPERATION\n");
+		sprintf(buff, "INVALID_OPERATION");
 		break;
 	case CL_OUT_OF_HOST_MEMORY:
-		msg("OUT_OF_HOST_MEMORY\n");
+		sprintf(buff, "OUT_OF_HOST_MEMORY");
 		break;
 	default:
-		msg("NO_ERROR_CODE\n");
+		sprintf(buff, "NO_ERROR_CODE");
 		break;
 	}
+
+	err("Failed to run kernel: %s", buff);
 }
 
 static k_Image *_CLImage_to_k_Image(CLImage clImage) {
@@ -178,9 +180,9 @@ static void *_start_renderer_loop() {
 			_setup_renderer_args();
 		}
 
-		if (_render_frame(i) == RENDERER_FAILURE) {
-			exit(-1);
-		}
+		if (_render_frame(i) == RENDERER_FAILURE)
+			panic("Failed to run kernel");
+
 		i++;
 	}
 
@@ -200,6 +202,8 @@ RendererStatus set_output_properties(int width, int height) {
 }
 
 RendererStatus begin_rendering() {
+	msg("Starting render");
+
 	r.restartRender = 1;
 	r.stopRender = 0;
 
@@ -210,13 +214,13 @@ RendererStatus begin_rendering() {
 }
 
 RendererStatus end_rendering() {
+	msg("Stopping render");
+
 	r.stopRender = 1;
 	return RENDERER_SUCCESS;
 }
 
 k_Image *get_image() {
-	// msg("(%f, %f, %f)\n", r.image.data[0].x, r.image.data[0].y,
-	// 	r.image.data[0].z);
 	k_Image *image = _CLImage_to_k_Image(r.image);
 	k_gamma_correct_image(image);
 	return image;

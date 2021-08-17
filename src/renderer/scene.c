@@ -52,7 +52,7 @@ static int _chunk_exists(int x, int y, int z) {
 }
 
 static void _create_chunk(int x, int y, int z) {
-	msg("creating new chunk %d (%d, %d, %d)\n", r.scene.chunkCount, x, y, z);
+	dbg("new chunk (%d, %d, %d), total: %d", x, y, z, r.scene.chunkCount + 1);
 	Chunk chunk =
 		(Chunk){(cl_int3){.x = x, .y = y, .z = z}, r.scene.voxelCount, 0};
 
@@ -103,7 +103,7 @@ RendererStatus add_voxel(int x, int y, int z, Material material) {
 	memcpy(&r.scene.voxels[insertPos + 1], &r.scene.voxels[insertPos],
 		   sizeof(Voxel) * voxelsToMove);
 
-	// msg("inserting voxel at %d/%d\n", insertPos, r.scene.voxelCount - 1);
+	// msg("inserting voxel at %d/%d", insertPos, r.scene.voxelCount - 1);
 
 	r.scene.voxels[insertPos] = voxel;
 
@@ -133,25 +133,4 @@ RendererStatus remove_voxel(int x, int y, int z) {
 	// 	realloc(r.scene.voxels, sizeof(Voxel) * r.scene.voxelCount);
 
 	// return RENDERER_SUCCESS;
-}
-
-RendererStatus print_scene_state() {
-	msg("Scene:\n");
-
-	msg("  Voxels (chunk size: %d, chunk count: %d, voxel count: %d):\n",
-		r.scene.chunkSize, r.scene.chunkCount, r.scene.voxelCount);
-
-	for (int i = 0; i < r.scene.chunkCount; i++) {
-		Chunk chunk = r.scene.chunks[i];
-
-		msg("    C(%d, %d, %d):\n", chunk.pos.x, chunk.pos.y, chunk.pos.z);
-
-		int lastVoxel = chunk.firstVoxel + chunk.voxelCount;
-		for (int j = chunk.firstVoxel; j < lastVoxel; j++) {
-			Voxel voxel = r.scene.voxels[j];
-			msg("      V(%d, %d, %d)\n", voxel.pos.x, voxel.pos.y, voxel.pos.z);
-		}
-	}
-
-	return RENDERER_SUCCESS;
 }

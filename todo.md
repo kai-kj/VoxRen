@@ -3,12 +3,11 @@
 ## Core
 
 * [ ] Rendering
-  * [ ] Better logging
-    * [ ] Only print with `msg()` when `VERBOSE` is defined
-    * [ ] Print newline automatically
-    * [ ] Use `msg()` to show detailed info about the status of the program
-    * [ ] Implement `wrn()`, `err()`, and `panic()`
-    * [ ] Better error checking
+  * [x] Better logging
+    * [x] Print newline automatically
+    * [x] Use `msg()` to show detailed info about the status of the program
+    * [x] Implement `dbg()`, `err()`, and `panic()`
+    * [x] Better error checking
   * [ ] Transparent materials
 * [ ] Basic GUI
   * [x] Render to SDL window

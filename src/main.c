@@ -27,7 +27,8 @@
 #define SCREEN_HEIGHT 600
 
 int main(void) {
-	create_renderer();
+	if (create_renderer() != RENDERER_SUCCESS)
+		exit(-1);
 
 	set_output_properties(800, 600);
 
@@ -83,8 +84,6 @@ int main(void) {
 	add_voxel(width * 0.3, height - 2, depth * 0.3, white);
 
 	set_camera_properties(5.5, -2, -10, -M_PI / 8, 0, 0, 1, 1, 0.001, 1000);
-
-	print_scene_state();
 
 	if (create_window(SCREEN_WIDTH, SCREEN_HEIGHT) == GUI_SUCCESS)
 		start_main_loop();

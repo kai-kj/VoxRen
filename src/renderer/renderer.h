@@ -7,6 +7,7 @@
 #include <k_tools/k_util.h>
 #include <math.h>
 #include <pthread.h>
+#include <stdio.h>
 #include <string.h>
 #include <time.h>
 

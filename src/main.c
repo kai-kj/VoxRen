@@ -76,6 +76,10 @@ int main(void) {
 		}
 	}
 
+	// test chunk add/removal
+	add_voxel(2 * width, 0, 0, white);
+	remove_voxel(2 * width, 0, 0);
+
 	// objects
 	add_voxel(width * 0.7, height - 1, depth * 0.5, light);
 	add_voxel(width * 0.7, height - 2, depth * 0.5, light);

@@ -70,7 +70,7 @@ typedef struct Scene {
 
 typedef struct Camera {
 	cl_float3 pos;
-	cl_float3 rot;
+	cl_float2 rot;
 	cl_float sensorWidth;
 	cl_float focalLength;
 	cl_float aperture;
@@ -80,6 +80,7 @@ typedef struct Camera {
 typedef struct Renderer {
 	int stopRender;
 	int restartRender;
+	int readFirstFrame;
 
 	double dt;
 	double prevTime;

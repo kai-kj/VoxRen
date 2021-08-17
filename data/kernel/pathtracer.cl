@@ -46,7 +46,7 @@ typedef struct Material {
 
 typedef struct Camera {
 	float3 pos;
-	float3 rot;
+	float2 rot;
 	float sensorWidth;
 	float focalLength;
 	float aperture;
@@ -349,22 +349,35 @@ float3 get_color_preview(Renderer *r, Ray ray) {
 // TODO: better sampling
 
 Ray get_first_ray(Renderer *r, int id) {
-	int row = id / r->imageSize.x;
-	int column = id % r->imageSize.x;
-
 	float aspectRatio = (float)r->imageSize.x / (float)r->imageSize.y;
 
-	float xOffset = 2 * (float)(column - r->imageSize.x / 2) /
-					(float)r->imageSize.x * r->camera.sensorWidth;
-	float yOffset = 2 * (float)(row - r->imageSize.y / 2) /
-					(float)r->imageSize.y * r->camera.sensorWidth / aspectRatio;
-	float3 offset = (float3){xOffset, yOffset, r->camera.focalLength};
+	int x = id % r->imageSize.x;
+	int y = id / r->imageSize.x;
 
-	float3 origin = r->camera.pos + rotate_vector(offset, r->camera.rot);
+	float3 offset = (float3){r->camera.sensorWidth * (x - r->imageSize.x / 2) /
+								 r->imageSize.x,
+							 r->camera.sensorWidth * (y - r->imageSize.y / 2) /
+								 aspectRatio / r->imageSize.y,
+							 r->camera.focalLength};
 
+	float3 origin = r->camera.pos + offset;
 	float3 target = r->camera.pos;
 
 	float3 direction = -normalize(target - origin);
+
+	float cosX = cos(r->camera.rot.x);
+	float sinX = sin(r->camera.rot.x);
+	float cosY = cos(r->camera.rot.y);
+	float sinY = sin(r->camera.rot.y);
+
+	direction = (float3){direction.x, direction.y * cosY - direction.z * sinY,
+						 direction.y * sinY + direction.z * cosY};
+
+	direction = (float3){
+		direction.x * cosX - direction.z * sinX,
+		direction.y,
+		direction.x * sinX + direction.z * cosX,
+	};
 
 	return (Ray){r->camera.pos, direction};
 }

@@ -1,5 +1,8 @@
 #include "gui.h"
 
+#define MOV_SPEED 4
+#define TURN_SPEED M_PI / 64
+
 //---- private ---------------------------------------------------------------//
 
 SDL_Surface *_get_render_surface() {
@@ -46,17 +49,26 @@ void print_text(char *string, int x, int y, SDL_Color fg, SDL_Color bg) {
 void _procces_events() {
 	SDL_Event e;
 
-	while (SDL_PollEvent(&e) != 0) {
+	while (SDL_PollEvent(&e)) {
 		if (e.type == SDL_QUIT) {
 			s.quit = 1;
+		}
+
+		if (e.type == SDL_MOUSEBUTTONDOWN) {
+			if (e.button.button == SDL_BUTTON_RIGHT) {
+				s.rightMouseDown = 1;
+			}
+		}
+
+		if (e.type == SDL_MOUSEBUTTONUP) {
+			if (e.button.button == SDL_BUTTON_RIGHT) {
+				s.rightMouseDown = 0;
+			}
 		}
 	}
 }
 
 void _process_kb_input() {
-	float movementSpeed = 1;
-	float turnSpeed = M_PI / 32;
-
 	SDL_PumpEvents();
 
 	if (s.keyState[SDL_SCANCODE_Q]) {
@@ -64,52 +76,50 @@ void _process_kb_input() {
 	}
 
 	if (s.keyState[SDL_SCANCODE_W]) {
-		r.camera.pos.z += movementSpeed * s.dt;
+		r.camera.pos.z += MOV_SPEED * cos(r.camera.rot.x) * s.dt;
+		r.camera.pos.x -= MOV_SPEED * sin(r.camera.rot.x) * s.dt;
 		r.restartRender = 1;
 	}
 
 	if (s.keyState[SDL_SCANCODE_S]) {
-		r.camera.pos.z -= movementSpeed * s.dt;
+		r.camera.pos.z -= MOV_SPEED * cos(r.camera.rot.x) * s.dt;
+		r.camera.pos.x += MOV_SPEED * sin(r.camera.rot.x) * s.dt;
 		r.restartRender = 1;
 	}
 
 	if (s.keyState[SDL_SCANCODE_A]) {
-		r.camera.pos.x -= movementSpeed * s.dt;
+		r.camera.pos.z -= MOV_SPEED * sin(r.camera.rot.x) * s.dt;
+		r.camera.pos.x -= MOV_SPEED * cos(r.camera.rot.x) * s.dt;
 		r.restartRender = 1;
 	}
 
 	if (s.keyState[SDL_SCANCODE_D]) {
-		r.camera.pos.x += movementSpeed * s.dt;
+		r.camera.pos.z += MOV_SPEED * sin(r.camera.rot.x) * s.dt;
+		r.camera.pos.x += MOV_SPEED * cos(r.camera.rot.x) * s.dt;
 		r.restartRender = 1;
 	}
 
 	if (s.keyState[SDL_SCANCODE_LCTRL]) {
-		r.camera.pos.y += movementSpeed * s.dt;
+		r.camera.pos.y += MOV_SPEED * s.dt;
 		r.restartRender = 1;
 	}
 
 	if (s.keyState[SDL_SCANCODE_SPACE]) {
-		r.camera.pos.y -= movementSpeed * s.dt;
+		r.camera.pos.y -= MOV_SPEED * s.dt;
 		r.restartRender = 1;
 	}
+}
 
-	if (s.keyState[SDL_SCANCODE_UP]) {
-		r.camera.rot.x += turnSpeed * s.dt;
-		r.restartRender = 1;
-	}
+void _precess_mouse_input() {
+	if (s.rightMouseDown) {
+		int currentX, currentY;
+		SDL_GetMouseState(&currentX, &currentY);
 
-	if (s.keyState[SDL_SCANCODE_DOWN]) {
-		r.camera.rot.x -= turnSpeed * s.dt;
-		r.restartRender = 1;
-	}
+		int deltaX = currentX - s.prevMousePosX;
+		int deltaY = currentY - s.prevMousePosY;
 
-	if (s.keyState[SDL_SCANCODE_LEFT]) {
-		r.camera.rot.y -= turnSpeed * s.dt;
-		r.restartRender = 1;
-	}
-
-	if (s.keyState[SDL_SCANCODE_RIGHT]) {
-		r.camera.rot.y += turnSpeed * s.dt;
+		r.camera.rot.x += deltaX * TURN_SPEED * s.dt;
+		r.camera.rot.y += deltaY * TURN_SPEED * s.dt;
 		r.restartRender = 1;
 	}
 }
@@ -126,6 +136,7 @@ GUIStatus create_window(int width, int height) {
 	s.window = NULL;
 	s.windowSurface = NULL;
 	s.renderSurface = NULL;
+	s.rightMouseDown = 0;
 
 	msg("Creating window");
 
@@ -167,12 +178,14 @@ GUIStatus start_main_loop() {
 		_update_dt();
 		_procces_events();
 		_process_kb_input();
+		_precess_mouse_input();
 
 		if (s.renderSurface != NULL) {
 			SDL_FreeSurface(s.renderSurface);
 			s.renderSurface = NULL;
 		}
 
+		r.readFirstFrame = 1;
 		s.renderSurface = _get_render_surface();
 		SDL_BlitSurface(s.renderSurface, NULL, s.windowSurface, NULL);
 
@@ -182,6 +195,8 @@ GUIStatus start_main_loop() {
 				   (SDL_Color){0, 0, 0});
 
 		SDL_UpdateWindowSurface(s.window);
+
+		SDL_GetMouseState(&s.prevMousePosX, &s.prevMousePosY);
 	}
 
 	end_rendering();

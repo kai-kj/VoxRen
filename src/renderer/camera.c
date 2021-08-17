@@ -1,7 +1,7 @@
 #include "renderer.h"
 
 RendererStatus set_camera_properties(float x, float y, float z, float rotX,
-									 float rotY, float rotZ, float sensorWidth,
+									 float rotY, float sensorWidth,
 									 float focalLength, float aperture,
 									 float exposure) {
 
@@ -11,7 +11,7 @@ RendererStatus set_camera_properties(float x, float y, float z, float rotX,
 						.exposure = exposure};
 
 	r.camera.pos = (cl_float3){.x = x, .y = y, .z = z};
-	r.camera.rot = (cl_float3){.x = rotX, .y = rotY, .z = rotZ};
+	r.camera.rot = (cl_float2){.x = rotX, .y = rotY};
 
 	return RENDERER_SUCCESS;
 }

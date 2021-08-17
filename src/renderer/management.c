@@ -120,35 +120,6 @@ static cl_int _run_kernel(size_t size) {
 								  &size, NULL, 0, NULL, NULL);
 }
 
-static RendererStatus _render_frame(int sampleNumber) {
-	cl_ulong seed = rand();
-	cl_int preview = !sampleNumber;
-
-	// non-constant arguments
-	_set_kernel_arg(10, sizeof(cl_int), &sampleNumber);
-	_set_kernel_arg(11, sizeof(cl_ulong), &seed);
-	_set_kernel_arg(12, sizeof(cl_int), &preview);
-
-	cl_int ret = _run_kernel(r.image.size.x * r.image.size.y);
-
-	if (ret != CL_SUCCESS) {
-		_print_kernel_run_error(ret);
-		return RENDERER_FAILURE;
-	}
-
-	clEnqueueReadBuffer(r.program.queue, r.program.imageBuff, CL_TRUE, 0,
-						sizeof(cl_float3) * r.image.size.x * r.image.size.y,
-						r.image.data, 0, NULL, NULL);
-
-	double currentTime = get_time();
-	r.dt = currentTime - r.prevTime;
-	r.prevTime = currentTime;
-
-	clFinish(r.program.queue);
-
-	return RENDERER_SUCCESS;
-}
-
 static void _setup_renderer_args() {
 	int imageSize = r.image.size.x * r.image.size.y;
 
@@ -184,6 +155,35 @@ static void _setup_renderer_args() {
 	_set_kernel_arg(9, sizeof(Camera), &r.camera);
 }
 
+static RendererStatus _render_frame(int sampleNumber) {
+	cl_ulong seed = rand();
+	cl_int preview = !sampleNumber;
+
+	// non-constant arguments
+	_set_kernel_arg(10, sizeof(cl_int), &sampleNumber);
+	_set_kernel_arg(11, sizeof(cl_ulong), &seed);
+	_set_kernel_arg(12, sizeof(cl_int), &preview);
+
+	cl_int ret = _run_kernel(r.image.size.x * r.image.size.y);
+
+	if (ret != CL_SUCCESS) {
+		_print_kernel_run_error(ret);
+		return RENDERER_FAILURE;
+	}
+
+	clEnqueueReadBuffer(r.program.queue, r.program.imageBuff, CL_TRUE, 0,
+						sizeof(cl_float3) * r.image.size.x * r.image.size.y,
+						r.image.data, 0, NULL, NULL);
+
+	double currentTime = get_time();
+	r.dt = currentTime - r.prevTime;
+	r.prevTime = currentTime;
+
+	clFinish(r.program.queue);
+
+	return RENDERER_SUCCESS;
+}
+
 static void *_start_renderer_loop() {
 	r.restartRender = 1;
 
@@ -191,9 +191,13 @@ static void *_start_renderer_loop() {
 	while (!r.stopRender) {
 		if (r.restartRender) {
 			r.restartRender = 0;
+			r.readFirstFrame = 0;
 			i = 0;
 			_setup_renderer_args();
 		}
+
+		if (!r.readFirstFrame)
+			i = 0;
 
 		if (_render_frame(i) == RENDERER_FAILURE)
 			panic("Failed to run kernel");

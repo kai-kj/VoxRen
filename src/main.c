@@ -1,13 +1,3 @@
-#include <CL/cl.h>
-#include <math.h>
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/sysinfo.h>
-#include <sys/types.h>
-
-#define PI 3.14159265358979323846
-
 #define K_UTIL_IMPLEMENTATION
 #include <k_tools/k_util.h>
 
@@ -17,11 +7,10 @@
 #define K_IMAGE_IMPLEMENTATION
 #include <k_tools/k_image.h>
 
-// #define K_OPENCL_IMPLEMENTATION
-// #include "k_tools/k_opencl.h"
-
 #include "gui/gui.h"
 #include "renderer/renderer.h"
+
+#define PI 3.14159265358979323846
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -44,7 +33,7 @@ int main(void) {
 	Material red = create_lambertian_material(1, 0, 0);
 	Material green = create_lambertian_material(0, 1, 0);
 	Material blue = create_lambertian_material(0, 0, 1);
-	Material mirror = create_metal_material(0, 0, 0, 0.5, 0);
+	// Material mirror = create_metal_material(0, 0, 0, 0.5, 0);
 	Material light = create_light_source_material(1, 1, 0.5, 2);
 
 	// side walls

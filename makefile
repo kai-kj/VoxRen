@@ -56,8 +56,7 @@ $(BUILD):
 	$(MKDIR) $(BUILD)/gui
 
 $(BIN): $(BUILD)
-	$(CC) -c $(SRC)/renderer/renderer.c -o $(BUILD)/renderer/renderer.a
-	$(CC) -c $(SRC)/renderer/image.c -o $(BUILD)/renderer/image.a
+	$(CC) -c $(SRC)/renderer/management.c -o $(BUILD)/renderer/management.a
 	$(CC) -c $(SRC)/renderer/scene.c -o $(BUILD)/renderer/scene.a
 	$(CC) -c $(SRC)/renderer/camera.c -o $(BUILD)/renderer/camera.a
 	$(CC) -c $(SRC)/renderer/material.c -o $(BUILD)/renderer/material.a

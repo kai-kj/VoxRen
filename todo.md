@@ -13,12 +13,13 @@
   * [x] Render to SDL window
   * [x] Keyboard movement
   * [ ] Integrate command system to GUI
-  * Mouse right drang to change view angle
+  * Mouse right drag to change view angle
   * [ ] Place voxels anywhere on the screen with mouse
 * [ ] Command system (LUA)
   * [ ] Get lua working
   * [ ] Basic C commands
   * [ ] Basic lua commands
+* [ ] Read write scene to file
 * [ ] Other
   * [ ] Windows support
 
@@ -63,4 +64,4 @@
   * [ ] Use unsigned values where possible
   * [ ] Use pointers for almost everything
 * [ ] GUI
-  * [ ] Only update renderer surface when it changes
+  * [x] Only update renderer surface when it changes

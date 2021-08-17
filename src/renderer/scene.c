@@ -110,6 +110,14 @@ static void _remove_chunk(int x, int y, int z) {
 
 //---- public ----------------------------------------------------------------//
 
+RendererStatus set_output_properties(int width, int height) {
+	safe_free(r.image.data);
+	r.image.size = (cl_int2){.x = width, .y = height};
+	r.image.data = malloc(sizeof(cl_float3) * width * height);
+
+	return RENDERER_SUCCESS;
+}
+
 RendererStatus set_background_properties(float red, float green, float blue,
 										 float brightness) {
 	r.scene.bgColor = (cl_float3){.x = red, .y = green, .z = blue};

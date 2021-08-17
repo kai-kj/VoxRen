@@ -1,6 +1,21 @@
 #include "renderer.h"
 
+#define FILE_NAME "data/kernel/pathtracer.cl"
+#define KERNEL_NAME "pathtracer"
+#define ARGS "-Werror -cl-mad-enable -cl-no-signed-zeros -cl-fast-relaxed-math"
+#define CHUNK_SIZE 3
+
 //---- private ---------------------------------------------------------------//
+
+static void _print_source_read_error() { err("Failed to read source file"); }
+
+static void _print_program_build_error(cl_device_id device,
+									   cl_program program) {
+	char buff[0x100000];
+	clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, sizeof(buff),
+						  buff, NULL);
+	err("Failed to build program: %s", buff);
+}
 
 static void _print_kernel_run_error(cl_int ret) {
 	char buff[0x100000];
@@ -193,10 +208,67 @@ static void *_start_renderer_loop() {
 
 //---- public ----------------------------------------------------------------//
 
-RendererStatus set_output_properties(int width, int height) {
+RendererStatus create_renderer() {
+	msg("creating renderer");
+
+	srand(time(NULL));
+
+	r.scene.voxelCount = 0;
+	r.scene.chunkCount = 0;
+	r.program.voxelBuff = NULL;
+	r.program.imageBuff = NULL;
+	r.scene.voxels = NULL;
+	r.scene.chunks = NULL;
+
+	r.scene.chunkSize = CHUNK_SIZE;
+
+	// TODO: check platform count
+	cl_uint platformNum;
+	clGetPlatformIDs(1, &r.program.platform, &platformNum);
+	cl_uint deviceNum;
+	clGetDeviceIDs(r.program.platform, CL_DEVICE_TYPE_GPU, 2, &r.program.device,
+				   &deviceNum);
+
+	r.program.context =
+		clCreateContext(0, 1, &r.program.device, NULL, NULL, NULL);
+	r.program.queue = clCreateCommandQueueWithProperties(
+		r.program.context, r.program.device, 0, NULL);
+
+	char *source = read_file(FILE_NAME);
+
+	if (source == NULL) {
+		_print_source_read_error();
+		destroy_renderer();
+		return RENDERER_FAILURE;
+	}
+
+	r.program.program = clCreateProgramWithSource(
+		r.program.context, 1, (const char **)&source, NULL, NULL);
+
+	free(source);
+
+	if (clBuildProgram(r.program.program, 0, NULL, ARGS, NULL, NULL) !=
+		CL_SUCCESS) {
+		_print_program_build_error(r.program.device, r.program.program);
+		destroy_renderer();
+		return RENDERER_FAILURE;
+	}
+
+	r.program.kernel = clCreateKernel(r.program.program, KERNEL_NAME, NULL);
+
+	return RENDERER_SUCCESS;
+}
+
+RendererStatus destroy_renderer() {
+	msg("Destroying renderer");
+
+	safe_free(r.scene.voxels);
 	safe_free(r.image.data);
-	r.image.size = (cl_int2){.x = width, .y = height};
-	r.image.data = malloc(sizeof(cl_float3) * width * height);
+	safe_clReleaseMemObject(r.program.voxelBuff);
+	safe_clReleaseMemObject(r.program.imageBuff);
+	clReleaseProgram(r.program.program);
+	clReleaseKernel(r.program.kernel);
+	clReleaseContext(r.program.context);
 
 	return RENDERER_SUCCESS;
 }

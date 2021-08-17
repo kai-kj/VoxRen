@@ -17,20 +17,17 @@ typedef char RendererStatus;
 
 extern Renderer r;
 
-//---- renderer --------------------------------------------------------------//
+//---- management ------------------------------------------------------------//
 
 RendererStatus create_renderer();
 RendererStatus destroy_renderer();
-
-//---- image -----------------------------------------------------------------//
-
-RendererStatus set_output_properties(int width, int height);
 RendererStatus begin_rendering();
 RendererStatus end_rendering();
 k_Image *get_image();
 
 //---- scene -----------------------------------------------------------------//
 
+RendererStatus set_output_properties(int width, int height);
 RendererStatus set_background_properties(float red, float green, float blue,
 										 float brightness);
 RendererStatus add_voxel(int x, int y, int z, Material material);

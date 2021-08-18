@@ -9,25 +9,56 @@
     * [x] Implement `dbg()`, `err()`, and `panic()`
     * [x] Better error checking
   * [ ] Transparent materials
+  
 * [ ] Basic GUI
   * [x] Render to SDL window
   * [x] Keyboard movement
-  * [ ] Integrate command system to GUI
   * [x] Mouse right drag to change view angle
   * [ ] Place voxels anywhere on the screen with mouse
-* [ ] Command system (LUA)
-  * [ ] Get lua working
-  * [ ] Basic C commands
-  * [ ] Basic lua commands
+  
+* [ ] Command system (in lua)
+
+  All scene-related commands (eg: `add_voxel()`, `remo_voxel`, `set_camera_properties`, ...) should be callable from lua.
+
+  * [x] Run lua file
+
+  * [x] Implement all basic commands
+
+  * [ ] Integrate command system into the GUI
+
+    * [ ] Use lua for camera movement
+
+      Instead of directly calling C functions, call lua functions
+
+      * [ ] Check performance
+
+    * [ ] Command bar
+
+  * [ ] Add more complicated commands in lua like:
+
+    * [ ] `create_box()`
+    * [ ] `create_box_empty()`
+    * [ ] `create_sphere()`
+    * [ ] `create_sphere_empty`
+    * [ ] 
+
 * [ ] Read write scene to file
+
+* [ ] Better window
+
+  * [ ] Resizeble window
+  * [ ] Fullscreen
+
 * [ ] Other
   * [ ] Windows support
 
 ## Optimization
 
 * [ ] Rendering
-  * [x] Chunks Voxel storage format in C and openCL:
+  * [x] Chunks
 
+    Voxel storage format in C and openCL:
+    
     ```
     struct Chunk {
     	cl_int x;
@@ -40,7 +71,7 @@
     ```
 
     New `add_voxel()` function:
-
+    
     ```
     
     add_voxel() {
@@ -61,7 +92,9 @@
     
     
     ```
+    
   * [ ] Use unsigned values where possible
+  
   * [ ] Use pointers for almost everything
 * [ ] GUI
   * [x] Only update renderer surface when it changes

@@ -226,6 +226,9 @@ RendererStatus create_renderer() {
 
 	r.scene.chunkSize = CHUNK_SIZE;
 
+	r.camera = (Camera){
+		.sensorWidth = 1, .focalLength = 1, .aperture = 1, .exposure = 1};
+
 	// TODO: check platform count
 	cl_uint platformNum;
 	clGetPlatformIDs(1, &r.program.platform, &platformNum);

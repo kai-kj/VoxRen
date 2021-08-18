@@ -4,4 +4,4 @@
 
 //---- public ----------------------------------------------------------------//
 
-GUIStatus add_voxel_at_mouse() {}
+GUIStatus add_voxel_at_mouse() { return GUI_SUCCESS; }

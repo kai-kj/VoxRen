@@ -24,7 +24,7 @@ GUIStatus procces_events() {
 
 		if (e.type == SDL_MOUSEBUTTONDOWN) {
 			if (e.button.button == SDL_BUTTON_LEFT) {
-				_add_voxel_with_mouse();
+				add_voxel_at_mouse();
 			}
 		}
 	}

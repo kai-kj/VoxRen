@@ -36,10 +36,9 @@ RendererStatus remove_voxel(int x, int y, int z);
 
 //---- camera ----------------------------------------------------------------//
 
-RendererStatus set_camera_properties(float x, float y, float z, float rotX,
-									 float rotY, float sensorWidth,
-									 float focalLength, float aperture,
-									 float exposure);
+RendererStatus set_camera_properties(float sensorWidth, float focalLength,
+									 float aperture, float exposure);
+RendererStatus set_camera_pos(float x, float y, float z, float rx, float ry);
 
 //---- material --------------------------------------------------------------//
 

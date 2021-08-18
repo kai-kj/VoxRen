@@ -5,6 +5,7 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "../renderer/renderer.h"
+#include "../scripting/scripting.h"
 #include "structs.h"
 
 #define MOV_SPEED 4

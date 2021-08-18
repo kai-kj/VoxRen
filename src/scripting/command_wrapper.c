@@ -18,29 +18,29 @@ void _push_material(lua_State *l, Material material) {
 	lua_setfield(l, -2, "color");
 
 	switch (material.type) {
-	case 1:
-		lua_pushnumber(l, material.details.lightSource.brightness);
-		lua_setfield(l, -2, "brightness");
-		break;
+		case 1:
+			lua_pushnumber(l, material.details.lightSource.brightness);
+			lua_setfield(l, -2, "brightness");
+			break;
 
-	case 2:
-		break;
+		case 2:
+			break;
 
-	case 3:
-		lua_pushnumber(l, material.details.metal.tint);
-		lua_setfield(l, -2, "tint");
-		lua_pushnumber(l, material.details.metal.fuzz);
-		lua_setfield(l, -2, "fuzz");
-		break;
+		case 3:
+			lua_pushnumber(l, material.details.metal.tint);
+			lua_setfield(l, -2, "tint");
+			lua_pushnumber(l, material.details.metal.fuzz);
+			lua_setfield(l, -2, "fuzz");
+			break;
 
-	case 4:
-		lua_pushnumber(l, material.details.dielectric.tint);
-		lua_setfield(l, -2, "tint");
-		lua_pushnumber(l, material.details.dielectric.fuzz);
-		lua_setfield(l, -2, "fuzz");
-		lua_pushnumber(l, material.details.dielectric.refIdx);
-		lua_setfield(l, -2, "refIdx");
-		break;
+		case 4:
+			lua_pushnumber(l, material.details.dielectric.tint);
+			lua_setfield(l, -2, "tint");
+			lua_pushnumber(l, material.details.dielectric.fuzz);
+			lua_setfield(l, -2, "fuzz");
+			lua_pushnumber(l, material.details.dielectric.refIdx);
+			lua_setfield(l, -2, "refIdx");
+			break;
 	}
 }
 
@@ -65,35 +65,35 @@ Material _to_material(lua_State *l, int idx) {
 	lua_pop(l, 1);
 
 	switch (material.type) {
-	case 1:
-		lua_getfield(l, idx, "brightness");
-		material.details.lightSource.brightness = luaL_checknumber(l, -1);
-		lua_pop(l, 1);
-		break;
+		case 1:
+			lua_getfield(l, idx, "brightness");
+			material.details.lightSource.brightness = luaL_checknumber(l, -1);
+			lua_pop(l, 1);
+			break;
 
-	case 2:
-		break;
+		case 2:
+			break;
 
-	case 3:
-		lua_getfield(l, idx, "tint");
-		material.details.metal.tint = luaL_checknumber(l, -1);
-		lua_pop(l, 1);
-		lua_getfield(l, idx, "fuzz");
-		material.details.metal.fuzz = luaL_checknumber(l, -1);
-		lua_pop(l, 1);
-		break;
+		case 3:
+			lua_getfield(l, idx, "tint");
+			material.details.metal.tint = luaL_checknumber(l, -1);
+			lua_pop(l, 1);
+			lua_getfield(l, idx, "fuzz");
+			material.details.metal.fuzz = luaL_checknumber(l, -1);
+			lua_pop(l, 1);
+			break;
 
-	case 4:
-		lua_getfield(l, idx, "tint");
-		material.details.dielectric.tint = luaL_checknumber(l, -1);
-		lua_pop(l, 1);
-		lua_getfield(l, idx, "fuzz");
-		material.details.dielectric.fuzz = luaL_checknumber(l, -1);
-		lua_pop(l, 1);
-		lua_getfield(l, idx, "refIdx");
-		material.details.dielectric.refIdx = luaL_checknumber(l, -1);
-		lua_pop(l, 1);
-		break;
+		case 4:
+			lua_getfield(l, idx, "tint");
+			material.details.dielectric.tint = luaL_checknumber(l, -1);
+			lua_pop(l, 1);
+			lua_getfield(l, idx, "fuzz");
+			material.details.dielectric.fuzz = luaL_checknumber(l, -1);
+			lua_pop(l, 1);
+			lua_getfield(l, idx, "refIdx");
+			material.details.dielectric.refIdx = luaL_checknumber(l, -1);
+			lua_pop(l, 1);
+			break;
 	}
 
 	return material;
@@ -217,22 +217,35 @@ int l_create_dielectric_material(lua_State *l) {
 }
 
 ScriptStatus load_functions(lua_State *l) {
-	const struct luaL_Reg luaFuncs[] = {
-		{"set_output_properties", l_set_output_properties},
-		{"set_background_properties", l_set_background_properties},
-		{"add_voxel", l_add_voxel},
-		{"remove_voxel", l_remove_voxel},
-		{"set_camera_properties", l_set_camera_properties},
-		{"set_camera_pos", l_set_camera_pos},
-		{"create_light_source_material", l_create_light_source_material},
-		{"create_lambertian_material", l_create_lambertian_material},
-		{"create_metal_material", l_create_metal_material},
-		{"create_dielectric_material", l_create_dielectric_material},
-		{NULL, NULL}};
+	lua_pushcfunction(l, l_set_output_properties);
+	lua_setglobal(l, "outputProperties");
 
-	lua_newtable(l);
-	luaL_setfuncs(l, luaFuncs, 0);
-	lua_setglobal(l, "r");
+	lua_pushcfunction(l, l_set_background_properties);
+	lua_setglobal(l, "bgProperties");
+
+	lua_pushcfunction(l, l_add_voxel);
+	lua_setglobal(l, "addVox");
+
+	lua_pushcfunction(l, l_remove_voxel);
+	lua_setglobal(l, "remVox");
+
+	lua_pushcfunction(l, l_set_camera_properties);
+	lua_setglobal(l, "cameraProperties");
+
+	lua_pushcfunction(l, l_set_camera_pos);
+	lua_setglobal(l, "cameraPos");
+
+	lua_pushcfunction(l, l_create_light_source_material);
+	lua_setglobal(l, "lightSource");
+
+	lua_pushcfunction(l, l_create_lambertian_material);
+	lua_setglobal(l, "lambertMaterial");
+
+	lua_pushcfunction(l, l_create_metal_material);
+	lua_setglobal(l, "metalMaterial");
+
+	lua_pushcfunction(l, l_create_dielectric_material);
+	lua_setglobal(l, "glassMaterial");
 
 	return SCRIPTING_SUCCESS;
 }

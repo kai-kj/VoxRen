@@ -31,8 +31,8 @@ void _update_dt() {
 	s.prevTime = currentTime;
 }
 
-void print_text(char *string, int x, int y, SDL_Color fg, SDL_Color bg) {
-	SDL_Surface *textSurface = TTF_RenderText(s.font, string, fg, bg);
+void _print_text(char *string, int x, int y, SDL_Color fg) {
+	SDL_Surface *textSurface = TTF_RenderText_Solid(s.font, string, fg);
 
 	if (textSurface == NULL)
 		exit(-1);
@@ -68,8 +68,22 @@ GUIStatus start_main_loop() {
 
 		char fps[100];
 		sprintf(fps, "%03d, %03d", (int)(1 / s.dt), (int)(1 / r.dt));
-		print_text(fps, 10, 10, (SDL_Color){255, 255, 255},
-				   (SDL_Color){0, 0, 0});
+		_print_text(fps, 10, 10, (SDL_Color){255, 255, 255});
+
+		int width, height;
+		SDL_GL_GetDrawableSize(s.window, &width, &height);
+
+		char command[100];
+
+		if (s.commandLength != 1)
+			sprintf(command, ">> %s", s.command);
+		else
+			sprintf(command, ">>");
+
+		if (s.commandMode) {
+			_print_text(command, 10, height - 10 - 24,
+						(SDL_Color){255, 255, 255});
+		}
 
 		SDL_UpdateWindowSurface(s.window);
 

@@ -13,6 +13,8 @@ ScriptStatus init_command_interpreter() {
 ScriptStatus close_command_interpreter() {
 	msg("Closing command lua state");
 	lua_close(c.cl);
+
+	return SCRIPTING_SUCCESS;
 }
 
 ScriptStatus run_command(char *command) {
@@ -22,6 +24,8 @@ ScriptStatus run_command(char *command) {
 		err("%s\n", lua_tostring(c.cl, -1));
 		return SCRIPTING_FAILURE;
 	}
+
+	r.restartRender = 1;
 
 	return SCRIPTING_SUCCESS;
 }

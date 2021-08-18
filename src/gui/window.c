@@ -14,7 +14,12 @@ GUIStatus create_window(int width, int height) {
 	s.window = NULL;
 	s.windowSurface = NULL;
 	s.renderSurface = NULL;
-	s.rightMouseDown = 0;
+
+	s.commandLength = 1;
+	s.command = '\0';
+
+	s.draging = 0;
+	s.commandMode = 0;
 
 	msg("Creating window");
 

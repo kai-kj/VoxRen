@@ -4,7 +4,8 @@
 #include "scripting.h"
 
 typedef struct ScriptState {
-	lua_State *l;
+	lua_State *sl; // for scripts
+	lua_State *cl; // for commands
 
 } ScriptState;
 

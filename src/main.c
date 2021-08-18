@@ -20,6 +20,9 @@ int main(void) {
 	if (create_renderer() != RENDERER_SUCCESS)
 		exit(-1);
 
+	if (init_command_interpreter() != RENDERER_SUCCESS)
+		exit(-1);
+
 	if (run_script("main.lua", "Main") != SCRIPTING_SUCCESS)
 		exit(-1);
 
@@ -27,9 +30,7 @@ int main(void) {
 		start_main_loop();
 
 	close_window();
-
-	// render_image_to_file(samples, "render.png");
-
+	close_command_interpreter();
 	destroy_renderer();
 
 	return 0;

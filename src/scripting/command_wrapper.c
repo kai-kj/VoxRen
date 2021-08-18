@@ -215,3 +215,24 @@ int l_create_dielectric_material(lua_State *l) {
 
 	return 1;
 }
+
+ScriptStatus load_functions(lua_State *l) {
+	const struct luaL_Reg luaFuncs[] = {
+		{"set_output_properties", l_set_output_properties},
+		{"set_background_properties", l_set_background_properties},
+		{"add_voxel", l_add_voxel},
+		{"remove_voxel", l_remove_voxel},
+		{"set_camera_properties", l_set_camera_properties},
+		{"set_camera_pos", l_set_camera_pos},
+		{"create_light_source_material", l_create_light_source_material},
+		{"create_lambertian_material", l_create_lambertian_material},
+		{"create_metal_material", l_create_metal_material},
+		{"create_dielectric_material", l_create_dielectric_material},
+		{NULL, NULL}};
+
+	lua_newtable(l);
+	luaL_setfuncs(l, luaFuncs, 0);
+	lua_setglobal(l, "r");
+
+	return SCRIPTING_SUCCESS;
+}

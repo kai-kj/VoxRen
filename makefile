@@ -70,6 +70,7 @@ $(BIN): $(BUILD)
 	$(CC) -c $(SRC)/gui/global.c -o $(BUILD)/gui/global.a
 
 	$(CC) -c $(SRC)/scripting/script.c -o $(BUILD)/scripting/script.a
+	$(CC) -c $(SRC)/scripting/command.c -o $(BUILD)/scripting/command.a
 	$(CC) -c $(SRC)/scripting/command_wrapper.c -o $(BUILD)/scripting/command_wrapper.a
 	$(CC) -c $(SRC)/scripting/global.c -o $(BUILD)/scripting/global.a
 

@@ -26,9 +26,16 @@ int l_create_light_source_material(lua_State *l);
 int l_create_lambertian_material(lua_State *l);
 int l_create_metal_material(lua_State *l);
 int l_create_dielectric_material(lua_State *l);
+ScriptStatus load_functions(lua_State *l);
 
 //---- script ----------------------------------------------------------------//
 
 ScriptStatus run_script(char *fileName, char *functionName);
+
+//---- command ---------------------------------------------------------------//
+
+ScriptStatus init_command_interpreter();
+ScriptStatus close_command_interpreter();
+ScriptStatus run_command(char *command);
 
 #endif

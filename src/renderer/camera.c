@@ -3,10 +3,10 @@
 RendererStatus set_camera_properties(float sensorWidth, float focalLength,
 									 float aperture, float exposure) {
 
-	r.camera = (Camera){.sensorWidth = sensorWidth,
-						.focalLength = focalLength,
-						.aperture = aperture,
-						.exposure = exposure};
+	r.camera = (VoxCamera){.sensorWidth = sensorWidth,
+						   .focalLength = focalLength,
+						   .aperture = aperture,
+						   .exposure = exposure};
 
 	return RENDERER_SUCCESS;
 }

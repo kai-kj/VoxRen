@@ -20,7 +20,7 @@ typedef struct CLImage {
 	cl_float3 *data;
 } CLImage;
 
-typedef struct Material {
+typedef struct VoxMaterial {
 	cl_uchar type;
 	cl_float3 color;
 
@@ -43,11 +43,11 @@ typedef struct Material {
 			cl_float refIdx;
 		} dielectric;
 	} details;
-} Material;
+} VoxMaterial;
 
 typedef struct Voxel {
 	cl_int3 pos;
-	Material material;
+	VoxMaterial material;
 } Voxel;
 
 typedef struct Chunk {
@@ -68,14 +68,14 @@ typedef struct Scene {
 	cl_float bgBrightness;
 } Scene;
 
-typedef struct Camera {
+typedef struct VoxCamera {
 	cl_float3 pos;
 	cl_float2 rot;
 	cl_float sensorWidth;
 	cl_float focalLength;
 	cl_float aperture;
 	cl_float exposure;
-} Camera;
+} VoxCamera;
 
 typedef struct Renderer {
 	int stopRender;
@@ -88,7 +88,7 @@ typedef struct Renderer {
 	CLProgram program;
 	CLImage image;
 	Scene scene;
-	Camera camera;
+	VoxCamera camera;
 } Renderer;
 
 #endif

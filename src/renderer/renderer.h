@@ -31,7 +31,7 @@ k_Image *get_image();
 RendererStatus set_output_properties(int width, int height);
 RendererStatus set_background_properties(float red, float green, float blue,
 										 float brightness);
-RendererStatus add_voxel(int x, int y, int z, Material material);
+RendererStatus add_voxel(int x, int y, int z, VoxMaterial material);
 RendererStatus remove_voxel(int x, int y, int z);
 
 //---- camera ----------------------------------------------------------------//
@@ -42,12 +42,12 @@ RendererStatus set_camera_pos(float x, float y, float z, float rx, float ry);
 
 //---- material --------------------------------------------------------------//
 
-Material create_light_source_material(float r, float g, float b,
-									  float brightness);
-Material create_lambertian_material(float r, float g, float b);
-Material create_metal_material(float r, float g, float b, float tint,
-							   float fuzz);
-Material create_dielectric_material(float r, float g, float b, float tint,
-									float fuzz, float refIdx);
+VoxMaterial create_light_source_material(float r, float g, float b,
+										 float brightness);
+VoxMaterial create_lambertian_material(float r, float g, float b);
+VoxMaterial create_metal_material(float r, float g, float b, float tint,
+								  float fuzz);
+VoxMaterial create_dielectric_material(float r, float g, float b, float tint,
+									   float fuzz, float refIdx);
 
 #endif

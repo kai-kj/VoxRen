@@ -12,7 +12,7 @@ INC := -I include/
 LIB := -L lib/
 
 # libraries 
-LIBS := -lOpenCL -lm -lSDL2 -lSDL2_ttf -pthread -llua5.4
+LIBS := -lOpenCL -lm -pthread -llua5.4 -lraylib -lGL -ldl -lrt -lX11
 
 # flags 
 FLAGS := -Wall -Wno-missing-braces
@@ -65,8 +65,8 @@ $(BIN): $(BUILD)
 
 	$(CC) -c $(SRC)/gui/window.c -o $(BUILD)/gui/window.a
 	$(CC) -c $(SRC)/gui/main_loop.c -o $(BUILD)/gui/main_loop.a
-	$(CC) -c $(SRC)/gui/input.c -o $(BUILD)/gui/input.a
-	$(CC) -c $(SRC)/gui/place_voxel.c -o $(BUILD)/gui/place_voxel.a
+	# $(CC) -c $(SRC)/gui/input.c -o $(BUILD)/gui/input.a
+	# $(CC) -c $(SRC)/gui/place_voxel.c -o $(BUILD)/gui/place_voxel.a
 	$(CC) -c $(SRC)/gui/global.c -o $(BUILD)/gui/global.a
 
 	$(CC) -c $(SRC)/scripting/script.c -o $(BUILD)/scripting/script.a

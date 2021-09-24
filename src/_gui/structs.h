@@ -4,7 +4,11 @@
 #include "gui.h"
 
 typedef struct GUIState {
-	Texture2D renderTexture;
+	Uint8 *keyState;
+	SDL_Window *window;
+	SDL_Surface *windowSurface;
+	SDL_Surface *renderSurface;
+	TTF_Font *font;
 
 	double dt;
 	double prevTime;

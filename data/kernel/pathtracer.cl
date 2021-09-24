@@ -19,7 +19,7 @@ typedef struct Ray {
 } Ray;
 
 // TODO: attenuation for diffuse material
-typedef struct Material {
+typedef struct VoxMaterial {
 	uchar type;
 	float3 color;
 
@@ -42,16 +42,16 @@ typedef struct Material {
 			float refIdx;
 		} dielectric;
 	} details;
-} Material;
+} VoxMaterial;
 
-typedef struct Camera {
+typedef struct VoxCamera {
 	float3 pos;
 	float2 rot;
 	float sensorWidth;
 	float focalLength;
 	float aperture;
 	float exposure;
-} Camera;
+} VoxCamera;
 
 typedef struct Chunk {
 	int3 pos;
@@ -61,7 +61,7 @@ typedef struct Chunk {
 
 typedef struct Voxel {
 	int3 pos;
-	Material material;
+	VoxMaterial material;
 } Voxel;
 
 typedef struct Renderer {
@@ -78,7 +78,7 @@ typedef struct Renderer {
 	float3 bgColor;
 	float bgBrightness;
 
-	Camera camera;
+	VoxCamera camera;
 	ulong *rng;
 } Renderer;
 
@@ -270,40 +270,41 @@ float3 get_color(Renderer *r, Ray ray, int maxDepth) {
 		Voxel voxel;
 
 		if (cast_ray(r, ray, &hitPos, &iNormal, &voxel)) {
-			Material material = voxel.material;
+			VoxMaterial material = voxel.material;
 			float3 fNormal = convert_float3(iNormal);
 			hitPos += fNormal * SMALL_NUM;
 
 			// TODO: dielectric material
 			switch (material.type) {
-			case MATERIAL_TYPE_LIGHT_SOURCE:
-				// TODO: better lighting
-				color = material.color * mask *
-						material.details.lightSource.brightness;
-				returnFlag = true;
-				break;
+				case MATERIAL_TYPE_LIGHT_SOURCE:
+					// TODO: better lighting
+					color = material.color * mask *
+							material.details.lightSource.brightness;
+					returnFlag = true;
+					break;
 
-			case MATERIAL_TYPE_LAMBERTIAN:
-				ray = (Ray){hitPos, normalize(fNormal +
-											  get_random_unit_vector(r->rng))};
-				mask *= material.color;
-				break;
+				case MATERIAL_TYPE_LAMBERTIAN:
+					ray = (Ray){
+						hitPos,
+						normalize(fNormal + get_random_unit_vector(r->rng))};
+					mask *= material.color;
+					break;
 
-			case MATERIAL_TYPE_METAL:
-				ray =
-					(Ray){hitPos,
-						  normalize(get_reflection_dir(ray.direction, fNormal) +
-									get_random_unit_vector(r->rng) *
-										material.details.metal.fuzz)};
-				mask = mask * (1 - material.details.metal.tint) +
-					   mask * material.color * material.details.metal.tint;
-				break;
+				case MATERIAL_TYPE_METAL:
+					ray = (Ray){
+						hitPos,
+						normalize(get_reflection_dir(ray.direction, fNormal) +
+								  get_random_unit_vector(r->rng) *
+									  material.details.metal.fuzz)};
+					mask = mask * (1 - material.details.metal.tint) +
+						   mask * material.color * material.details.metal.tint;
+					break;
 
-			case MATERIAL_TYPE_DIELECTRIC:
-				break;
+				case MATERIAL_TYPE_DIELECTRIC:
+					break;
 
-			default:
-				break;
+				default:
+					break;
 			}
 
 		} else {
@@ -389,7 +390,7 @@ float3 adjust_color(Renderer *r, float3 color) {
 kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount,
 					   global Voxel *voxels, int chunkSize, int chunkCount,
 					   global Chunk *chunks, float3 bgColor, float bgBrightness,
-					   Camera camera, int sampleNumber, ulong seed,
+					   VoxCamera camera, int sampleNumber, ulong seed,
 					   int preview) {
 	int id = get_global_id(0);
 	ulong rng = init_rng_2(id, seed);

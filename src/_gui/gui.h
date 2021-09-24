@@ -1,7 +1,8 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include "raylib/raylib.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "../renderer/renderer.h"
 #include "../scripting/scripting.h"

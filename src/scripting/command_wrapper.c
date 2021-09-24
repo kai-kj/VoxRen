@@ -2,7 +2,7 @@
 
 //---- private ---------------------------------------------------------------//
 
-void _push_material(lua_State *l, Material material) {
+void _push_material(lua_State *l, VoxMaterial material) {
 	lua_newtable(l);
 
 	lua_pushinteger(l, material.type);
@@ -44,9 +44,9 @@ void _push_material(lua_State *l, Material material) {
 	}
 }
 
-Material _to_material(lua_State *l, int idx) {
+VoxMaterial _to_material(lua_State *l, int idx) {
 
-	Material material;
+	VoxMaterial material;
 
 	lua_getfield(l, idx, "type");
 	material.type = luaL_checkinteger(l, -1);
@@ -125,7 +125,7 @@ int l_add_voxel(lua_State *l) {
 	float x = luaL_checknumber(l, 1);
 	float y = luaL_checknumber(l, 2);
 	float z = luaL_checknumber(l, 3);
-	Material material = _to_material(l, 4);
+	VoxMaterial material = _to_material(l, 4);
 
 	add_voxel(x, y, z, material);
 
@@ -171,7 +171,7 @@ int l_create_light_source_material(lua_State *l) {
 	float b = luaL_checknumber(l, 3);
 	float brightness = luaL_checknumber(l, 4);
 
-	Material material = create_light_source_material(r, g, b, brightness);
+	VoxMaterial material = create_light_source_material(r, g, b, brightness);
 
 	_push_material(l, material);
 
@@ -182,7 +182,7 @@ int l_create_lambertian_material(lua_State *l) {
 	float g = luaL_checknumber(l, 2);
 	float b = luaL_checknumber(l, 3);
 
-	Material material = create_lambertian_material(r, g, b);
+	VoxMaterial material = create_lambertian_material(r, g, b);
 
 	_push_material(l, material);
 
@@ -195,7 +195,7 @@ int l_create_metal_material(lua_State *l) {
 	float tint = luaL_checknumber(l, 4);
 	float fuzz = luaL_checknumber(l, 5);
 
-	Material material = create_metal_material(r, g, b, tint, fuzz);
+	VoxMaterial material = create_metal_material(r, g, b, tint, fuzz);
 
 	_push_material(l, material);
 
@@ -209,7 +209,8 @@ int l_create_dielectric_material(lua_State *l) {
 	float fuzz = luaL_checknumber(l, 5);
 	float refIdx = luaL_checknumber(l, 6);
 
-	Material material = create_dielectric_material(r, g, b, tint, fuzz, refIdx);
+	VoxMaterial material =
+		create_dielectric_material(r, g, b, tint, fuzz, refIdx);
 
 	_push_material(l, material);
 

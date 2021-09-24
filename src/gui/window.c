@@ -5,69 +5,26 @@
 //---- public ----------------------------------------------------------------//
 
 GUIStatus create_window(int width, int height) {
-	// window
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		err("Failed to initialise SDL");
-		return GUI_FAILURE;
-	}
-
-	s.window = NULL;
-	s.windowSurface = NULL;
-	s.renderSurface = NULL;
-
-	s.commandLength = 1;
-	s.command = '\0';
-
-	s.draging = 0;
-	s.commandMode = 0;
-
 	msg("Creating window");
+	InitWindow(width, height, "VoxRen");
+	SetTargetFPS(30);
 
-	s.window = SDL_CreateWindow("pathtracer", SDL_WINDOWPOS_UNDEFINED,
-								SDL_WINDOWPOS_UNDEFINED, width, height,
-								SDL_WINDOW_SHOWN);
+	Image tmpImg = GenImageColor(width, height, BLACK);
+	g.renderTexture = LoadTextureFromImage(tmpImg);
+	UnloadImage(tmpImg);
 
-	if (s.window == NULL) {
-		err("Failed to crate window");
-		return GUI_FAILURE;
-	}
+	g.commandLength = 1;
+	g.command = '\0';
 
-	s.windowSurface = SDL_GetWindowSurface(s.window);
-
-	s.keyState = (Uint8 *)SDL_GetKeyboardState(NULL);
-
-	// font
-	if (TTF_Init() < 0) {
-		err("Failed to initialise SDL_TTF");
-		return GUI_FAILURE;
-	}
-
-	s.font = TTF_OpenFont("data/assets/opensans.ttf", 24);
-
-	if (s.font == NULL) {
-		err("Failed to load font");
-		return GUI_FAILURE;
-	}
+	g.draging = 0;
+	g.commandMode = 0;
 
 	return GUI_SUCCESS;
 }
 
 GUIStatus close_window() {
 	msg("Closing window");
-
-	if (s.renderSurface != NULL) {
-		SDL_FreeSurface(s.renderSurface);
-		s.renderSurface = NULL;
-	}
-
-	if (s.renderSurface != NULL) {
-		SDL_FreeSurface(s.windowSurface);
-		s.windowSurface = NULL;
-	}
-
-	SDL_DestroyWindow(s.window);
-	TTF_Quit();
-	SDL_Quit();
+	CloseWindow();
 
 	return GUI_SUCCESS;
 }

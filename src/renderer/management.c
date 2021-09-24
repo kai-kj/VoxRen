@@ -21,60 +21,60 @@ static void _print_kernel_run_error(cl_int ret) {
 	char buff[0x100000];
 
 	switch (ret) {
-	case CL_INVALID_PROGRAM_EXECUTABLE:
-		sprintf(buff, "INVALID_PROGRAM_EXECUTABLE");
-		break;
-	case CL_INVALID_COMMAND_QUEUE:
-		sprintf(buff, "INVALID_COMMAND_QUEUE");
-		break;
-	case CL_INVALID_KERNEL:
-		sprintf(buff, "INVALID_KERNEL");
-		break;
-	case CL_INVALID_CONTEXT:
-		sprintf(buff, "INVALID_CONTEXT");
-		break;
-	case CL_INVALID_KERNEL_ARGS:
-		sprintf(buff, "INVALID_KERNEL_ARGS");
-		break;
-	case CL_INVALID_WORK_DIMENSION:
-		sprintf(buff, "INVALID_WORK_DIMENSION");
-		break;
-	case CL_INVALID_GLOBAL_WORK_SIZE:
-		sprintf(buff, "INVALID_GLOBAL_WORK_SIZE");
-		break;
-	case CL_INVALID_GLOBAL_OFFSET:
-		sprintf(buff, "INVALID_GLOBAL_OFFSET");
-		break;
-	case CL_INVALID_WORK_GROUP_SIZE:
-		sprintf(buff, "INVALID_WORK_GROUP_SIZE");
-		break;
-	case CL_MISALIGNED_SUB_BUFFER_OFFSET:
-		sprintf(buff, "MISALIGNED_SUB_BUFFER_OFFSET");
-		break;
-	case CL_INVALID_IMAGE_SIZE:
-		sprintf(buff, "INVALID_IMAGE_SIZE");
-		break;
-	case CL_IMAGE_FORMAT_NOT_SUPPORTED:
-		sprintf(buff, "IMAGE_FORMAT_NOT_SUPPORTED");
-		break;
-	case CL_OUT_OF_RESOURCES:
-		sprintf(buff, "OUT_OF_RESOURCES");
-		break;
-	case CL_MEM_OBJECT_ALLOCATION_FAILURE:
-		sprintf(buff, "MEM_OBJECT_ALLOCATION_FAILURE");
-		break;
-	case CL_INVALID_EVENT_WAIT_LIST:
-		sprintf(buff, "INVALID_EVENT_WAIT_LIST");
-		break;
-	case CL_INVALID_OPERATION:
-		sprintf(buff, "INVALID_OPERATION");
-		break;
-	case CL_OUT_OF_HOST_MEMORY:
-		sprintf(buff, "OUT_OF_HOST_MEMORY");
-		break;
-	default:
-		sprintf(buff, "NO_ERROR_CODE");
-		break;
+		case CL_INVALID_PROGRAM_EXECUTABLE:
+			sprintf(buff, "INVALID_PROGRAM_EXECUTABLE");
+			break;
+		case CL_INVALID_COMMAND_QUEUE:
+			sprintf(buff, "INVALID_COMMAND_QUEUE");
+			break;
+		case CL_INVALID_KERNEL:
+			sprintf(buff, "INVALID_KERNEL");
+			break;
+		case CL_INVALID_CONTEXT:
+			sprintf(buff, "INVALID_CONTEXT");
+			break;
+		case CL_INVALID_KERNEL_ARGS:
+			sprintf(buff, "INVALID_KERNEL_ARGS");
+			break;
+		case CL_INVALID_WORK_DIMENSION:
+			sprintf(buff, "INVALID_WORK_DIMENSION");
+			break;
+		case CL_INVALID_GLOBAL_WORK_SIZE:
+			sprintf(buff, "INVALID_GLOBAL_WORK_SIZE");
+			break;
+		case CL_INVALID_GLOBAL_OFFSET:
+			sprintf(buff, "INVALID_GLOBAL_OFFSET");
+			break;
+		case CL_INVALID_WORK_GROUP_SIZE:
+			sprintf(buff, "INVALID_WORK_GROUP_SIZE");
+			break;
+		case CL_MISALIGNED_SUB_BUFFER_OFFSET:
+			sprintf(buff, "MISALIGNED_SUB_BUFFER_OFFSET");
+			break;
+		case CL_INVALID_IMAGE_SIZE:
+			sprintf(buff, "INVALID_IMAGE_SIZE");
+			break;
+		case CL_IMAGE_FORMAT_NOT_SUPPORTED:
+			sprintf(buff, "IMAGE_FORMAT_NOT_SUPPORTED");
+			break;
+		case CL_OUT_OF_RESOURCES:
+			sprintf(buff, "OUT_OF_RESOURCES");
+			break;
+		case CL_MEM_OBJECT_ALLOCATION_FAILURE:
+			sprintf(buff, "MEM_OBJECT_ALLOCATION_FAILURE");
+			break;
+		case CL_INVALID_EVENT_WAIT_LIST:
+			sprintf(buff, "INVALID_EVENT_WAIT_LIST");
+			break;
+		case CL_INVALID_OPERATION:
+			sprintf(buff, "INVALID_OPERATION");
+			break;
+		case CL_OUT_OF_HOST_MEMORY:
+			sprintf(buff, "OUT_OF_HOST_MEMORY");
+			break;
+		default:
+			sprintf(buff, "NO_ERROR_CODE");
+			break;
 	}
 
 	err("Failed to run kernel: %s", buff);
@@ -152,7 +152,7 @@ static void _setup_renderer_args() {
 	_set_kernel_arg(6, sizeof(cl_mem), &r.program.chunkBuff);
 	_set_kernel_arg(7, sizeof(cl_float3), &r.scene.bgColor);
 	_set_kernel_arg(8, sizeof(cl_float3), &r.scene.bgBrightness);
-	_set_kernel_arg(9, sizeof(Camera), &r.camera);
+	_set_kernel_arg(9, sizeof(VoxCamera), &r.camera);
 }
 
 static RendererStatus _render_frame(int sampleNumber) {
@@ -226,7 +226,7 @@ RendererStatus create_renderer() {
 
 	r.scene.chunkSize = CHUNK_SIZE;
 
-	r.camera = (Camera){
+	r.camera = (VoxCamera){
 		.sensorWidth = 1, .focalLength = 1, .aperture = 1, .exposure = 1};
 
 	// TODO: check platform count

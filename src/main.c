@@ -26,8 +26,8 @@ int main(void) {
 	if (run_script("main.lua", "Main") != SCRIPTING_SUCCESS)
 		exit(-1);
 
-	if (create_window(SCREEN_WIDTH, SCREEN_HEIGHT) == GUI_SUCCESS)
-		start_main_loop();
+	create_window(SCREEN_WIDTH, SCREEN_HEIGHT);
+	start_main_loop();
 
 	close_window();
 	close_command_interpreter();

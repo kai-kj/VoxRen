@@ -126,7 +126,7 @@ RendererStatus set_background_properties(float red, float green, float blue,
 	return RENDERER_SUCCESS;
 }
 
-RendererStatus add_voxel(int x, int y, int z, Material material) {
+RendererStatus add_voxel(int x, int y, int z, VoxMaterial material) {
 	if (x < 0 || y < 0 || z < 0)
 		return RENDERER_FAILURE;
 

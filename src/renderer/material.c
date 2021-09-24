@@ -1,8 +1,8 @@
 #include "renderer.h"
 
-Material create_light_source_material(float r, float g, float b,
-									  float brightness) {
-	Material m;
+VoxMaterial create_light_source_material(float r, float g, float b,
+										 float brightness) {
+	VoxMaterial m;
 
 	m.type = 1;
 	m.color = (cl_float3){r, g, b};
@@ -11,8 +11,8 @@ Material create_light_source_material(float r, float g, float b,
 	return m;
 }
 
-Material create_lambertian_material(float r, float g, float b) {
-	Material m;
+VoxMaterial create_lambertian_material(float r, float g, float b) {
+	VoxMaterial m;
 
 	m.type = 2;
 	m.color = (cl_float3){r, g, b};
@@ -20,9 +20,9 @@ Material create_lambertian_material(float r, float g, float b) {
 	return m;
 }
 
-Material create_metal_material(float r, float g, float b, float tint,
-							   float fuzz) {
-	Material m;
+VoxMaterial create_metal_material(float r, float g, float b, float tint,
+								  float fuzz) {
+	VoxMaterial m;
 
 	m.type = 3;
 	m.color = (cl_float3){r, g, b};
@@ -32,9 +32,9 @@ Material create_metal_material(float r, float g, float b, float tint,
 	return m;
 }
 
-Material create_dielectric_material(float r, float g, float b, float tint,
-									float fuzz, float refIdx) {
-	Material m;
+VoxMaterial create_dielectric_material(float r, float g, float b, float tint,
+									   float fuzz, float refIdx) {
+	VoxMaterial m;
 
 	m.type = 3;
 	m.color = (cl_float3){r, g, b};

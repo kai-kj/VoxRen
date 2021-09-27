@@ -414,9 +414,4 @@ kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount,
 		sampleNumber = 0;
 
 	image[id] = (image[id] * sampleNumber + color) / (sampleNumber + 1);
-
-	if (id == 0) {
-		image[id] = (float3){(float)r.chunkCount, r.chunks[1].firstVoxel,
-							 r.chunks[1].voxelCount};
-	}
 }

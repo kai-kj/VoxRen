@@ -4,6 +4,7 @@
 #define KERNEL_NAME "pathtracer"
 #define ARGS "-Werror -cl-mad-enable -cl-no-signed-zeros -cl-fast-relaxed-math"
 #define CHUNK_SIZE 3
+#define QUICK_PREVIEW 0
 
 //---- private ---------------------------------------------------------------//
 
@@ -196,8 +197,11 @@ static void *_start_renderer_loop() {
 			_setup_renderer_args();
 		}
 
-		if (!r.readFirstFrame)
+		if (QUICK_PREVIEW && !r.readFirstFrame)
 			i = 0;
+
+		if (!QUICK_PREVIEW && i == 0)
+			i = 1;
 
 		if (_render_frame(i) == RENDERER_FAILURE)
 			panic("Failed to run kernel");

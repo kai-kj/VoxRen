@@ -25,6 +25,7 @@ int k_destroy_image(k_Image *image);
 
 #ifdef K_IMAGE_IMPLEMENTATION
 
+#include <math.h>
 #include <string.h>
 
 // #define STB_IMAGE_WRITE_IMPLEMENTATION

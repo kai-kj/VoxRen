@@ -50,6 +50,8 @@ function Main()
 	addVox(width * 0.3, height - 1, depth * 0.3, metal)
 	addVox(width * 0.3, height - 2, depth * 0.3, metal)
 
+	addVox(width * 0.5, height - 2, depth * 0.5, red)
+
 	cameraProperties(1, 1, 0.001, 1000)
 	cameraPos(5.5, -2, -10, 0, -math.pi / 8)
 

@@ -1,7 +1,4 @@
-
 #include "gui.h"
-
-//---- private ---------------------------------------------------------------//
 
 #define GC_VALUE(v) sqrt(v)
 #define FLT_TO_CHAR(f) (char)((f <= 0) ? 0 : (f >= 1) ? 255 : (int)(f * 255))
@@ -65,7 +62,6 @@ void _procces_mouse_input() {
 	if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON)) {
 		int currentX = GetMouseX();
 		int currentY = GetMouseY();
-
 		int deltaX = currentX - g.prevMousePosX;
 		int deltaY = currentY - g.prevMousePosY;
 
@@ -77,8 +73,6 @@ void _procces_mouse_input() {
 	g.prevMousePosX = GetMouseX();
 	g.prevMousePosY = GetMouseY();
 }
-
-//---- public ----------------------------------------------------------------//
 
 GUIStatus start_main_loop() {
 	msg("Starting main loop");

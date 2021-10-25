@@ -9,17 +9,16 @@
 #define MATERIAL_TYPE_METAL 3
 #define MATERIAL_TYPE_DIELECTRIC 4
 
-//---- structs ---------------------------------------------------------------//
-
-// TODO: char -> ushort
+//--------------------------------------------------------------------------------------------------------------------//
+// structs                                                                                                            //
+//--------------------------------------------------------------------------------------------------------------------//
 
 typedef struct Ray {
 	float3 origin;
 	float3 direction;
 } Ray;
 
-// TODO: attenuation for diffuse material
-typedef struct VoxMaterial {
+typedef struct Material {
 	uchar type;
 	float3 color;
 
@@ -41,17 +40,18 @@ typedef struct VoxMaterial {
 			float fuzz;
 			float refIdx;
 		} dielectric;
-	} details;
-} VoxMaterial;
 
-typedef struct VoxCamera {
+	} details;
+} Material;
+
+typedef struct Camera {
 	float3 pos;
 	float2 rot;
 	float sensorWidth;
 	float focalLength;
 	float aperture;
 	float exposure;
-} VoxCamera;
+} Camera;
 
 typedef struct Chunk {
 	int3 pos;
@@ -61,7 +61,7 @@ typedef struct Chunk {
 
 typedef struct Voxel {
 	int3 pos;
-	VoxMaterial material;
+	Material material;
 } Voxel;
 
 typedef struct Renderer {
@@ -78,11 +78,13 @@ typedef struct Renderer {
 	float3 bgColor;
 	float bgBrightness;
 
-	VoxCamera camera;
+	Camera camera;
 	ulong *rng;
 } Renderer;
 
-//---- pesudo rng ------------------------------------------------------------//
+//--------------------------------------------------------------------------------------------------------------------//
+// rng                                                                                                                //
+//--------------------------------------------------------------------------------------------------------------------//
 
 ulong init_rng_1(ulong a) {
 	return (16807 * a) % 2147483647 * (16807 * a) % 2147483647;
@@ -112,22 +114,9 @@ float3 get_random_unit_vector(ulong *rng) {
 #define get_max_idx(t, a, b) (t[a] > t[b] ? a : b)
 #define get_min_idx(t, a, b) (t[a] < t[b] ? a : b)
 
-//---- math ------------------------------------------------------------------//
-
-float3 rotate_vector_x(float3 vec, float rot) {
-	return (float3){vec.x, vec.y * cos(rot) - vec.z * sin(rot),
-					vec.y * sin(rot) + vec.z * cos(rot)};
-}
-
-float3 rotate_vector_y(float3 vec, float rot) {
-	return (float3){vec.x * cos(rot) + vec.z * sin(rot), vec.y,
-					-vec.x * sin(rot) + vec.z * cos(rot)};
-}
-
-float3 rotate_vector_z(float3 vec, float rot) {
-	return (float3){vec.y * cos(rot) - vec.z * sin(rot),
-					vec.y * sin(rot) + vec.z * cos(rot), vec.z};
-}
+//--------------------------------------------------------------------------------------------------------------------//
+// math                                                                                                               //
+//--------------------------------------------------------------------------------------------------------------------//
 
 float3 rotate_vector(float3 vec, float3 rot) {
 	float3 nVec;
@@ -151,9 +140,7 @@ float3 get_reflection_dir(float3 in, float3 normal) {
 float3 get_refraction_dir(float3 in, float3 normal, float relativeRefIdx) {
 	float cosTheta = fmin(dot(in * -1, normal), 1);
 	float3 outPerpendicular = (in + normal * cosTheta) * relativeRefIdx;
-	float3 outParallel =
-		normal *
-		-sqrt(fabs(1 - length(outPerpendicular) * length(outPerpendicular)));
+	float3 outParallel = normal * -sqrt(fabs(1 - length(outPerpendicular) * length(outPerpendicular)));
 	return outParallel + outPerpendicular;
 }
 
@@ -178,9 +165,8 @@ bool ray_voxel(Ray ray, global Voxel *voxel, float3 dirFrac, float *tMin) {
 	return tMax > *tMin && tMax >= 0;
 }
 
-constant int3 returnValues[6] = {(int3){-1, 0, 0}, (int3){1, 0, 0},
-								 (int3){0, -1, 0}, (int3){0, 1, 0},
-								 (int3){0, 0, -1}, (int3){0, 0, 1}};
+constant int3 returnValues[6] = {(int3){-1, 0, 0}, (int3){1, 0, 0},	 (int3){0, -1, 0},
+								 (int3){0, 1, 0},  (int3){0, 0, -1}, (int3){0, 0, 1}};
 
 int3 get_ray_voxel_normal(Ray ray, global Voxel *voxel, float3 dirFrac) {
 	float t[6];
@@ -192,9 +178,7 @@ int3 get_ray_voxel_normal(Ray ray, global Voxel *voxel, float3 dirFrac) {
 	t[4] = (voxel->pos.z - ray.origin.z) * dirFrac.z;
 	t[5] = t[4] + dirFrac.z;
 
-	int tMinIdx = get_max_idx(
-		t, get_max_idx(t, get_min_idx(t, 0, 1), get_min_idx(t, 2, 3)),
-		get_min_idx(t, 4, 5));
+	int tMinIdx = get_max_idx(t, get_max_idx(t, get_min_idx(t, 0, 1), get_min_idx(t, 2, 3)), get_min_idx(t, 4, 5));
 
 	return returnValues[tMinIdx];
 }
@@ -214,18 +198,18 @@ bool ray_chunk(Ray ray, global Chunk *chunk, int chunkSize, float3 dirFrac) {
 	return tMax > tMin && tMax >= 0;
 }
 
-//---- ray -------------------------------------------------------------------//
+//--------------------------------------------------------------------------------------------------------------------//
+// ray                                                                                                                //
+//--------------------------------------------------------------------------------------------------------------------//
 
-bool cast_ray(Renderer *r, Ray ray, float3 *hitPos, int3 *normal,
-			  Voxel *voxel) {
+bool cast_ray(Renderer *r, Ray ray, float3 *hitPos, int3 *normal, Voxel *voxel) {
 	bool hit = false;
 	float minDist;
 	int minIdx;
 
-	float3 dirFrac =
-		(float3){(ray.direction.x != 0) ? (1.0f / ray.direction.x) : BIG_NUM,
-				 (ray.direction.y != 0) ? (1.0f / ray.direction.y) : BIG_NUM,
-				 (ray.direction.z != 0) ? (1.0f / ray.direction.z) : BIG_NUM};
+	float3 dirFrac = (float3){(ray.direction.x != 0) ? (1.0f / ray.direction.x) : BIG_NUM,
+							  (ray.direction.y != 0) ? (1.0f / ray.direction.y) : BIG_NUM,
+							  (ray.direction.z != 0) ? (1.0f / ray.direction.z) : BIG_NUM};
 
 	for (uint i = 0; i < r->chunkCount; i++) {
 		global Chunk *chunk = &r->chunks[i];
@@ -246,8 +230,7 @@ bool cast_ray(Renderer *r, Ray ray, float3 *hitPos, int3 *normal,
 		}
 	}
 
-	if (!hit)
-		return false;
+	if (!hit) return false;
 
 	*hitPos = ray.origin + ray.direction * minDist;
 	*normal = get_ray_voxel_normal(ray, &r->voxels[minIdx], dirFrac);
@@ -270,7 +253,7 @@ float3 get_color(Renderer *r, Ray ray, int maxDepth) {
 		Voxel voxel;
 
 		if (cast_ray(r, ray, &hitPos, &iNormal, &voxel)) {
-			VoxMaterial material = voxel.material;
+			Material material = voxel.material;
 			float3 fNormal = convert_float3(iNormal);
 			hitPos += fNormal * SMALL_NUM;
 
@@ -278,26 +261,21 @@ float3 get_color(Renderer *r, Ray ray, int maxDepth) {
 			switch (material.type) {
 				case MATERIAL_TYPE_LIGHT_SOURCE:
 					// TODO: better lighting
-					color = material.color * mask *
-							material.details.lightSource.brightness;
+					color = material.color * mask * material.details.lightSource.brightness;
 					returnFlag = true;
 					break;
 
 				case MATERIAL_TYPE_LAMBERTIAN:
-					ray = (Ray){
-						hitPos,
-						normalize(fNormal + get_random_unit_vector(r->rng))};
+					ray = (Ray){hitPos, normalize(fNormal + get_random_unit_vector(r->rng))};
 					mask *= material.color;
 					break;
 
 				case MATERIAL_TYPE_METAL:
-					ray = (Ray){
-						hitPos,
-						normalize(get_reflection_dir(ray.direction, fNormal) +
-								  get_random_unit_vector(r->rng) *
-									  material.details.metal.fuzz)};
-					mask = mask * (1 - material.details.metal.tint) +
-						   mask * material.color * material.details.metal.tint;
+					ray = (Ray){hitPos,
+								normalize(get_reflection_dir(ray.direction, fNormal) +
+										  get_random_unit_vector(r->rng) * material.details.metal.fuzz)};
+					mask =
+						mask * (1 - material.details.metal.tint) + mask * material.color * material.details.metal.tint;
 					break;
 
 				case MATERIAL_TYPE_DIELECTRIC:
@@ -312,8 +290,7 @@ float3 get_color(Renderer *r, Ray ray, int maxDepth) {
 			returnFlag = true;
 		}
 
-		if (returnFlag)
-			break;
+		if (returnFlag) break;
 	}
 
 	return color;
@@ -327,17 +304,15 @@ float3 get_color_preview(Renderer *r, Ray ray) {
 		if (cast_ray(r, ray, &hitPos, &iNormal, &voxel)) {
 			if (voxel.material.type == MATERIAL_TYPE_METAL) {
 				float3 fNormal = convert_float3(iNormal);
-				ray = (Ray){hitPos + fNormal * 0.01f,
-							get_reflection_dir(ray.direction, fNormal)};
+				ray = (Ray){hitPos + fNormal * 0.01f, get_reflection_dir(ray.direction, fNormal)};
 			} else {
 				float3 color = voxel.material.color;
-				if (iNormal.x != 0) {
+				if (iNormal.x != 0)
 					return color * 0.75f;
-				} else if (iNormal.y != 0) {
+				else if (iNormal.y != 0)
 					return color;
-				} else if (iNormal.z != 0) {
+				else if (iNormal.z != 0)
 					return color * 0.5f;
-				}
 			}
 		} else {
 			return r->bgColor;
@@ -345,7 +320,9 @@ float3 get_color_preview(Renderer *r, Ray ray) {
 	}
 }
 
-//---- main ------------------------------------------------------------------//
+//--------------------------------------------------------------------------------------------------------------------//
+// main                                                                                                               //
+//--------------------------------------------------------------------------------------------------------------------//
 
 // TODO: better sampling
 
@@ -355,10 +332,8 @@ Ray get_first_ray(Renderer *r, int id) {
 	int x = id % r->imageSize.x;
 	int y = id / r->imageSize.x;
 
-	float3 offset = (float3){r->camera.sensorWidth * (x - r->imageSize.x / 2) /
-								 r->imageSize.x,
-							 r->camera.sensorWidth * (y - r->imageSize.y / 2) /
-								 aspectRatio / r->imageSize.y,
+	float3 offset = (float3){r->camera.sensorWidth * (x - r->imageSize.x / 2) / r->imageSize.x,
+							 r->camera.sensorWidth * (y - r->imageSize.y / 2) / aspectRatio / r->imageSize.y,
 							 r->camera.focalLength};
 
 	float3 origin = r->camera.pos + offset;
@@ -371,8 +346,7 @@ Ray get_first_ray(Renderer *r, int id) {
 	float cosY = cos(r->camera.rot.y);
 	float sinY = sin(r->camera.rot.y);
 
-	direction = (float3){direction.x, direction.y * cosY - direction.z * sinY,
-						 direction.y * sinY + direction.z * cosY};
+	direction = (float3){direction.x, direction.y * cosY - direction.z * sinY, direction.y * sinY + direction.z * cosY};
 
 	direction = (float3){
 		direction.x * cosX - direction.z * sinX,
@@ -387,17 +361,14 @@ float3 adjust_color(Renderer *r, float3 color) {
 	return color * r->camera.exposure * r->camera.aperture;
 }
 
-kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount,
-					   global Voxel *voxels, int chunkSize, int chunkCount,
-					   global Chunk *chunks, float3 bgColor, float bgBrightness,
-					   VoxCamera camera, int sampleNumber, ulong seed,
-					   int preview) {
+kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount, global Voxel *voxels, int chunkSize,
+					   int chunkCount, global Chunk *chunks, float3 bgColor, float bgBrightness, Camera camera,
+					   int sampleNumber, ulong seed, int preview) {
 	int id = get_global_id(0);
 	ulong rng = init_rng_2(id, seed);
 
-	Renderer r = (Renderer){imageSize,	  image,	  voxelCount, voxels,
-							chunkSize,	  chunkCount, chunks,	  bgColor,
-							bgBrightness, camera,	  &rng};
+	Renderer r = (Renderer){imageSize, image,	voxelCount,	  voxels, chunkSize, chunkCount,
+							chunks,	   bgColor, bgBrightness, camera, &rng};
 
 	Ray ray = get_first_ray(&r, id);
 
@@ -410,8 +381,7 @@ kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount,
 
 	color = adjust_color(&r, color);
 
-	if (sampleNumber == 1)
-		sampleNumber = 0;
+	if (sampleNumber == 1) sampleNumber = 0;
 
 	image[id] = (image[id] * sampleNumber + color) / (sampleNumber + 1);
 }

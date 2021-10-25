@@ -4,7 +4,6 @@ ScriptStatus init_command_interpreter() {
 	msg("Initialising script lua state");
 	c.cl = luaL_newstate();
 	luaL_openlibs(c.cl);
-
 	load_functions(c.cl);
 
 	return SCRIPTING_SUCCESS;

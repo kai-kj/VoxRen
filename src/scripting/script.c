@@ -45,12 +45,8 @@ static void _destroy_script() {
 //---- public ----------------------------------------------------------------//
 
 ScriptStatus run_script(char *fileName, char *functionName) {
-	if (_load_script(fileName) != SCRIPTING_SUCCESS)
-		return SCRIPTING_FAILURE;
-
-	if (_run_script(functionName) != SCRIPTING_SUCCESS)
-		return SCRIPTING_FAILURE;
-
+	if (_load_script(fileName) != SCRIPTING_SUCCESS) return SCRIPTING_FAILURE;
+	if (_run_script(functionName) != SCRIPTING_SUCCESS) return SCRIPTING_FAILURE;
 	_destroy_script();
 
 	return SCRIPTING_SUCCESS;

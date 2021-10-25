@@ -11,20 +11,13 @@
 #include "renderer/renderer.h"
 #include "scripting/scripting.h"
 
-#define PI 3.14159265358979323846
-
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
 int main(void) {
-	if (create_renderer() != RENDERER_SUCCESS)
-		exit(-1);
-
-	if (init_command_interpreter() != RENDERER_SUCCESS)
-		exit(-1);
-
-	if (run_script("main.lua", "Main") != SCRIPTING_SUCCESS)
-		exit(-1);
+	if (create_renderer() != RENDERER_SUCCESS) exit(-1);
+	if (init_command_interpreter() != RENDERER_SUCCESS) exit(-1);
+	if (run_script("data/scripts/main.lua", "Main") != SCRIPTING_SUCCESS) exit(-1);
 
 	create_window(SCREEN_WIDTH, SCREEN_HEIGHT);
 	start_main_loop();

@@ -18,7 +18,9 @@ typedef char RendererStatus;
 
 extern Renderer r;
 
-//---- management ------------------------------------------------------------//
+//--------------------------------------------------------------------------------------------------------------------//
+// management                                                                                                         //
+//--------------------------------------------------------------------------------------------------------------------//
 
 RendererStatus create_renderer();
 RendererStatus destroy_renderer();
@@ -26,28 +28,29 @@ RendererStatus begin_rendering();
 RendererStatus end_rendering();
 k_Image *get_image();
 
-//---- scene -----------------------------------------------------------------//
+//--------------------------------------------------------------------------------------------------------------------//
+// scene                                                                                                              //
+//--------------------------------------------------------------------------------------------------------------------//
 
 RendererStatus set_output_properties(int width, int height);
-RendererStatus set_background_properties(float red, float green, float blue,
-										 float brightness);
+RendererStatus set_background_properties(float red, float green, float blue, float brightness);
 RendererStatus add_voxel(int x, int y, int z, VoxMaterial material);
 RendererStatus remove_voxel(int x, int y, int z);
 
-//---- camera ----------------------------------------------------------------//
+//--------------------------------------------------------------------------------------------------------------------//
+// camera                                                                                                             //
+//--------------------------------------------------------------------------------------------------------------------//
 
-RendererStatus set_camera_properties(float sensorWidth, float focalLength,
-									 float aperture, float exposure);
+RendererStatus set_camera_properties(float sensorWidth, float focalLength, float aperture, float exposure);
 RendererStatus set_camera_pos(float x, float y, float z, float rx, float ry);
 
-//---- material --------------------------------------------------------------//
+//--------------------------------------------------------------------------------------------------------------------//
+// materials                                                                                                          //
+//--------------------------------------------------------------------------------------------------------------------//
 
-VoxMaterial create_light_source_material(float r, float g, float b,
-										 float brightness);
+VoxMaterial create_light_source_material(float r, float g, float b, float brightness);
 VoxMaterial create_lambertian_material(float r, float g, float b);
-VoxMaterial create_metal_material(float r, float g, float b, float tint,
-								  float fuzz);
-VoxMaterial create_dielectric_material(float r, float g, float b, float tint,
-									   float fuzz, float refIdx);
+VoxMaterial create_metal_material(float r, float g, float b, float tint, float fuzz);
+VoxMaterial create_dielectric_material(float r, float g, float b, float tint, float fuzz, float refIdx);
 
 #endif

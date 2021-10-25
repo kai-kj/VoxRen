@@ -1,7 +1,5 @@
 #include "scripting.h"
 
-//---- private ---------------------------------------------------------------//
-
 void _push_material(lua_State *l, VoxMaterial material) {
 	lua_newtable(l);
 
@@ -99,8 +97,6 @@ VoxMaterial _to_material(lua_State *l, int idx) {
 	return material;
 }
 
-//---- public ----------------------------------------------------------------//
-
 int l_set_output_properties(lua_State *l) {
 	int width = luaL_checkinteger(l, 1);
 	int height = luaL_checkinteger(l, 2);
@@ -177,6 +173,7 @@ int l_create_light_source_material(lua_State *l) {
 
 	return 1;
 }
+
 int l_create_lambertian_material(lua_State *l) {
 	float r = luaL_checknumber(l, 1);
 	float g = luaL_checknumber(l, 2);
@@ -188,6 +185,7 @@ int l_create_lambertian_material(lua_State *l) {
 
 	return 1;
 }
+
 int l_create_metal_material(lua_State *l) {
 	float r = luaL_checknumber(l, 1);
 	float g = luaL_checknumber(l, 2);
@@ -201,6 +199,7 @@ int l_create_metal_material(lua_State *l) {
 
 	return 1;
 }
+
 int l_create_dielectric_material(lua_State *l) {
 	float r = luaL_checknumber(l, 1);
 	float g = luaL_checknumber(l, 2);
@@ -209,8 +208,7 @@ int l_create_dielectric_material(lua_State *l) {
 	float fuzz = luaL_checknumber(l, 5);
 	float refIdx = luaL_checknumber(l, 6);
 
-	VoxMaterial material =
-		create_dielectric_material(r, g, b, tint, fuzz, refIdx);
+	VoxMaterial material = create_dielectric_material(r, g, b, tint, fuzz, refIdx);
 
 	_push_material(l, material);
 

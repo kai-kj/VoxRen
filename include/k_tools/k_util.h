@@ -1,15 +1,15 @@
-//============================================================================//
-// k_util.h                                                                //
-//============================================================================//
+//====================================================================================================================//
+// k_util.h                                                                                                           //
+//====================================================================================================================//
 
-#define K_UTIL_MAX_LOG_LENGTH 256
-
-//----------------------------------------------------------------------------//
-// interface                                                                  //
-//----------------------------------------------------------------------------//
+//--------------------------------------------------------------------------------------------------------------------//
+// interface                                                                                                          //
+//--------------------------------------------------------------------------------------------------------------------//
 
 #ifndef K_UTIL_H
 #define K_UTIL_H
+
+#define K_UTIL_MAX_LOG_LENGTH 256
 
 double get_time();
 int sec_to_min(int seconds);
@@ -22,9 +22,9 @@ void dbg(char *format, ...);
 void err(char *format, ...);
 void panic(char *format, ...);
 
-//----------------------------------------------------------------------------//
-// implementation                                                             //
-//----------------------------------------------------------------------------//
+//--------------------------------------------------------------------------------------------------------------------//
+// implementation                                                                                                     //
+//--------------------------------------------------------------------------------------------------------------------//
 
 #ifdef K_UTIL_IMPLEMENTATION
 
@@ -34,20 +34,19 @@ void panic(char *format, ...);
 #include <string.h>
 #include <sys/time.h>
 
-//---- private functions -----------------------------------------------------//
-
-//---- public functions ------------------------------------------------------//
-
 double get_time() {
 	struct timeval time;
 	gettimeofday(&time, NULL);
-
 	return (double)time.tv_sec + (double)time.tv_usec / 1000000;
 }
 
-int sec_to_min(int seconds) { return seconds / 60; }
+int sec_to_min(int seconds) {
+	return seconds / 60;
+}
 
-int sec_to_h(int seconds) { return sec_to_min(seconds) / 60; }
+int sec_to_h(int seconds) {
+	return sec_to_min(seconds) / 60;
+}
 
 char *read_file(char *fileName) {
 	char *source = NULL;
@@ -75,9 +74,7 @@ char *read_file(char *fileName) {
 
 char *get_file_ext(char *filename) {
 	char *dot = strrchr(filename, '.');
-	if (!dot || dot == filename)
-		return "";
-	return dot + 1;
+	return (!dot || dot == filename) ? "" : dot + 1;
 }
 
 void safe_free(void *ptr) {

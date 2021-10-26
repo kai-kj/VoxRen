@@ -167,3 +167,13 @@ RendererStatus remove_voxel(int x, int y, int z) {
 
 	return RENDERER_SUCCESS;
 }
+
+RendererStatus add_voxel_at_mouse(VoxMaterial material) {
+	add_voxel(r.lookingAtPos.x + r.lookingAtNormal.x, r.lookingAtPos.y + r.lookingAtNormal.y,
+			  r.lookingAtPos.z + r.lookingAtNormal.z, material);
+}
+
+RendererStatus remove_voxel_at_mouse(VoxMaterial material) {
+	remove_voxel(r.lookingAtPos.x + r.lookingAtNormal.x, r.lookingAtPos.y + r.lookingAtNormal.y,
+				 r.lookingAtPos.z + r.lookingAtNormal.z);
+}

@@ -22,6 +22,10 @@ void _draw_performance_info(int x, int y) {
 	DrawText(text, x, y, 20, BLACK);
 }
 
+void _draw_aim() {
+	DrawCircle(g.width / 2, g.height / 2, 2, GRAY);
+}
+
 void _procces_kb_input() {
 	if (IsKeyDown(KEY_W)) {
 		r.camera.pos.z += MOV_SPEED * cos(r.camera.rot.x) * GetFrameTime();
@@ -59,9 +63,20 @@ void _procces_kb_input() {
 }
 
 void _procces_mouse_input() {
+	if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+		add_voxel_at_mouse(create_lambertian_material(1, 1, 1));
+		r.restartRender = 1;
+	}
+
 	if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON)) {
-		int currentX = GetMouseX();
-		int currentY = GetMouseY();
+		remove_voxel_at_mouse();
+		r.restartRender = 1;
+	}
+
+	int currentX = GetMouseX();
+	int currentY = GetMouseY();
+
+	if (currentX != g.prevMousePosX || currentY != g.prevMousePosY) {
 		int deltaX = currentX - g.prevMousePosX;
 		int deltaY = currentY - g.prevMousePosY;
 
@@ -96,6 +111,7 @@ GUIStatus start_main_loop() {
 		DrawTexture(g.renderTexture, 0, 0, WHITE);
 
 		_draw_performance_info(10, 10);
+		_draw_aim();
 
 		EndDrawing();
 	}

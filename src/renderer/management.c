@@ -34,15 +34,16 @@ static void _setup_renderer_args() {
 
 	cl_destroy_buffer(r.program.voxelBuff);
 	r.program.voxelBuff = cl_create_buffer(r.program.context, sizeof(Voxel) * r.scene.voxelCount, CL_MEM_READ_ONLY);
-
 	clEnqueueWriteBuffer(r.program.queue, r.program.voxelBuff, CL_TRUE, 0, sizeof(Voxel) * r.scene.voxelCount,
 						 r.scene.voxels, 0, NULL, NULL);
 
 	cl_destroy_buffer(r.program.chunkBuff);
 	r.program.chunkBuff = cl_create_buffer(r.program.context, sizeof(Chunk) * r.scene.chunkCount, CL_MEM_READ_ONLY);
-
 	clEnqueueWriteBuffer(r.program.queue, r.program.chunkBuff, CL_TRUE, 0, sizeof(Chunk) * r.scene.chunkCount,
 						 r.scene.chunks, 0, NULL, NULL);
+
+	cl_destroy_buffer(r.program.lookingAtBuff);
+	r.program.lookingAtBuff = cl_create_buffer(r.program.context, sizeof(cl_int3) * 2, CL_MEM_WRITE_ONLY);
 
 	cl_set_kernel_arg(r.program.kernel, 0, sizeof(cl_int2), &r.image.size);
 	cl_set_kernel_arg(r.program.kernel, 1, sizeof(cl_mem), &r.program.imageBuff);
@@ -54,16 +55,17 @@ static void _setup_renderer_args() {
 	cl_set_kernel_arg(r.program.kernel, 7, sizeof(cl_float3), &r.scene.bgColor);
 	cl_set_kernel_arg(r.program.kernel, 8, sizeof(cl_float3), &r.scene.bgBrightness);
 	cl_set_kernel_arg(r.program.kernel, 9, sizeof(VoxCamera), &r.camera);
+	cl_set_kernel_arg(r.program.kernel, 10, sizeof(cl_mem), &r.program.lookingAtBuff);
 }
 
 static RendererStatus _render_frame(int sampleNumber) {
 	cl_ulong seed = rand();
-	cl_int preview = !sampleNumber;
+	cl_int preview = (QUICK_PREVIEW) ? !sampleNumber : 0;
 
 	// non-constant arguments
-	cl_set_kernel_arg(r.program.kernel, 10, sizeof(cl_int), &sampleNumber);
-	cl_set_kernel_arg(r.program.kernel, 11, sizeof(cl_ulong), &seed);
-	cl_set_kernel_arg(r.program.kernel, 12, sizeof(cl_int), &preview);
+	cl_set_kernel_arg(r.program.kernel, 11, sizeof(cl_int), &sampleNumber);
+	cl_set_kernel_arg(r.program.kernel, 12, sizeof(cl_ulong), &seed);
+	cl_set_kernel_arg(r.program.kernel, 13, sizeof(cl_int), &preview);
 
 	cl_int ret = cl_run_kernel(r.program.queue, r.program.kernel, r.image.size.x * r.image.size.y);
 
@@ -84,6 +86,13 @@ static RendererStatus _render_frame(int sampleNumber) {
 	return RENDERER_SUCCESS;
 }
 
+static void _looking_at() {
+	cl_int3 data[2];
+	cl_read_buffer(r.program.queue, r.program.lookingAtBuff, 0, sizeof(cl_int3) * 2, data);
+	r.lookingAtPos = data[0];
+	r.lookingAtNormal = data[1];
+}
+
 static void *_start_renderer_loop() {
 	r.restartRender = 1;
 
@@ -96,9 +105,11 @@ static void *_start_renderer_loop() {
 			_setup_renderer_args();
 		}
 
-		if (QUICK_PREVIEW && !r.readFirstFrame) i = 0;
-		if (!QUICK_PREVIEW && i == 0) i = 1;
+		// if (QUICK_PREVIEW && !r.readFirstFrame) i = 0;
+		// if (!QUICK_PREVIEW && i == 0) i = 1;
 		if (_render_frame(i) == RENDERER_FAILURE) panic("Failed to run kernel");
+
+		if (i <= 1) _looking_at();
 
 		i++;
 	}
@@ -162,6 +173,8 @@ RendererStatus destroy_renderer() {
 	safe_free(r.image.data);
 	cl_destroy_buffer(r.program.voxelBuff);
 	cl_destroy_buffer(r.program.imageBuff);
+	cl_destroy_buffer(r.program.chunkBuff);
+	cl_destroy_buffer(r.program.lookingAtBuff);
 	clReleaseProgram(r.program.program);
 	clReleaseKernel(r.program.kernel);
 	clReleaseContext(r.program.context);

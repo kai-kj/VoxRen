@@ -363,7 +363,8 @@ float3 adjust_color(Renderer *r, float3 color) {
 
 kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount, global Voxel *voxels, int chunkSize,
 					   int chunkCount, global Chunk *chunks, float3 bgColor, float bgBrightness, Camera camera,
-					   int sampleNumber, ulong seed, int preview) {
+					   global int3 *lookingAt, int sampleNumber, ulong seed, int preview) {
+
 	int id = get_global_id(0);
 	ulong rng = init_rng_2(id, seed);
 
@@ -381,7 +382,16 @@ kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount, glo
 
 	color = adjust_color(&r, color);
 
-	if (sampleNumber == 1) sampleNumber = 0;
+	if (sampleNumber == 0 && id % r.imageSize.x == imageSize.x / 2 && id / r.imageSize.x == imageSize.y / 2) {
+		float3 hitPos;
+		int3 normal;
+		Voxel voxel;
+
+		cast_ray(&r, ray, &hitPos, &normal, &voxel);
+
+		lookingAt[0] = voxel.pos;
+		lookingAt[1] = normal;
+	}
 
 	image[id] = (image[id] * sampleNumber + color) / (sampleNumber + 1);
 }

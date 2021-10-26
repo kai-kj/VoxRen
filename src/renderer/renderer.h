@@ -36,6 +36,8 @@ RendererStatus set_output_properties(int width, int height);
 RendererStatus set_background_properties(float red, float green, float blue, float brightness);
 RendererStatus add_voxel(int x, int y, int z, VoxMaterial material);
 RendererStatus remove_voxel(int x, int y, int z);
+RendererStatus add_voxel_at_mouse(VoxMaterial material);
+RendererStatus remove_voxel_at_mouse();
 
 //--------------------------------------------------------------------------------------------------------------------//
 // camera                                                                                                             //

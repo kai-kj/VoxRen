@@ -6,6 +6,9 @@
 typedef struct GUIState {
 	Texture2D renderTexture;
 
+	int width;
+	int height;
+
 	double prevTime;
 	int prevMousePosX;
 	int prevMousePosY;

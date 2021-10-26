@@ -13,6 +13,7 @@ typedef struct CLProgram {
 	cl_mem imageBuff;
 	cl_mem voxelBuff;
 	cl_mem chunkBuff;
+	cl_mem lookingAtBuff;
 } CLProgram;
 
 typedef struct CLImage {
@@ -84,6 +85,9 @@ typedef struct Renderer {
 
 	double dt;
 	double prevTime;
+
+	cl_int3 lookingAtPos;
+	cl_int3 lookingAtNormal;
 
 	CLProgram program;
 	CLImage image;

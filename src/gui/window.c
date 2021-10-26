@@ -33,13 +33,16 @@ void _ray_log(int msgType, const char *text, va_list args) {
 }
 
 GUIStatus create_window(int width, int height) {
+	g.width = width;
+	g.height = height;
+
 	msg("Creating window");
 
 	SetTraceLogCallback(_ray_log);
-	InitWindow(width, height, "VoxRen");
+	InitWindow(g.width, g.height, "VoxRen");
 	SetTargetFPS(30);
 
-	Image tmpImg = GenImageColor(width, height, BLACK);
+	Image tmpImg = GenImageColor(g.width, g.height, BLACK);
 	g.renderTexture = LoadTextureFromImage(tmpImg);
 	UnloadImage(tmpImg);
 

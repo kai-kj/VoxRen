@@ -387,10 +387,12 @@ kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount, glo
 		int3 normal;
 		Voxel voxel;
 
-		cast_ray(&r, ray, &hitPos, &normal, &voxel);
-
-		lookingAt[0] = voxel.pos;
-		lookingAt[1] = normal;
+		if (cast_ray(&r, ray, &hitPos, &normal, &voxel)) {
+			lookingAt[0] = voxel.pos;
+			lookingAt[1] = normal;
+		} else {
+			lookingAt[0] = (int3){-1, -1, -1};
+		}
 	}
 
 	image[id] = (image[id] * sampleNumber + color) / (sampleNumber + 1);

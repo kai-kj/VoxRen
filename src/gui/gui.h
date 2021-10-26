@@ -1,7 +1,6 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include "k_tools/k_vectors.h"
 #include "raylib/raylib.h"
 
 #include "../renderer/renderer.h"

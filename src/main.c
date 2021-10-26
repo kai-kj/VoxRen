@@ -1,9 +1,6 @@
 #define K_UTIL_IMPLEMENTATION
 #include <k_tools/k_util.h>
 
-#define K_VECTORS_IMPLEMENTATION
-#include <k_tools/k_vectors.h>
-
 #define K_OPENCL_UTIL_IMPLEMENTATION
 #include <k_tools/k_opencl_util.h>
 

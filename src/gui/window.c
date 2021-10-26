@@ -42,6 +42,10 @@ GUIStatus create_window(int width, int height) {
 	InitWindow(g.width, g.height, "VoxRen");
 	SetTargetFPS(30);
 
+	if (!IsWindowFullscreen()) ToggleFullscreen();
+	HideCursor();
+	DisableCursor();
+
 	Image tmpImg = GenImageColor(g.width, g.height, BLACK);
 	g.renderTexture = LoadTextureFromImage(tmpImg);
 	UnloadImage(tmpImg);

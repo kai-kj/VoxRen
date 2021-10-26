@@ -23,7 +23,8 @@ void _draw_performance_info(int x, int y) {
 }
 
 void _draw_aim() {
-	DrawCircle(g.width / 2, g.height / 2, 2, GRAY);
+	DrawCircle(g.width / 2, g.height / 2, 5, BLACK);
+	DrawCircle(g.width / 2, g.height / 2, 3, WHITE);
 }
 
 void _procces_kb_input() {
@@ -63,12 +64,12 @@ void _procces_kb_input() {
 }
 
 void _procces_mouse_input() {
-	if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+	if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 		add_voxel_at_mouse(create_lambertian_material(1, 1, 1));
 		r.restartRender = 1;
 	}
 
-	if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON)) {
+	if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
 		remove_voxel_at_mouse();
 		r.restartRender = 1;
 	}
@@ -108,7 +109,9 @@ GUIStatus start_main_loop() {
 
 		ClearBackground(RAYWHITE);
 
-		DrawTexture(g.renderTexture, 0, 0, WHITE);
+		// DrawTexture(g.renderTexture, 0, 0, WHITE);
+		DrawTextureEx(g.renderTexture, (Vector2){0, 0}, 0, min(g.width / r.image.size.x, g.height / r.image.size.y),
+					  WHITE);
 
 		_draw_performance_info(10, 10);
 		_draw_aim();

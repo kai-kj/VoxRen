@@ -11,6 +11,9 @@
 
 #define K_UTIL_MAX_LOG_LENGTH 256
 
+#define max(a, b) (a > b ? a : b)
+#define min(a, b) (a < b ? a : b)
+
 double get_time();
 int sec_to_min(int seconds);
 int sec_to_h(int seconds);

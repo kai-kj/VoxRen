@@ -16,17 +16,6 @@ char *_get_rendered_pixels() {
 	return pixels;
 }
 
-void _draw_performance_info(int x, int y) {
-	char text[100];
-	sprintf(text, "%05.2f\n%05.2f\n", (float)GetFPS(), (float)(1.0 / r.dt));
-	DrawText(text, x, y, 20, BLACK);
-}
-
-void _draw_aim() {
-	DrawCircle(g.width / 2, g.height / 2, 5, BLACK);
-	DrawCircle(g.width / 2, g.height / 2, 3, WHITE);
-}
-
 void _procces_kb_input() {
 	if (IsKeyDown(KEY_W)) {
 		r.camera.pos.z += MOV_SPEED * cos(r.camera.rot.x) * GetFrameTime();
@@ -81,8 +70,8 @@ void _procces_mouse_input() {
 		int deltaX = currentX - g.prevMousePosX;
 		int deltaY = currentY - g.prevMousePosY;
 
-		r.camera.rot.x += deltaX * TURN_SPEED * GetFrameTime();
-		r.camera.rot.y += deltaY * TURN_SPEED * GetFrameTime();
+		r.camera.rot.x -= deltaX * TURN_SPEED * GetFrameTime();
+		r.camera.rot.y -= deltaY * TURN_SPEED * GetFrameTime();
 		r.restartRender = 1;
 	}
 
@@ -107,14 +96,14 @@ GUIStatus start_main_loop() {
 
 		BeginDrawing();
 
-		ClearBackground(RAYWHITE);
+		ClearBackground(BLACK);
 
-		// DrawTexture(g.renderTexture, 0, 0, WHITE);
-		DrawTextureEx(g.renderTexture, (Vector2){0, 0}, 0, min(g.width / r.image.size.x, g.height / r.image.size.y),
-					  WHITE);
+		float scale = min(GetScreenWidth() / r.image.size.x, GetScreenHeight() / r.image.size.y);
 
-		_draw_performance_info(10, 10);
-		_draw_aim();
+		DrawTextureEx(g.renderTexture, (Vector2){(GetScreenWidth() - r.image.size.x * scale) / 2, 0}, 0, scale, WHITE);
+
+		draw_aim();
+		draw_info_bar();
 
 		EndDrawing();
 	}

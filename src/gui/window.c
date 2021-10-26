@@ -32,29 +32,23 @@ void _ray_log(int msgType, const char *text, va_list args) {
 #endif
 }
 
-GUIStatus create_window(int width, int height) {
-	g.width = width;
-	g.height = height;
-
+GUIStatus create_window() {
 	msg("Creating window");
 
 	SetTraceLogCallback(_ray_log);
-	InitWindow(g.width, g.height, "VoxRen");
+	InitWindow(GetScreenWidth(), GetScreenWidth(), "VoxRen");
 	SetTargetFPS(30);
 
 	if (!IsWindowFullscreen()) ToggleFullscreen();
 	HideCursor();
 	DisableCursor();
 
-	Image tmpImg = GenImageColor(g.width, g.height, BLACK);
+	Image tmpImg = GenImageColor(r.image.size.x, r.image.size.x, BLACK);
 	g.renderTexture = LoadTextureFromImage(tmpImg);
 	UnloadImage(tmpImg);
 
 	g.commandLength = 1;
 	g.command = '\0';
-
-	g.draging = 0;
-	g.commandMode = 0;
 
 	return GUI_SUCCESS;
 }

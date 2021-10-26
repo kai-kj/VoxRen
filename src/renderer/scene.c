@@ -1,7 +1,5 @@
 #include "renderer.h"
 
-//---- private ---------------------------------------------------------------//
-
 static int _voxel_exists(int x, int y, int z) {
 	for (int i = 0; i < r.scene.voxelCount; i++) {
 		Voxel voxel = r.scene.voxels[i];
@@ -70,7 +68,7 @@ static int _chunk_exists(int x, int y, int z) {
 }
 
 static void _create_chunk(int x, int y, int z) {
-	dbg("new chunk (%d, %d, %d), total: %d", x, y, z, r.scene.chunkCount + 1);
+	// dbg("new chunk (%d, %d, %d), total: %d", x, y, z, r.scene.chunkCount + 1);
 	Chunk chunk = (Chunk){(cl_int3){.x = x, .y = y, .z = z}, r.scene.voxelCount, 0};
 
 	r.scene.chunkCount++;
@@ -80,7 +78,7 @@ static void _create_chunk(int x, int y, int z) {
 }
 
 static void _remove_chunk(int x, int y, int z) {
-	dbg("removing chunk (%d, %d, %d), total: %d", x, y, z, r.scene.chunkCount - 1);
+	// dbg("removing chunk (%d, %d, %d), total: %d", x, y, z, r.scene.chunkCount - 1);
 
 	int idx = _get_chunk_idx(x, y, z);
 
@@ -95,7 +93,23 @@ static void _remove_chunk(int x, int y, int z) {
 	r.scene.chunks = realloc(r.scene.chunks, sizeof(Chunk) * r.scene.chunkCount);
 }
 
-//---- public ----------------------------------------------------------------//
+static void _add_layers(int axis, int layers) {
+	int voxCount = r.scene.voxelCount;
+	Voxel *oldVoxels = malloc(sizeof(Voxel) * voxCount);
+	memcpy(oldVoxels, r.scene.voxels, sizeof(Voxel) * voxCount);
+
+	r.scene.voxelCount = 0;
+	r.scene.chunkCount = 0;
+
+	for (int i = 0; i < voxCount; i++) {
+		add_voxel(oldVoxels[i].pos.x + layers * (axis == 0), oldVoxels[i].pos.y + layers * (axis == 1),
+				  oldVoxels[i].pos.z + layers * (axis == 2), oldVoxels[i].material);
+	}
+
+	r.camera.pos.x += layers * (axis == 0);
+	r.camera.pos.y += layers * (axis == 1);
+	r.camera.pos.z += layers * (axis == 2);
+}
 
 RendererStatus set_output_properties(int width, int height) {
 	safe_free(r.image.data);
@@ -113,7 +127,18 @@ RendererStatus set_background_properties(float red, float green, float blue, flo
 }
 
 RendererStatus add_voxel(int x, int y, int z, VoxMaterial material) {
-	if (x < 0 || y < 0 || z < 0) return RENDERER_FAILURE;
+	if (x < 0) {
+		_add_layers(0, -x);
+		x = 0;
+	}
+	if (y < 0) {
+		_add_layers(1, -y);
+		y = 0;
+	}
+	if (z < 0) {
+		_add_layers(2, -z);
+		z = 0;
+	}
 
 	if (_voxel_exists(x, y, z)) remove_voxel(x, y, z);
 

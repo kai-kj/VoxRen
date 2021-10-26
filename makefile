@@ -15,7 +15,7 @@ LIB := -L lib/
 LIBS := -lOpenCL -lm -pthread -llua5.4 -lraylib -lGL -ldl -lrt -lX11
 
 # flags 
-FLAGS := -Wall -Wno-missing-braces
+FLAGS := -Wall -Wno-missing-braces -Werror
 
 # defines
 DEFS := -D CL_TARGET_OPENCL_VERSION=300 -D K_UTIL_DEBUG
@@ -65,9 +65,8 @@ $(BIN): $(BUILD)
 
 	$(CC) -c $(SRC)/gui/window.c -o $(BUILD)/gui/window.a
 	$(CC) -c $(SRC)/gui/main_loop.c -o $(BUILD)/gui/main_loop.a
-	# $(CC) -c $(SRC)/gui/input.c -o $(BUILD)/gui/input.a
-	# $(CC) -c $(SRC)/gui/place_voxel.c -o $(BUILD)/gui/place_voxel.a
 	$(CC) -c $(SRC)/gui/global.c -o $(BUILD)/gui/global.a
+	$(CC) -c $(SRC)/gui/interface.c -o $(BUILD)/gui/interface.a
 
 	$(CC) -c $(SRC)/scripting/script.c -o $(BUILD)/scripting/script.a
 	$(CC) -c $(SRC)/scripting/command.c -o $(BUILD)/scripting/command.a

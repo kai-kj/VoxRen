@@ -19,7 +19,7 @@ int main(void) {
 	if (init_command_interpreter() != RENDERER_SUCCESS) exit(-1);
 	if (run_script("data/scripts/main.lua", "Main") != SCRIPTING_SUCCESS) exit(-1);
 
-	create_window(SCREEN_WIDTH, SCREEN_HEIGHT);
+	create_window();
 	start_main_loop();
 
 	close_window();

@@ -18,8 +18,7 @@ typedef struct GUIState {
 	char *command;
 
 	int quit;
-	int draging;
-	int commandMode;
+	int state;
 
 } GUIState;
 

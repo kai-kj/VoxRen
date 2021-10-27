@@ -65,6 +65,21 @@ void _procces_kb_input() {
 
 		g.state = !g.state;
 	}
+
+	if (g.state == 0) {
+		if (IsKeyDown(KEY_Q)) {
+			VoxMaterial *material = get_material_at_mouse();
+			if (material != NULL) g.selectedMaterial = *material;
+		}
+
+	} else if (g.state == 1) {
+		if (!mouse_on_window()) {
+			if (IsKeyDown(KEY_Q)) {
+				VoxMaterial *material = get_material_at_mouse();
+				if (material != NULL) g.selectedMaterial = *material;
+			}
+		}
+	}
 }
 
 void _procces_mouse_input() {
@@ -77,6 +92,11 @@ void _procces_mouse_input() {
 		if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
 			remove_voxel_at_mouse();
 			r.restartRender = 1;
+		}
+
+		if (IsMouseButtonPressed(MOUSE_MIDDLE_BUTTON)) {
+			VoxMaterial *material = get_material_at_mouse();
+			if (material != NULL) g.selectedMaterial = *material;
 		}
 
 		if (g.mousePosX != g.prevMousePosX || g.mousePosY != g.prevMousePosY) {
@@ -99,6 +119,11 @@ void _procces_mouse_input() {
 				remove_voxel_at_mouse();
 				r.restartRender = 1;
 			}
+
+			if (IsMouseButtonPressed(MOUSE_MIDDLE_BUTTON)) {
+				VoxMaterial *material = get_material_at_mouse();
+				if (material != NULL) g.selectedMaterial = *material;
+			}
 		}
 	}
 
@@ -114,7 +139,7 @@ void _procces_mouse_input() {
 		g.renderMousePosY = r.image.size.y / 2;
 	}
 
-	if (g.renderMousePosX != prevRenderMousePosX || g.renderMousePosY != prevRenderMousePosY) r.restartRender = 1;
+	// if (g.renderMousePosX != prevRenderMousePosX || g.renderMousePosY != prevRenderMousePosY) r.restartRender = 1;
 
 	set_mouse_pos(g.renderMousePosX, g.renderMousePosY);
 }

@@ -18,11 +18,11 @@ void _draw_window(Window w) {
 
 	DrawText(w.title, w.x + padding, w.y + padding, g.settings.fontSize, g.settings.fontColor);
 
-	for (int j = 0; j < w.textBoxCount; j++) {
-		TextBox t = w.textBoxes[j];
+	for (int j = 0; j < w.coloredBoxCount; j++) {
+		ColoredBox b = w.coloredBoxes[j];
 
-		DrawText(t.text, w.x + t.x + padding, w.y + g.settings.windowTitleSize + t.y + padding, g.settings.fontSize,
-				 g.settings.fontColor);
+		DrawRectangle(w.x + b.x + padding, w.y + g.settings.windowTitleSize + b.y + padding, b.width, b.height,
+					  b.color);
 	}
 
 	for (int j = 0; j < w.buttonCount; j++) {
@@ -37,6 +37,13 @@ void _draw_window(Window w) {
 
 		DrawText(w.buttons[j].text, w.x + w.buttons[j].x + 2 * padding,
 				 w.y + g.settings.windowTitleSize + w.buttons[j].y + padding, g.settings.fontSize,
+				 g.settings.fontColor);
+	}
+
+	for (int j = 0; j < w.textBoxCount; j++) {
+		TextBox t = w.textBoxes[j];
+
+		DrawText(t.text, w.x + t.x + padding, w.y + g.settings.windowTitleSize + t.y + padding, g.settings.fontSize,
 				 g.settings.fontColor);
 	}
 }
@@ -142,6 +149,25 @@ GUIStatus add_button(int winID, int x, int y, int width, int height, char *text,
 	window->buttonCount++;
 	window->buttons = realloc(window->buttons, sizeof(Button) * window->buttonCount);
 	window->buttons[window->buttonCount - 1] = b;
+
+	return GUI_SUCCESS;
+}
+
+GUIStatus add_colored_box(int winID, int x, int y, int width, int height, Color color) {
+	Window *window = _get_window(winID);
+
+	ColoredBox b = (ColoredBox){x, y, width, height, color};
+
+	window->coloredBoxCount++;
+	window->coloredBoxes = realloc(window->coloredBoxes, sizeof(ColoredBox) * window->coloredBoxCount);
+	window->coloredBoxes[window->coloredBoxCount - 1] = b;
+
+	return GUI_SUCCESS;
+}
+
+GUIStatus change_colored_box_color(int winID, int idx, Color color) {
+	Window *window = _get_window(winID);
+	window->coloredBoxes[idx].color = color;
 
 	return GUI_SUCCESS;
 }

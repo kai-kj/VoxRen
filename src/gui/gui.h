@@ -49,6 +49,8 @@ int add_window(int x, int y, int width, int height, char *title);
 GUIStatus add_textbox(int winID, int x, int y, char *text);
 GUIStatus change_texbox_text(int winID, int idx, char *text);
 GUIStatus add_button(int winID, int x, int y, int width, int height, char *text, void *(function)());
+GUIStatus add_colored_box(int winID, int x, int y, int width, int height, Color color);
+GUIStatus change_colored_box_color(int winID, int idx, Color color);
 GUIStatus update_windows();
 GUIStatus draw_windows();
 

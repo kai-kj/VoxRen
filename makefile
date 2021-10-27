@@ -15,7 +15,7 @@ LIB := -L lib/
 LIBS := -lOpenCL -lm -pthread -llua5.4 -lraylib -lGL -ldl -lrt -lX11
 
 # flags 
-FLAGS := -Wall -Wno-missing-braces -Werror
+FLAGS := -Wall -Wno-missing-braces 
 
 # defines
 DEFS := -D CL_TARGET_OPENCL_VERSION=300 -D K_UTIL_DEBUG

@@ -62,7 +62,7 @@ GUIStatus create_window() {
 	g.settings.buttonColor = GRAY;
 	g.settings.buttonBorderColor = DARKGRAY;
 
-	g.selectedMaterial = create_lambertian_material(1, 1, 1);
+	g.selectedMaterial = (VoxMaterial){2, (cl_float3){0.5, 0.5, 0.5}, 0, 0, 0};
 
 	create_ui();
 

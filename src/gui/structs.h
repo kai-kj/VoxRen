@@ -22,6 +22,15 @@ typedef struct Button {
 	int pressed;
 } Button;
 
+typedef struct ColoredBox {
+	int x;
+	int y;
+	int width;
+	int height;
+
+	Color color;
+} ColoredBox;
+
 typedef struct Window {
 	int id;
 
@@ -38,6 +47,9 @@ typedef struct Window {
 
 	int buttonCount;
 	Button *buttons;
+
+	int coloredBoxCount;
+	ColoredBox *coloredBoxes;
 
 } Window;
 

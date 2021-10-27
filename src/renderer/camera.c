@@ -23,6 +23,16 @@ RendererStatus set_mouse_pos(int x, int y) {
 	return RENDERER_SUCCESS;
 }
 
+VoxMaterial *get_material_at_mouse() {
+	for (int i = 0; i < r.scene.voxelCount; i++) {
+		Voxel *v = &r.scene.voxels[i];
+		if (v->pos.x == r.lookingAtPos.x && v->pos.y == r.lookingAtPos.y && v->pos.z == r.lookingAtPos.z)
+			return &v->material;
+	}
+
+	return NULL;
+}
+
 RendererStatus add_voxel_at_mouse(VoxMaterial material) {
 	int x = r.lookingAtPos.x + r.lookingAtNormal.x;
 	int y = r.lookingAtPos.y + r.lookingAtNormal.y;

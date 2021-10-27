@@ -25,25 +25,10 @@ typedef struct VoxMaterial {
 	cl_uchar type;
 	cl_float3 color;
 
-	union {
-		struct {
-			cl_float brightness;
-		} lightSource;
+	cl_float v1;
+	cl_float v2;
+	cl_float v3;
 
-		struct {
-		} lambertian;
-
-		struct {
-			cl_float tint;
-			cl_float fuzz;
-		} metal;
-
-		struct {
-			cl_float tint;
-			cl_float fuzz;
-			cl_float refIdx;
-		} dielectric;
-	} details;
 } VoxMaterial;
 
 typedef struct Voxel {

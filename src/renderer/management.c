@@ -4,7 +4,6 @@
 #define KERNEL_NAME "pathtracer"
 #define ARGS "-Werror -cl-mad-enable -cl-no-signed-zeros -cl-fast-relaxed-math"
 #define CHUNK_SIZE 3
-#define QUICK_PREVIEW 0
 
 static k_Image *_CLImage_to_k_Image(CLImage clImage) {
 	k_Image *image = k_create_image(clImage.size.x, clImage.size.y);
@@ -42,13 +41,6 @@ static void _setup_renderer_args() {
 	clEnqueueWriteBuffer(r.program.queue, r.program.chunkBuff, CL_TRUE, 0, sizeof(Chunk) * r.scene.chunkCount,
 						 r.scene.chunks, 0, NULL, NULL);
 
-	cl_int3 lookingAt[2] = {(cl_int3){r.mousePos.x, r.mousePos.y, 0}, (cl_int3){0, 0, 0}};
-
-	cl_destroy_buffer(r.program.lookingAtBuff);
-	r.program.lookingAtBuff = cl_create_buffer(r.program.context, sizeof(cl_int3) * 2, CL_MEM_READ_WRITE);
-	clEnqueueWriteBuffer(r.program.queue, r.program.lookingAtBuff, CL_TRUE, 0, sizeof(cl_int3) * 2, lookingAt, 0, NULL,
-						 NULL);
-
 	cl_set_kernel_arg(r.program.kernel, 0, sizeof(cl_int2), &r.image.size);
 	cl_set_kernel_arg(r.program.kernel, 1, sizeof(cl_mem), &r.program.imageBuff);
 	cl_set_kernel_arg(r.program.kernel, 2, sizeof(cl_int), &r.scene.voxelCount);
@@ -59,17 +51,22 @@ static void _setup_renderer_args() {
 	cl_set_kernel_arg(r.program.kernel, 7, sizeof(cl_float3), &r.scene.bgColor);
 	cl_set_kernel_arg(r.program.kernel, 8, sizeof(cl_float3), &r.scene.bgBrightness);
 	cl_set_kernel_arg(r.program.kernel, 9, sizeof(VoxCamera), &r.camera);
-	cl_set_kernel_arg(r.program.kernel, 10, sizeof(cl_mem), &r.program.lookingAtBuff);
 }
 
 static RendererStatus _render_frame(int sampleNumber) {
 	cl_ulong seed = rand();
-	cl_int preview = (QUICK_PREVIEW) ? !sampleNumber : 0;
 
 	// non-constant arguments
+	cl_int3 lookingAt[3] = {r.lookingAtPos, r.lookingAtNormal, (cl_int3){r.mousePos.x, r.mousePos.y, 0}};
+
+	cl_destroy_buffer(r.program.lookingAtBuff);
+	r.program.lookingAtBuff = cl_create_buffer(r.program.context, sizeof(cl_int3) * 3, CL_MEM_READ_WRITE);
+	clEnqueueWriteBuffer(r.program.queue, r.program.lookingAtBuff, CL_TRUE, 0, sizeof(cl_int3) * 3, lookingAt, 0, NULL,
+						 NULL);
+
+	cl_set_kernel_arg(r.program.kernel, 10, sizeof(cl_mem), &r.program.lookingAtBuff);
 	cl_set_kernel_arg(r.program.kernel, 11, sizeof(cl_int), &sampleNumber);
 	cl_set_kernel_arg(r.program.kernel, 12, sizeof(cl_ulong), &seed);
-	cl_set_kernel_arg(r.program.kernel, 13, sizeof(cl_int), &preview);
 
 	cl_int ret = cl_run_kernel(r.program.queue, r.program.kernel, r.image.size.x * r.image.size.y);
 
@@ -81,6 +78,12 @@ static RendererStatus _render_frame(int sampleNumber) {
 	cl_read_buffer(r.program.queue, r.program.imageBuff, 0, sizeof(cl_float3) * r.image.size.x * r.image.size.y,
 				   r.image.data);
 
+	cl_int3 data[3];
+	cl_read_buffer(r.program.queue, r.program.lookingAtBuff, 0, sizeof(cl_int3) * 3, data);
+
+	r.lookingAtPos = data[0];
+	r.lookingAtNormal = data[1];
+
 	double currentTime = get_time();
 	r.dt = currentTime - r.prevTime;
 	r.prevTime = currentTime;
@@ -88,13 +91,6 @@ static RendererStatus _render_frame(int sampleNumber) {
 	clFinish(r.program.queue);
 
 	return RENDERER_SUCCESS;
-}
-
-static void _looking_at() {
-	cl_int3 data[2];
-	cl_read_buffer(r.program.queue, r.program.lookingAtBuff, 0, sizeof(cl_int3) * 2, data);
-	r.lookingAtPos = data[0];
-	r.lookingAtNormal = data[1];
 }
 
 static void *_start_renderer_loop() {
@@ -109,11 +105,7 @@ static void *_start_renderer_loop() {
 			_setup_renderer_args();
 		}
 
-		// if (QUICK_PREVIEW && !r.readFirstFrame) i = 0;
-		// if (!QUICK_PREVIEW && i == 0) i = 1;
 		if (_render_frame(i) == RENDERER_FAILURE) panic("Failed to run kernel");
-
-		if (i <= 1) _looking_at();
 
 		i++;
 	}

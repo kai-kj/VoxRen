@@ -22,26 +22,9 @@ typedef struct Material {
 	uchar type;
 	float3 color;
 
-	union {
-		struct {
-			float brightness;
-		} lightSource;
-
-		struct {
-		} lambertian;
-
-		struct {
-			float tint;
-			float fuzz;
-		} metal;
-
-		struct {
-			float tint;
-			float fuzz;
-			float refIdx;
-		} dielectric;
-
-	} details;
+	float v1;
+	float v2;
+	float v3;
 } Material;
 
 typedef struct Camera {
@@ -261,7 +244,7 @@ float3 get_color(Renderer *r, Ray ray, int maxDepth) {
 			switch (material.type) {
 				case MATERIAL_TYPE_LIGHT_SOURCE:
 					// TODO: better lighting
-					color = material.color * mask * material.details.lightSource.brightness;
+					color = material.color * mask * material.v1;
 					returnFlag = true;
 					break;
 
@@ -273,9 +256,8 @@ float3 get_color(Renderer *r, Ray ray, int maxDepth) {
 				case MATERIAL_TYPE_METAL:
 					ray = (Ray){hitPos,
 								normalize(get_reflection_dir(ray.direction, fNormal) +
-										  get_random_unit_vector(r->rng) * material.details.metal.fuzz)};
-					mask =
-						mask * (1 - material.details.metal.tint) + mask * material.color * material.details.metal.tint;
+										  get_random_unit_vector(r->rng) * material.v1)};
+					mask = mask * (1 - material.v2) + mask * material.color * material.v2;
 					break;
 
 				case MATERIAL_TYPE_DIELECTRIC:
@@ -294,30 +276,6 @@ float3 get_color(Renderer *r, Ray ray, int maxDepth) {
 	}
 
 	return color;
-}
-
-float3 get_color_preview(Renderer *r, Ray ray) {
-	while (1) {
-		float3 hitPos;
-		int3 iNormal;
-		Voxel voxel;
-		if (cast_ray(r, ray, &hitPos, &iNormal, &voxel)) {
-			if (voxel.material.type == MATERIAL_TYPE_METAL) {
-				float3 fNormal = convert_float3(iNormal);
-				ray = (Ray){hitPos + fNormal * 0.01f, get_reflection_dir(ray.direction, fNormal)};
-			} else {
-				float3 color = voxel.material.color;
-				if (iNormal.x != 0)
-					return color * 0.75f;
-				else if (iNormal.y != 0)
-					return color;
-				else if (iNormal.z != 0)
-					return color * 0.5f;
-			}
-		} else {
-			return r->bgColor;
-		}
-	}
 }
 
 //--------------------------------------------------------------------------------------------------------------------//
@@ -363,7 +321,7 @@ float3 adjust_color(Renderer *r, float3 color) {
 
 kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount, global Voxel *voxels, int chunkSize,
 					   int chunkCount, global Chunk *chunks, float3 bgColor, float bgBrightness, Camera camera,
-					   global int3 *lookingAt, int sampleNumber, ulong seed, int preview) {
+					   global int3 *lookingAt, int sampleNumber, ulong seed) {
 
 	int id = get_global_id(0);
 	ulong rng = init_rng_2(id, seed);
@@ -373,16 +331,11 @@ kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount, glo
 
 	Ray ray = get_first_ray(&r, id);
 
-	float3 color;
-
-	if (preview)
-		color = get_color_preview(&r, ray);
-	else
-		color = get_color(&r, ray, 10);
+	float3 color = get_color(&r, ray, 10);
 
 	color = adjust_color(&r, color);
 
-	if (sampleNumber == 0 && id % r.imageSize.x == lookingAt[0].x && id / r.imageSize.x == lookingAt[0].y) {
+	if (id % r.imageSize.x == lookingAt[2].x && id / r.imageSize.x == lookingAt[2].y) {
 		float3 hitPos;
 		int3 normal;
 		Voxel voxel;
@@ -391,7 +344,7 @@ kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount, glo
 			lookingAt[0] = voxel.pos;
 			lookingAt[1] = normal;
 		} else {
-			lookingAt[0].x = -1;
+			lookingAt[0].z = -1;
 		}
 	}
 

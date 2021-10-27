@@ -17,7 +17,7 @@ void _push_material(lua_State *l, VoxMaterial material) {
 
 	switch (material.type) {
 		case 1:
-			lua_pushnumber(l, material.details.lightSource.brightness);
+			lua_pushnumber(l, material.v1);
 			lua_setfield(l, -2, "brightness");
 			break;
 
@@ -25,18 +25,18 @@ void _push_material(lua_State *l, VoxMaterial material) {
 			break;
 
 		case 3:
-			lua_pushnumber(l, material.details.metal.tint);
+			lua_pushnumber(l, material.v1);
 			lua_setfield(l, -2, "tint");
-			lua_pushnumber(l, material.details.metal.fuzz);
+			lua_pushnumber(l, material.v2);
 			lua_setfield(l, -2, "fuzz");
 			break;
 
 		case 4:
-			lua_pushnumber(l, material.details.dielectric.tint);
+			lua_pushnumber(l, material.v1);
 			lua_setfield(l, -2, "tint");
-			lua_pushnumber(l, material.details.dielectric.fuzz);
+			lua_pushnumber(l, material.v2);
 			lua_setfield(l, -2, "fuzz");
-			lua_pushnumber(l, material.details.dielectric.refIdx);
+			lua_pushnumber(l, material.v3);
 			lua_setfield(l, -2, "refIdx");
 			break;
 	}
@@ -65,7 +65,7 @@ VoxMaterial _to_material(lua_State *l, int idx) {
 	switch (material.type) {
 		case 1:
 			lua_getfield(l, idx, "brightness");
-			material.details.lightSource.brightness = luaL_checknumber(l, -1);
+			material.v1 = luaL_checknumber(l, -1);
 			lua_pop(l, 1);
 			break;
 
@@ -74,22 +74,22 @@ VoxMaterial _to_material(lua_State *l, int idx) {
 
 		case 3:
 			lua_getfield(l, idx, "tint");
-			material.details.metal.tint = luaL_checknumber(l, -1);
+			material.v1 = luaL_checknumber(l, -1);
 			lua_pop(l, 1);
 			lua_getfield(l, idx, "fuzz");
-			material.details.metal.fuzz = luaL_checknumber(l, -1);
+			material.v2 = luaL_checknumber(l, -1);
 			lua_pop(l, 1);
 			break;
 
 		case 4:
 			lua_getfield(l, idx, "tint");
-			material.details.dielectric.tint = luaL_checknumber(l, -1);
+			material.v1 = luaL_checknumber(l, -1);
 			lua_pop(l, 1);
 			lua_getfield(l, idx, "fuzz");
-			material.details.dielectric.fuzz = luaL_checknumber(l, -1);
+			material.v2 = luaL_checknumber(l, -1);
 			lua_pop(l, 1);
 			lua_getfield(l, idx, "refIdx");
-			material.details.dielectric.refIdx = luaL_checknumber(l, -1);
+			material.v3 = luaL_checknumber(l, -1);
 			lua_pop(l, 1);
 			break;
 	}

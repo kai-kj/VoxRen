@@ -44,6 +44,7 @@ RendererStatus remove_voxel(int x, int y, int z);
 RendererStatus set_camera_properties(float sensorWidth, float focalLength, float aperture, float exposure);
 RendererStatus set_camera_pos(float x, float y, float z, float rx, float ry);
 RendererStatus set_mouse_pos(int x, int y);
+VoxMaterial *get_material_at_mouse();
 RendererStatus add_voxel_at_mouse(VoxMaterial material);
 RendererStatus remove_voxel_at_mouse();
 

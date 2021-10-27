@@ -382,7 +382,7 @@ kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount, glo
 
 	color = adjust_color(&r, color);
 
-	if (sampleNumber == 0 && id % r.imageSize.x == imageSize.x / 2 && id / r.imageSize.x == imageSize.y / 2) {
+	if (sampleNumber == 0 && id % r.imageSize.x == lookingAt[0].x && id / r.imageSize.x == lookingAt[0].y) {
 		float3 hitPos;
 		int3 normal;
 		Voxel voxel;
@@ -391,7 +391,7 @@ kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount, glo
 			lookingAt[0] = voxel.pos;
 			lookingAt[1] = normal;
 		} else {
-			lookingAt[0] = (int3){-1, -1, -1};
+			lookingAt[0].x = -1;
 		}
 	}
 

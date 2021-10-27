@@ -85,9 +85,38 @@ void _procces_mouse_input() {
 
 			r.camera.rot.x -= deltaX * TURN_SPEED * GetFrameTime();
 			r.camera.rot.y -= deltaY * TURN_SPEED * GetFrameTime();
+
 			r.restartRender = 1;
 		}
+	} else if (g.state == 1) {
+		if (!mouse_on_window()) {
+			if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+				add_voxel_at_mouse(g.selectedMaterial);
+				r.restartRender = 1;
+			}
+
+			if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
+				remove_voxel_at_mouse();
+				r.restartRender = 1;
+			}
+		}
 	}
+
+	int prevRenderMousePosX = g.renderMousePosX;
+	int prevRenderMousePosY = g.renderMousePosY;
+	float scale = min(GetScreenWidth() / r.image.size.x, GetScreenHeight() / r.image.size.y);
+
+	if (g.state == 1) {
+		g.renderMousePosX = (g.mousePosX - (GetScreenWidth() - r.image.size.x * scale) / 2) / scale;
+		g.renderMousePosY = (g.mousePosY - (GetScreenHeight() - r.image.size.y * scale) / 2) / scale;
+	} else {
+		g.renderMousePosX = r.image.size.x / 2;
+		g.renderMousePosY = r.image.size.y / 2;
+	}
+
+	if (g.renderMousePosX != prevRenderMousePosX || g.renderMousePosY != prevRenderMousePosY) r.restartRender = 1;
+
+	set_mouse_pos(g.renderMousePosX, g.renderMousePosY);
 }
 
 GUIStatus start_main_loop() {
@@ -97,6 +126,7 @@ GUIStatus start_main_loop() {
 
 	while (!WindowShouldClose()) {
 		r.readFirstFrame = 1;
+
 		g.mousePosX = GetMouseX();
 		g.mousePosY = GetMouseY();
 
@@ -112,18 +142,15 @@ GUIStatus start_main_loop() {
 		ClearBackground(BLACK);
 
 		float scale = min(GetScreenWidth() / r.image.size.x, GetScreenHeight() / r.image.size.y);
-
 		DrawTextureEx(g.renderTexture, (Vector2){(GetScreenWidth() - r.image.size.x * scale) / 2, 0}, 0, scale, WHITE);
 
 		update_info_window();
 		update_material_window();
 
-		if (g.state == 0) {
-			draw_aim();
-		} else {
-			update_windows();
-			draw_windows();
-		}
+		if (g.state == 0) draw_aim();
+
+		update_windows();
+		draw_windows();
 
 		EndDrawing();
 

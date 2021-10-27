@@ -36,8 +36,6 @@ RendererStatus set_output_properties(int width, int height);
 RendererStatus set_background_properties(float red, float green, float blue, float brightness);
 RendererStatus add_voxel(int x, int y, int z, VoxMaterial material);
 RendererStatus remove_voxel(int x, int y, int z);
-RendererStatus add_voxel_at_mouse(VoxMaterial material);
-RendererStatus remove_voxel_at_mouse();
 
 //--------------------------------------------------------------------------------------------------------------------//
 // camera                                                                                                             //
@@ -45,6 +43,9 @@ RendererStatus remove_voxel_at_mouse();
 
 RendererStatus set_camera_properties(float sensorWidth, float focalLength, float aperture, float exposure);
 RendererStatus set_camera_pos(float x, float y, float z, float rx, float ry);
+RendererStatus set_mouse_pos(int x, int y);
+RendererStatus add_voxel_at_mouse(VoxMaterial material);
+RendererStatus remove_voxel_at_mouse();
 
 //--------------------------------------------------------------------------------------------------------------------//
 // materials                                                                                                          //

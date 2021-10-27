@@ -69,6 +69,9 @@ typedef struct GUIState {
 	int prevMousePosX;
 	int prevMousePosY;
 
+	int renderMousePosX;
+	int renderMousePosY;
+
 	int firstChar;
 	int commandLength;
 	char *command;

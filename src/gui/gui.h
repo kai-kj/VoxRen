@@ -41,9 +41,10 @@ GUIStatus update_material_window();
 GUIStatus create_ui();
 
 //--------------------------------------------------------------------------------------------------------------------//
-// components //
+// components                                                                                                         //
 //--------------------------------------------------------------------------------------------------------------------//
 
+int mouse_on_window();
 int add_window(int x, int y, int width, int height, char *title);
 GUIStatus add_textbox(int winID, int x, int y, char *text);
 GUIStatus change_texbox_text(int winID, int idx, char *text);

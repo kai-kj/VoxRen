@@ -86,6 +86,7 @@ typedef struct Renderer {
 	double dt;
 	double prevTime;
 
+	cl_int2 mousePos;
 	cl_int3 lookingAtPos;
 	cl_int3 lookingAtNormal;
 

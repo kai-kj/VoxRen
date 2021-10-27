@@ -48,7 +48,7 @@ Window *_get_window(int id) {
 	return NULL;
 }
 
-int _update_window_pos(Window *win) {
+void _update_window_pos(Window *win) {
 	if (win->dragging) {
 		win->x += g.mousePosX - g.prevMousePosX;
 		win->y += g.mousePosY - g.prevMousePosY;
@@ -63,15 +63,12 @@ int _update_window_pos(Window *win) {
 		win->dragging = 0;
 	}
 
-	if (win->dragging) {
+	if (win->dragging ||
+		(IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && _mouse_in_area(win->x, win->y, win->width, win->height))) {
 		Window tmp = g.windows[g.windowCount - 1];
 		g.windows[g.windowCount - 1] = *win;
 		*win = tmp;
-
-		return 1;
 	}
-
-	return 1;
 }
 
 void _process_buttons(Window *win) {
@@ -91,6 +88,13 @@ void _process_buttons(Window *win) {
 			b->pressed = 0;
 		}
 	}
+}
+
+int mouse_on_window() {
+	for (int i = 0; i < g.windowCount; i++)
+		if (_mouse_in_area(g.windows[i].x, g.windows[i].y, g.windows[i].width, g.windows[i].height)) return 1;
+
+	return 0;
 }
 
 int add_window(int x, int y, int width, int height, char *title) {

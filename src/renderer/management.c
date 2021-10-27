@@ -42,8 +42,12 @@ static void _setup_renderer_args() {
 	clEnqueueWriteBuffer(r.program.queue, r.program.chunkBuff, CL_TRUE, 0, sizeof(Chunk) * r.scene.chunkCount,
 						 r.scene.chunks, 0, NULL, NULL);
 
+	cl_int3 lookingAt[2] = {(cl_int3){r.mousePos.x, r.mousePos.y, 0}, (cl_int3){0, 0, 0}};
+
 	cl_destroy_buffer(r.program.lookingAtBuff);
-	r.program.lookingAtBuff = cl_create_buffer(r.program.context, sizeof(cl_int3) * 2, CL_MEM_WRITE_ONLY);
+	r.program.lookingAtBuff = cl_create_buffer(r.program.context, sizeof(cl_int3) * 2, CL_MEM_READ_WRITE);
+	clEnqueueWriteBuffer(r.program.queue, r.program.lookingAtBuff, CL_TRUE, 0, sizeof(cl_int3) * 2, lookingAt, 0, NULL,
+						 NULL);
 
 	cl_set_kernel_arg(r.program.kernel, 0, sizeof(cl_int2), &r.image.size);
 	cl_set_kernel_arg(r.program.kernel, 1, sizeof(cl_mem), &r.program.imageBuff);

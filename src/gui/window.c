@@ -40,8 +40,6 @@ GUIStatus create_window() {
 	SetTargetFPS(30);
 
 	if (!IsWindowFullscreen()) ToggleFullscreen();
-	HideCursor();
-	DisableCursor();
 
 	Image tmpImg = GenImageColor(r.image.size.x, r.image.size.x, BLACK);
 	g.renderTexture = LoadTextureFromImage(tmpImg);
@@ -49,6 +47,24 @@ GUIStatus create_window() {
 
 	g.commandLength = 1;
 	g.command = '\0';
+	g.windowIDs = 0;
+	g.windowCount = 0;
+	g.windows = NULL;
+	g.state = 1;
+
+	g.settings.fontSize = 20;
+	g.settings.fontColor = BLACK;
+	g.settings.windowTitleSize = 30;
+	g.settings.windowColor = LIGHTGRAY;
+	g.settings.windowTitleColor = GRAY;
+	g.settings.borderSize = 4;
+	g.settings.borderColor = BLACK;
+	g.settings.buttonColor = GRAY;
+	g.settings.buttonBorderColor = DARKGRAY;
+
+	g.selectedMaterial = create_lambertian_material(1, 1, 1);
+
+	create_ui();
 
 	return GUI_SUCCESS;
 }

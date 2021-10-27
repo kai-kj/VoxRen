@@ -67,6 +67,7 @@ $(BIN): $(BUILD)
 	$(CC) -c $(SRC)/gui/main_loop.c -o $(BUILD)/gui/main_loop.a
 	$(CC) -c $(SRC)/gui/global.c -o $(BUILD)/gui/global.a
 	$(CC) -c $(SRC)/gui/interface.c -o $(BUILD)/gui/interface.a
+	$(CC) -c $(SRC)/gui/components.c -o $(BUILD)/gui/components.a
 
 	$(CC) -c $(SRC)/scripting/script.c -o $(BUILD)/scripting/script.a
 	$(CC) -c $(SRC)/scripting/command.c -o $(BUILD)/scripting/command.a

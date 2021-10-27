@@ -50,33 +50,44 @@ void _procces_kb_input() {
 		r.camera.pos.y -= MOV_SPEED * GetFrameTime();
 		r.restartRender = 1;
 	}
+
+	if (IsKeyPressed(KEY_E)) {
+		if (g.state == 1) {
+			HideCursor();
+			DisableCursor();
+
+			g.prevMousePosX = GetMouseX();
+			g.prevMousePosY = GetMouseY();
+		} else {
+			ShowCursor();
+			EnableCursor();
+		}
+
+		g.state = !g.state;
+	}
 }
 
 void _procces_mouse_input() {
-	if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-		add_voxel_at_mouse(create_lambertian_material(1, 1, 1));
-		r.restartRender = 1;
+	if (g.state == 0) {
+		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+			add_voxel_at_mouse(g.selectedMaterial);
+			r.restartRender = 1;
+		}
+
+		if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
+			remove_voxel_at_mouse();
+			r.restartRender = 1;
+		}
+
+		if (g.mousePosX != g.prevMousePosX || g.mousePosY != g.prevMousePosY) {
+			int deltaX = g.mousePosX - g.prevMousePosX;
+			int deltaY = g.mousePosY - g.prevMousePosY;
+
+			r.camera.rot.x -= deltaX * TURN_SPEED * GetFrameTime();
+			r.camera.rot.y -= deltaY * TURN_SPEED * GetFrameTime();
+			r.restartRender = 1;
+		}
 	}
-
-	if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
-		remove_voxel_at_mouse();
-		r.restartRender = 1;
-	}
-
-	int currentX = GetMouseX();
-	int currentY = GetMouseY();
-
-	if (currentX != g.prevMousePosX || currentY != g.prevMousePosY) {
-		int deltaX = currentX - g.prevMousePosX;
-		int deltaY = currentY - g.prevMousePosY;
-
-		r.camera.rot.x -= deltaX * TURN_SPEED * GetFrameTime();
-		r.camera.rot.y -= deltaY * TURN_SPEED * GetFrameTime();
-		r.restartRender = 1;
-	}
-
-	g.prevMousePosX = GetMouseX();
-	g.prevMousePosY = GetMouseY();
 }
 
 GUIStatus start_main_loop() {
@@ -86,6 +97,8 @@ GUIStatus start_main_loop() {
 
 	while (!WindowShouldClose()) {
 		r.readFirstFrame = 1;
+		g.mousePosX = GetMouseX();
+		g.mousePosY = GetMouseY();
 
 		_procces_kb_input();
 		_procces_mouse_input();
@@ -102,10 +115,20 @@ GUIStatus start_main_loop() {
 
 		DrawTextureEx(g.renderTexture, (Vector2){(GetScreenWidth() - r.image.size.x * scale) / 2, 0}, 0, scale, WHITE);
 
-		draw_aim();
-		draw_info_bar();
+		update_info_window();
+		update_material_window();
+
+		if (g.state == 0) {
+			draw_aim();
+		} else {
+			update_windows();
+			draw_windows();
+		}
 
 		EndDrawing();
+
+		g.prevMousePosX = g.mousePosX;
+		g.prevMousePosY = g.mousePosY;
 	}
 
 	return GUI_SUCCESS;

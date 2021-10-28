@@ -46,6 +46,22 @@ void _draw_window(Window w) {
 		DrawText(t.text, w.x + t.x + padding, w.y + g.settings.windowTitleSize + t.y + padding, g.settings.fontSize,
 				 g.settings.fontColor);
 	}
+
+	for (int j = 0; j < w.textInputBoxCount; j++) {
+		TextInputBox t = w.textInputBoxes[j];
+
+		if (t.editing)
+			DrawRectangle(w.x + t.x + padding, w.y + g.settings.windowTitleSize + t.y + padding, t.width, t.height,
+						  g.settings.buttonColor);
+
+		DrawRectangleLinesEx(
+			(Rectangle){w.x + t.x + padding, w.y + g.settings.windowTitleSize + t.y + padding, t.width, t.height},
+			g.settings.borderSize / 2, g.settings.buttonBorderColor);
+
+		DrawText(t.text, w.x + t.x + padding + g.settings.borderSize / 2,
+				 w.y + g.settings.windowTitleSize + t.y + padding + g.settings.borderSize / 2, g.settings.fontSize,
+				 g.settings.fontColor);
+	}
 }
 
 Window *_get_window(int id) {
@@ -97,21 +113,58 @@ void _process_buttons(Window *win) {
 	}
 }
 
-int mouse_on_window() {
-	for (int i = 0; i < g.windowCount; i++)
-		if (_mouse_in_area(g.windows[i].x, g.windows[i].y, g.windows[i].width, g.windows[i].height)) return 1;
+void _procces_text_input_boxes(Window *win) {
+	if (g.state != 1) return;
 
-	return 0;
+	for (int i = 0; i < win->textInputBoxCount; i++) {
+		TextInputBox *t = &win->textInputBoxes[i];
+		int onBox = _mouse_in_area(win->x + t->x, win->y + g.settings.windowTitleSize + t->y, t->width, t->height);
+
+		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && onBox) {
+			change_text_input_box_text(win->id, i, "");
+			t->editing = 1;
+			g.state = 2;
+		}
+
+		if ((IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !onBox) || IsKeyPressed(KEY_ENTER)) {
+			t->fn(t->text);
+			t->editing = 0;
+			g.state = 1;
+		}
+
+		if (t->editing) {
+			int key = GetCharPressed();
+
+			while (key > 0) {
+				if ((key >= 48 && key <= 57) || key == 46) {
+					int length = strlen(t->text);
+					t->text = realloc(t->text, length + 2);
+					t->text[length] = (char)key;
+					t->text[length + 1] = '\0';
+				}
+
+				key = GetCharPressed();
+			}
+
+			if (IsKeyPressed(KEY_BACKSPACE)) {
+				int length = strlen(t->text);
+
+				if (length > 0) {
+					t->text = realloc(t->text, length);
+					t->text[length - 1] = '\0';
+				}
+			}
+		}
+	}
 }
 
-int add_window(int x, int y, int width, int height, char *title) {
-	Window w = (Window){g.windowIDs++, x, y, width, height, title, 0, 0, NULL, 0, NULL};
+int mouse_on_window() {
+	for (int i = 0; i < g.windowCount; i++)
+		if (_mouse_in_area(g.windows[i].x, g.windows[i].y, g.windows[i].width,
+						   g.windows[i].height + g.settings.windowTitleSize))
+			return 1;
 
-	g.windowCount++;
-	g.windows = realloc(g.windows, sizeof(Window) * g.windowCount);
-	g.windows[g.windowCount - 1] = w;
-
-	return w.id;
+	return 0;
 }
 
 GUIStatus add_textbox(int winID, int x, int y, char *text) {
@@ -138,7 +191,7 @@ GUIStatus change_texbox_text(int winID, int idx, char *text) {
 	return GUI_SUCCESS;
 }
 
-GUIStatus add_button(int winID, int x, int y, int width, int height, char *text, void *(function)()) {
+GUIStatus add_button(int winID, int x, int y, int width, int height, char *text, void (*function)()) {
 	Window *window = _get_window(winID);
 
 	Button b = (Button){x, y, width, height, function};
@@ -172,10 +225,37 @@ GUIStatus change_colored_box_color(int winID, int idx, Color color) {
 	return GUI_SUCCESS;
 }
 
+GUIStatus add_text_input_box(int winID, int x, int y, int width, int height, char *text, void (*function)(char *)) {
+	Window *window = _get_window(winID);
+
+	TextInputBox t = (TextInputBox){x, y, width, height, NULL, function, 0};
+	t.text = malloc(strlen(text) + 1);
+	memcpy(t.text, text, strlen(text) + 1);
+
+	window->textInputBoxCount++;
+	window->textInputBoxes = realloc(window->textInputBoxes, sizeof(TextInputBox) * window->textInputBoxCount);
+	window->textInputBoxes[window->textInputBoxCount - 1] = t;
+
+	return GUI_SUCCESS;
+}
+
+GUIStatus change_text_input_box_text(int winID, int idx, char *text) {
+	Window *window = _get_window(winID);
+
+	if (window->textInputBoxes[idx].editing == 1) return GUI_FAILURE;
+
+	free(window->textInputBoxes[idx].text);
+	window->textInputBoxes[idx].text = malloc(strlen(text) + 1);
+	memcpy(window->textInputBoxes[idx].text, text, strlen(text) + 1);
+
+	return GUI_SUCCESS;
+}
+
 GUIStatus update_windows() {
 	for (int i = 0; i < g.windowCount; i++) {
 		_update_window_pos(&g.windows[i]);
 		_process_buttons(&g.windows[i]);
+		_procces_text_input_boxes(&g.windows[i]);
 	}
 
 	return GUI_SUCCESS;
@@ -188,4 +268,14 @@ GUIStatus draw_windows() {
 	}
 
 	return GUI_SUCCESS;
+}
+
+int add_window(int x, int y, int width, int height, char *title) {
+	Window w = (Window){g.windowIDs++, x, y, width, height, title, 0, 0, NULL, 0, NULL, 0, NULL, 0, NULL};
+
+	g.windowCount++;
+	g.windows = realloc(g.windows, sizeof(Window) * g.windowCount);
+	g.windows[g.windowCount - 1] = w;
+
+	return w.id;
 }

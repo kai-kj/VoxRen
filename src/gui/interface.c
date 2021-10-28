@@ -107,6 +107,51 @@ void _v3_minus() {
 	if (g.selectedMaterial.v3 < 0) g.selectedMaterial.v3 = 0;
 }
 
+void _set_r(char *text) {
+	float color = (float)atoi(text) / 255.0;
+	if (color > 1) color = 1;
+	if (color < 0) color = 0;
+
+	g.selectedMaterial.color.x = color;
+}
+
+void _set_g(char *text) {
+	float color = (float)atoi(text) / 255.0;
+	if (color > 1) color = 1;
+	if (color < 0) color = 0;
+
+	g.selectedMaterial.color.y = color;
+}
+
+void _set_b(char *text) {
+	float color = (float)atoi(text) / 255.0;
+	if (color > 1) color = 1;
+	if (color < 0) color = 0;
+
+	g.selectedMaterial.color.z = color;
+}
+
+void _set_v1(char *text) {
+	float z = atof(text);
+	if (z < 0) z = 0;
+
+	g.selectedMaterial.v1 = z;
+}
+
+void _set_v2(char *text) {
+	float z = atof(text);
+	if (z < 0) z = 0;
+
+	g.selectedMaterial.v2 = z;
+}
+
+void _set_v3(char *text) {
+	float z = atof(text);
+	if (z < 0) z = 0;
+
+	g.selectedMaterial.v3 = z;
+}
+
 GUIStatus draw_aim() {
 	DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, AIM_SIZE, BLACK);
 	DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, AIM_SIZE / 2, WHITE);
@@ -116,8 +161,9 @@ GUIStatus draw_aim() {
 
 GUIStatus update_info_window() {
 	char text[1000];
-	sprintf(text, "size %dx%d\nfps %03d\nvoxels %d\nchunks %d", r.image.size.x, r.image.size.y, (int)(1.0 / r.dt),
-			r.scene.voxelCount, r.scene.chunkCount);
+	sprintf(text, "fps: %03d\nscene: %dv, %dc\nlooking at:\n  v(%d, %d, %d)\n  p(%d, %d)", (int)(1.0 / r.dt),
+			r.scene.voxelCount, r.scene.chunkCount, r.lookingAtPos.x, r.lookingAtPos.y, r.lookingAtPos.z, r.mousePos.x,
+			r.mousePos.y);
 	change_texbox_text(g.infoWindow, 0, text);
 
 	return GUI_SUCCESS;
@@ -127,13 +173,13 @@ GUIStatus update_material_window() {
 	char text[100];
 
 	sprintf(text, "%03d", (int)(g.selectedMaterial.color.x * 255));
-	change_texbox_text(g.materialWindow, 2, text);
+	change_text_input_box_text(g.materialWindow, 0, text);
 
 	sprintf(text, "%03d", (int)(g.selectedMaterial.color.y * 255));
-	change_texbox_text(g.materialWindow, 4, text);
+	change_text_input_box_text(g.materialWindow, 1, text);
 
 	sprintf(text, "%03d", (int)(g.selectedMaterial.color.z * 255));
-	change_texbox_text(g.materialWindow, 6, text);
+	change_text_input_box_text(g.materialWindow, 2, text);
 
 	switch (g.selectedMaterial.type) {
 		case 1:
@@ -150,90 +196,90 @@ GUIStatus update_material_window() {
 			break;
 	}
 
-	change_texbox_text(g.materialWindow, 8, text);
+	change_texbox_text(g.materialWindow, 5, text);
 
 	switch (g.selectedMaterial.type) {
 		case 1:
 			sprintf(text, "%s", "brightness");
-			change_texbox_text(g.materialWindow, 10, text);
+			change_texbox_text(g.materialWindow, 7, text);
 
 			sprintf(text, "(none)");
-			change_texbox_text(g.materialWindow, 12, text);
+			change_texbox_text(g.materialWindow, 8, text);
 
 			sprintf(text, "(none)");
-			change_texbox_text(g.materialWindow, 14, text);
+			change_texbox_text(g.materialWindow, 9, text);
 
 			sprintf(text, "%01.2f", g.selectedMaterial.v1);
-			change_texbox_text(g.materialWindow, 11, text);
+			change_text_input_box_text(g.materialWindow, 3, text);
 
-			sprintf(text, "");
-			change_texbox_text(g.materialWindow, 13, text);
+			sprintf(text, " ");
+			change_text_input_box_text(g.materialWindow, 4, text);
 
-			sprintf(text, "");
-			change_texbox_text(g.materialWindow, 15, text);
+			sprintf(text, " ");
+			change_text_input_box_text(g.materialWindow, 5, text);
 
 			break;
 
 		case 2:
 			sprintf(text, "(none)");
-			change_texbox_text(g.materialWindow, 10, text);
+			change_texbox_text(g.materialWindow, 7, text);
 
 			sprintf(text, "(none)");
-			change_texbox_text(g.materialWindow, 12, text);
+			change_texbox_text(g.materialWindow, 8, text);
 
 			sprintf(text, "(none)");
-			change_texbox_text(g.materialWindow, 14, text);
+			change_texbox_text(g.materialWindow, 9, text);
 
-			sprintf(text, "");
-			change_texbox_text(g.materialWindow, 11, text);
+			sprintf(text, " ");
+			change_text_input_box_text(g.materialWindow, 3, text);
 
-			sprintf(text, "");
-			change_texbox_text(g.materialWindow, 13, text);
+			sprintf(text, " ");
+			change_text_input_box_text(g.materialWindow, 4, text);
 
-			sprintf(text, "");
-			change_texbox_text(g.materialWindow, 15, text);
+			sprintf(text, " ");
+			change_text_input_box_text(g.materialWindow, 5, text);
 
 			break;
 
 		case 3:
 			sprintf(text, "%s", "tint");
-			change_texbox_text(g.materialWindow, 10, text);
+			change_texbox_text(g.materialWindow, 7, text);
 
 			sprintf(text, "%s", "fuzz");
-			change_texbox_text(g.materialWindow, 12, text);
+			change_texbox_text(g.materialWindow, 8, text);
 
 			sprintf(text, "(none)");
-			change_texbox_text(g.materialWindow, 14, text);
+			change_texbox_text(g.materialWindow, 9, text);
 
 			sprintf(text, "%01.2f", g.selectedMaterial.v1);
-			change_texbox_text(g.materialWindow, 11, text);
+			change_text_input_box_text(g.materialWindow, 3, text);
 
 			sprintf(text, "%01.2f", g.selectedMaterial.v2);
-			change_texbox_text(g.materialWindow, 13, text);
+			change_text_input_box_text(g.materialWindow, 4, text);
 
-			sprintf(text, "");
-			change_texbox_text(g.materialWindow, 15, text);
+			sprintf(text, " ");
+			change_text_input_box_text(g.materialWindow, 5, text);
 
 			break;
 
 		case 4:
 			sprintf(text, "%s", "tint");
-			change_texbox_text(g.materialWindow, 10, text);
+			change_texbox_text(g.materialWindow, 7, text);
 
 			sprintf(text, "%s", "fuzz");
-			change_texbox_text(g.materialWindow, 12, text);
+			change_texbox_text(g.materialWindow, 8, text);
 
 			sprintf(text, "%s", "refIdx");
-			change_texbox_text(g.materialWindow, 14, text);
+			change_texbox_text(g.materialWindow, 9, text);
 
 			sprintf(text, "%01.2f", g.selectedMaterial.v1);
-			change_texbox_text(g.materialWindow, 11, text);
+			change_text_input_box_text(g.materialWindow, 3, text);
 
 			sprintf(text, "%01.2f", g.selectedMaterial.v2);
-			change_texbox_text(g.materialWindow, 13, text);
+			change_text_input_box_text(g.materialWindow, 4, text);
 
 			sprintf(text, "%01.2f", g.selectedMaterial.v3);
-			change_texbox_text(g.materialWindow, 15, text);
+			change_text_input_box_text(g.materialWindow, 5, text);
 
 			break;
 	}
@@ -264,7 +310,7 @@ GUIStatus create_ui() {
 	xOff += 20 + 5;
 	add_button(g.materialWindow, xOff, yOff, 20, 20, "-", (void *)_r_minus);
 	xOff += 20 + 5;
-	add_textbox(g.materialWindow, xOff, yOff, "");
+	add_text_input_box(g.materialWindow, xOff, yOff, 40, 20, " ", _set_r);
 	xOff += 40 + 5;
 	add_button(g.materialWindow, xOff, yOff, 20, 20, "+", (void *)_r_plus);
 	yOff += 20 + 5;
@@ -274,7 +320,7 @@ GUIStatus create_ui() {
 	xOff += 20 + 5;
 	add_button(g.materialWindow, xOff, yOff, 20, 20, "-", (void *)_g_minus);
 	xOff += 20 + 5;
-	add_textbox(g.materialWindow, xOff, yOff, "");
+	add_text_input_box(g.materialWindow, xOff, yOff, 40, 20, " ", _set_g);
 	xOff += 40 + 5;
 	add_button(g.materialWindow, xOff, yOff, 20, 20, "+", (void *)_g_plus);
 	yOff += 20 + 5;
@@ -284,7 +330,7 @@ GUIStatus create_ui() {
 	xOff += 20 + 5;
 	add_button(g.materialWindow, xOff, yOff, 20, 20, "-", (void *)_b_minus);
 	xOff += 20 + 5;
-	add_textbox(g.materialWindow, xOff, yOff, "");
+	add_text_input_box(g.materialWindow, xOff, yOff, 40, 20, " ", _set_b);
 	xOff += 40 + 5;
 	add_button(g.materialWindow, xOff, yOff, 20, 20, "+", (void *)_b_plus);
 	yOff += 20 + 5;
@@ -295,7 +341,7 @@ GUIStatus create_ui() {
 	xOff = 0;
 	add_button(g.materialWindow, xOff, yOff, 20, 20, "<", (void *)_mat_minus);
 	xOff += 20 + 5;
-	add_textbox(g.materialWindow, xOff, yOff, "");
+	add_textbox(g.materialWindow, xOff, yOff, " ");
 	xOff += 160 + 5;
 	add_button(g.materialWindow, xOff, yOff, 20, 20, ">", (void *)_mat_plus);
 	yOff += 20 + 5;
@@ -304,31 +350,31 @@ GUIStatus create_ui() {
 	yOff += 20 + 5;
 
 	xOff = 0;
-	add_textbox(g.materialWindow, xOff, yOff, "");
+	add_textbox(g.materialWindow, xOff, yOff, " ");
 	xOff += 120 + 5;
 	add_button(g.materialWindow, xOff, yOff, 20, 20, "-", (void *)_v1_minus);
 	xOff += 20 + 5;
-	add_textbox(g.materialWindow, xOff, yOff, "");
+	add_text_input_box(g.materialWindow, xOff, yOff, 40, 20, " ", _set_v1);
 	xOff += 40 + 5;
 	add_button(g.materialWindow, xOff, yOff, 20, 20, "+", (void *)_v1_plus);
 	yOff += 20 + 5;
 
 	xOff = 0;
-	add_textbox(g.materialWindow, xOff, yOff, "");
+	add_textbox(g.materialWindow, xOff, yOff, " ");
 	xOff += 120 + 5;
 	add_button(g.materialWindow, xOff, yOff, 20, 20, "-", (void *)_v2_minus);
 	xOff += 20 + 5;
-	add_textbox(g.materialWindow, xOff, yOff, "");
+	add_text_input_box(g.materialWindow, xOff, yOff, 40, 20, " ", _set_v2);
 	xOff += 40 + 5;
 	add_button(g.materialWindow, xOff, yOff, 20, 20, "+", (void *)_v2_plus);
 	yOff += 20 + 5;
 
 	xOff = 0;
-	add_textbox(g.materialWindow, xOff, yOff, "");
+	add_textbox(g.materialWindow, xOff, yOff, " ");
 	xOff += 120 + 5;
 	add_button(g.materialWindow, xOff, yOff, 20, 20, "-", (void *)_v3_plus);
 	xOff += 20 + 5;
-	add_textbox(g.materialWindow, xOff, yOff, "");
+	add_text_input_box(g.materialWindow, xOff, yOff, 40, 20, " ", _set_v3);
 	xOff += 40 + 5;
 	add_button(g.materialWindow, xOff, yOff, 20, 20, "+", (void *)_v3_plus);
 	yOff += 20 + 5;

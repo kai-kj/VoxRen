@@ -1,100 +1,30 @@
-# ToDo list
+# to-do list
 
-## Core
+- [ ] GUI
 
-* [ ] Rendering
-  * [x] Better logging
-    * [x] Print newline automatically
-    * [x] Use `msg()` to show detailed info about the status of the program
-    * [x] Implement `dbg()`, `err()`, and `panic()`
-    * [x] Better error checking
-  * [ ] Transparent materials
-  
-* [ ] Basic GUI
-  * [x] Render to SDL window
-  * [x] Keyboard movement
-  * [x] Mouse right drag to change view angle
-  * [ ] Place voxels anywhere on the screen with mouse
-  
-* [ ] Command system (in lua)
+  - [ ] windows
 
-  All scene-related commands (eg: `add_voxel()`, `remo_voxel`, `set_camera_properties`, ...) should be callable from lua.
+    - [ ] editable text boxes
+    - [ ] file IO window
+    - [ ] command window
+    - [ ] show / hide / minimize windows in title bar
+    - [ ] window manager (select which windows to show)
 
-  * [x] Run lua file
+    - [ ] info window
+      - fps
+      - image size
+      - voxels
+      - chunks
 
-  * [x] Implement all basic commands
+  - [ ] non-full screen support 
 
-  * [ ] Integrate command system into the GUI
+- [ ] saving / loading
 
-    * [ ] Use lua for camera movement
+- [ ] headless mode
 
-      Instead of directly calling C functions, call lua functions
+- [ ] ray tracing
 
-      * [ ] Check performance
+  - [ ] transparent material
 
-    * [ ] Command bar
+- [ ] windows support
 
-  * [ ] Add more complicated commands in lua like:
-
-    * [ ] `create_box()`
-    * [ ] `create_box_empty()`
-    * [ ] `create_sphere()`
-    * [ ] `create_sphere_empty`
-    * [ ] 
-
-* [ ] Read write scene to file
-
-* [ ] Better window
-
-  * [ ] Resizeble window
-  * [ ] Fullscreen
-
-* [ ] Other
-  * [ ] Windows support
-
-## Optimization
-
-* [ ] Rendering
-  * [x] Chunks
-
-    Voxel storage format in C and openCL:
-    
-    ```
-    struct Chunk {
-    	cl_int x;
-    	cl_int y;
-    	cl_uint voxelIdx;
-    	cl_uint voxelCount;
-    }
-    
-    
-    ```
-
-    New `add_voxel()` function:
-    
-    ```
-    
-    add_voxel() {
-    	voxel = create_voxel()
-    
-    	chunk = get_chunk_for_voxel()
-    
-    	if not chunk_exists(chunk) {
-    		add_chunk(chunk)
-    	}
-    
-    	add_voxel_to_chunk(chunk, voxel)
-    }
-    
-    add_voxel_to_chunk() {
-    	
-    }
-    
-    
-    ```
-    
-  * [ ] Use unsigned values where possible
-  
-  * [ ] Use pointers for almost everything
-* [ ] GUI
-  * [x] Only update renderer surface when it changes

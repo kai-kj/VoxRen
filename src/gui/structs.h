@@ -15,7 +15,7 @@ typedef struct Button {
 	int y;
 	int width;
 	int height;
-	void *(*fn)();
+	void (*fn)();
 	char *text;
 
 	int hover;
@@ -30,6 +30,19 @@ typedef struct ColoredBox {
 
 	Color color;
 } ColoredBox;
+
+typedef struct TextInputBox {
+	int x;
+	int y;
+	int width;
+	int height;
+
+	char *text;
+	void (*fn)(char *);
+
+	int editing;
+
+} TextInputBox;
 
 typedef struct Window {
 	int id;
@@ -50,6 +63,9 @@ typedef struct Window {
 
 	int coloredBoxCount;
 	ColoredBox *coloredBoxes;
+
+	int textInputBoxCount;
+	TextInputBox *textInputBoxes;
 
 } Window;
 
@@ -97,6 +113,8 @@ typedef struct GUIState {
 
 	int infoWindow;
 	int materialWindow;
+
+	int editingTextBox;
 
 	VoxMaterial selectedMaterial;
 

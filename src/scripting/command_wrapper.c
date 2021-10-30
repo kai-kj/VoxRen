@@ -215,7 +215,7 @@ int l_create_dielectric_material(lua_State *l) {
 	return 1;
 }
 
-ScriptStatus load_functions(lua_State *l) {
+Status load_functions(lua_State *l) {
 	lua_pushcfunction(l, l_set_output_properties);
 	lua_setglobal(l, "outputProperties");
 
@@ -246,5 +246,5 @@ ScriptStatus load_functions(lua_State *l) {
 	lua_pushcfunction(l, l_create_dielectric_material);
 	lua_setglobal(l, "glassMaterial");
 
-	return SCRIPTING_SUCCESS;
+	return SUCCESS;
 }

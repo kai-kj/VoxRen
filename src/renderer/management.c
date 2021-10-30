@@ -26,179 +26,181 @@ static k_Image *_CLImage_to_k_Image(CLImage clImage) {
 }
 
 static void _setup_renderer_args() {
-	int imageSize = r.image.size.x * r.image.size.y;
+	int imageSize = ren.image.size.x * ren.image.size.y;
 
-	cl_destroy_buffer(r.program.imageBuff);
-	r.program.imageBuff = cl_create_buffer(r.program.context, sizeof(cl_float3) * imageSize, CL_MEM_READ_WRITE);
+	cl_destroy_buffer(ren.program.imageBuff);
+	ren.program.imageBuff = cl_create_buffer(ren.program.context, sizeof(cl_float3) * imageSize, CL_MEM_READ_WRITE);
 
-	cl_destroy_buffer(r.program.voxelBuff);
-	r.program.voxelBuff = cl_create_buffer(r.program.context, sizeof(Voxel) * r.scene.voxelCount, CL_MEM_READ_ONLY);
-	clEnqueueWriteBuffer(r.program.queue, r.program.voxelBuff, CL_TRUE, 0, sizeof(Voxel) * r.scene.voxelCount,
-						 r.scene.voxels, 0, NULL, NULL);
+	cl_destroy_buffer(ren.program.voxelBuff);
+	ren.program.voxelBuff =
+		cl_create_buffer(ren.program.context, sizeof(Voxel) * ren.scene.voxelCount, CL_MEM_READ_ONLY);
+	clEnqueueWriteBuffer(ren.program.queue, ren.program.voxelBuff, CL_TRUE, 0, sizeof(Voxel) * ren.scene.voxelCount,
+						 ren.scene.voxels, 0, NULL, NULL);
 
-	cl_destroy_buffer(r.program.chunkBuff);
-	r.program.chunkBuff = cl_create_buffer(r.program.context, sizeof(Chunk) * r.scene.chunkCount, CL_MEM_READ_ONLY);
-	clEnqueueWriteBuffer(r.program.queue, r.program.chunkBuff, CL_TRUE, 0, sizeof(Chunk) * r.scene.chunkCount,
-						 r.scene.chunks, 0, NULL, NULL);
+	cl_destroy_buffer(ren.program.chunkBuff);
+	ren.program.chunkBuff =
+		cl_create_buffer(ren.program.context, sizeof(Chunk) * ren.scene.chunkCount, CL_MEM_READ_ONLY);
+	clEnqueueWriteBuffer(ren.program.queue, ren.program.chunkBuff, CL_TRUE, 0, sizeof(Chunk) * ren.scene.chunkCount,
+						 ren.scene.chunks, 0, NULL, NULL);
 
-	cl_set_kernel_arg(r.program.kernel, 0, sizeof(cl_int2), &r.image.size);
-	cl_set_kernel_arg(r.program.kernel, 1, sizeof(cl_mem), &r.program.imageBuff);
-	cl_set_kernel_arg(r.program.kernel, 2, sizeof(cl_int), &r.scene.voxelCount);
-	cl_set_kernel_arg(r.program.kernel, 3, sizeof(cl_mem), &r.program.voxelBuff);
-	cl_set_kernel_arg(r.program.kernel, 4, sizeof(cl_int), &r.scene.chunkSize);
-	cl_set_kernel_arg(r.program.kernel, 5, sizeof(cl_int), &r.scene.chunkCount);
-	cl_set_kernel_arg(r.program.kernel, 6, sizeof(cl_mem), &r.program.chunkBuff);
-	cl_set_kernel_arg(r.program.kernel, 7, sizeof(cl_float3), &r.scene.bgColor);
-	cl_set_kernel_arg(r.program.kernel, 8, sizeof(cl_float3), &r.scene.bgBrightness);
-	cl_set_kernel_arg(r.program.kernel, 9, sizeof(VoxCamera), &r.camera);
+	cl_set_kernel_arg(ren.program.kernel, 0, sizeof(cl_int2), &ren.image.size);
+	cl_set_kernel_arg(ren.program.kernel, 1, sizeof(cl_mem), &ren.program.imageBuff);
+	cl_set_kernel_arg(ren.program.kernel, 2, sizeof(cl_int), &ren.scene.voxelCount);
+	cl_set_kernel_arg(ren.program.kernel, 3, sizeof(cl_mem), &ren.program.voxelBuff);
+	cl_set_kernel_arg(ren.program.kernel, 4, sizeof(cl_int), &ren.scene.chunkSize);
+	cl_set_kernel_arg(ren.program.kernel, 5, sizeof(cl_int), &ren.scene.chunkCount);
+	cl_set_kernel_arg(ren.program.kernel, 6, sizeof(cl_mem), &ren.program.chunkBuff);
+	cl_set_kernel_arg(ren.program.kernel, 7, sizeof(cl_float3), &ren.scene.bgColor);
+	cl_set_kernel_arg(ren.program.kernel, 8, sizeof(cl_float3), &ren.scene.bgBrightness);
+	cl_set_kernel_arg(ren.program.kernel, 9, sizeof(VoxCamera), &ren.camera);
 }
 
-static RendererStatus _render_frame(int sampleNumber) {
+static Status _render_frame(int sampleNumber) {
 	cl_ulong seed = rand();
 
 	// non-constant arguments
-	cl_int3 lookingAt[3] = {r.lookingAtPos, r.lookingAtNormal, (cl_int3){r.mousePos.x, r.mousePos.y, 0}};
+	cl_int3 lookingAt[3] = {ren.lookingAtPos, ren.lookingAtNormal, (cl_int3){ren.mousePos.x, ren.mousePos.y, 0}};
 
-	cl_destroy_buffer(r.program.lookingAtBuff);
-	r.program.lookingAtBuff = cl_create_buffer(r.program.context, sizeof(cl_int3) * 3, CL_MEM_READ_WRITE);
-	clEnqueueWriteBuffer(r.program.queue, r.program.lookingAtBuff, CL_TRUE, 0, sizeof(cl_int3) * 3, lookingAt, 0, NULL,
-						 NULL);
+	cl_destroy_buffer(ren.program.lookingAtBuff);
+	ren.program.lookingAtBuff = cl_create_buffer(ren.program.context, sizeof(cl_int3) * 3, CL_MEM_READ_WRITE);
+	clEnqueueWriteBuffer(ren.program.queue, ren.program.lookingAtBuff, CL_TRUE, 0, sizeof(cl_int3) * 3, lookingAt, 0,
+						 NULL, NULL);
 
-	cl_set_kernel_arg(r.program.kernel, 10, sizeof(cl_mem), &r.program.lookingAtBuff);
-	cl_set_kernel_arg(r.program.kernel, 11, sizeof(cl_int), &sampleNumber);
-	cl_set_kernel_arg(r.program.kernel, 12, sizeof(cl_ulong), &seed);
+	cl_set_kernel_arg(ren.program.kernel, 10, sizeof(cl_mem), &ren.program.lookingAtBuff);
+	cl_set_kernel_arg(ren.program.kernel, 11, sizeof(cl_int), &sampleNumber);
+	cl_set_kernel_arg(ren.program.kernel, 12, sizeof(cl_ulong), &seed);
 
-	cl_int ret = cl_run_kernel(r.program.queue, r.program.kernel, r.image.size.x * r.image.size.y);
+	cl_int ret = cl_run_kernel(ren.program.queue, ren.program.kernel, ren.image.size.x * ren.image.size.y);
 
 	if (ret != CL_SUCCESS) {
 		cl_print_kernel_run_error(ret);
-		return RENDERER_FAILURE;
+		return FAILURE;
 	}
 
-	cl_read_buffer(r.program.queue, r.program.imageBuff, 0, sizeof(cl_float3) * r.image.size.x * r.image.size.y,
-				   r.image.data);
+	cl_read_buffer(ren.program.queue, ren.program.imageBuff, 0, sizeof(cl_float3) * ren.image.size.x * ren.image.size.y,
+				   ren.image.data);
 
 	cl_int3 data[3];
-	cl_read_buffer(r.program.queue, r.program.lookingAtBuff, 0, sizeof(cl_int3) * 3, data);
+	cl_read_buffer(ren.program.queue, ren.program.lookingAtBuff, 0, sizeof(cl_int3) * 3, data);
 
-	r.lookingAtPos = data[0];
-	r.lookingAtNormal = data[1];
+	ren.lookingAtPos = data[0];
+	ren.lookingAtNormal = data[1];
 
 	double currentTime = get_time();
-	r.dt = currentTime - r.prevTime;
-	r.prevTime = currentTime;
+	ren.dt = currentTime - ren.prevTime;
+	ren.prevTime = currentTime;
 
-	clFinish(r.program.queue);
+	clFinish(ren.program.queue);
 
-	return RENDERER_SUCCESS;
+	return SUCCESS;
 }
 
 static void *_start_renderer_loop() {
-	r.restartRender = 1;
+	ren.restartRender = 1;
 
 	int i;
-	while (!r.stopRender) {
-		if (r.restartRender) {
-			r.restartRender = 0;
-			r.readFirstFrame = 0;
+	while (!ren.stopRender) {
+		if (ren.restartRender) {
+			ren.restartRender = 0;
+			ren.readFirstFrame = 0;
 			i = 0;
 			_setup_renderer_args();
 		}
 
-		if (_render_frame(i) == RENDERER_FAILURE) panic("Failed to run kernel");
+		if (_render_frame(i) == FAILURE) panic("Failed to run kernel");
 
 		i++;
 	}
 
-	r.stopRender = 0;
+	ren.stopRender = 0;
 	pthread_exit(NULL);
 }
 
-RendererStatus create_renderer() {
+Status create_renderer() {
 	msg("creating renderer");
 
 	srand(time(NULL));
 
-	r.scene.voxelCount = 0;
-	r.scene.chunkCount = 0;
-	r.program.voxelBuff = NULL;
-	r.program.imageBuff = NULL;
-	r.scene.voxels = NULL;
-	r.scene.chunks = NULL;
+	ren.scene.voxelCount = 0;
+	ren.scene.chunkCount = 0;
+	ren.program.voxelBuff = NULL;
+	ren.program.imageBuff = NULL;
+	ren.scene.voxels = NULL;
+	ren.scene.chunks = NULL;
 
-	r.scene.chunkSize = CHUNK_SIZE;
+	ren.scene.chunkSize = CHUNK_SIZE;
 
-	r.camera = (VoxCamera){.sensorWidth = 1, .focalLength = 1, .aperture = 1, .exposure = 1};
+	ren.camera = (VoxCamera){.sensorWidth = 1, .focalLength = 1, .aperture = 1, .exposure = 1};
 
 	// TODO: check platform count
 	cl_uint platformNum;
-	clGetPlatformIDs(1, &r.program.platform, &platformNum);
+	clGetPlatformIDs(1, &ren.program.platform, &platformNum);
 	cl_uint deviceNum;
-	clGetDeviceIDs(r.program.platform, CL_DEVICE_TYPE_GPU, 2, &r.program.device, &deviceNum);
+	clGetDeviceIDs(ren.program.platform, CL_DEVICE_TYPE_GPU, 2, &ren.program.device, &deviceNum);
 
-	r.program.context = clCreateContext(0, 1, &r.program.device, NULL, NULL, NULL);
-	r.program.queue = clCreateCommandQueueWithProperties(r.program.context, r.program.device, 0, NULL);
+	ren.program.context = clCreateContext(0, 1, &ren.program.device, NULL, NULL, NULL);
+	ren.program.queue = clCreateCommandQueueWithProperties(ren.program.context, ren.program.device, 0, NULL);
 
 	char *source = read_file(FILE_NAME);
 
 	if (source == NULL) {
 		cl_print_source_read_error();
 		destroy_renderer();
-		return RENDERER_FAILURE;
+		return FAILURE;
 	}
 
-	r.program.program = clCreateProgramWithSource(r.program.context, 1, (const char **)&source, NULL, NULL);
+	ren.program.program = clCreateProgramWithSource(ren.program.context, 1, (const char **)&source, NULL, NULL);
 
 	free(source);
 
-	if (clBuildProgram(r.program.program, 0, NULL, ARGS, NULL, NULL) != CL_SUCCESS) {
-		cl_print_program_build_error(r.program.device, r.program.program);
+	if (clBuildProgram(ren.program.program, 0, NULL, ARGS, NULL, NULL) != CL_SUCCESS) {
+		cl_print_program_build_error(ren.program.device, ren.program.program);
 		destroy_renderer();
-		return RENDERER_FAILURE;
+		return FAILURE;
 	}
 
-	r.program.kernel = clCreateKernel(r.program.program, KERNEL_NAME, NULL);
+	ren.program.kernel = clCreateKernel(ren.program.program, KERNEL_NAME, NULL);
 
-	return RENDERER_SUCCESS;
+	return SUCCESS;
 }
 
-RendererStatus destroy_renderer() {
+Status destroy_renderer() {
 	msg("Destroying renderer");
 
-	safe_free(r.scene.voxels);
-	safe_free(r.image.data);
-	cl_destroy_buffer(r.program.voxelBuff);
-	cl_destroy_buffer(r.program.imageBuff);
-	cl_destroy_buffer(r.program.chunkBuff);
-	cl_destroy_buffer(r.program.lookingAtBuff);
-	clReleaseProgram(r.program.program);
-	clReleaseKernel(r.program.kernel);
-	clReleaseContext(r.program.context);
+	safe_free(ren.scene.voxels);
+	safe_free(ren.image.data);
+	cl_destroy_buffer(ren.program.voxelBuff);
+	cl_destroy_buffer(ren.program.imageBuff);
+	cl_destroy_buffer(ren.program.chunkBuff);
+	cl_destroy_buffer(ren.program.lookingAtBuff);
+	clReleaseProgram(ren.program.program);
+	clReleaseKernel(ren.program.kernel);
+	clReleaseContext(ren.program.context);
 
-	return RENDERER_SUCCESS;
+	return SUCCESS;
 }
 
-RendererStatus begin_rendering() {
+Status begin_rendering() {
 	msg("Starting render");
 
-	r.restartRender = 1;
-	r.stopRender = 0;
+	ren.restartRender = 1;
+	ren.stopRender = 0;
 
 	pthread_t thread;
 	pthread_create(&thread, NULL, _start_renderer_loop, NULL);
 
-	return RENDERER_SUCCESS;
+	return SUCCESS;
 }
 
-RendererStatus end_rendering() {
+Status end_rendering() {
 	msg("Stopping render");
 
-	r.stopRender = 1;
-	return RENDERER_SUCCESS;
+	ren.stopRender = 1;
+	return SUCCESS;
 }
 
 k_Image *get_image() {
-	k_Image *image = _CLImage_to_k_Image(r.image);
+	k_Image *image = _CLImage_to_k_Image(ren.image);
 	k_gamma_correct_image(image);
 	return image;
 }

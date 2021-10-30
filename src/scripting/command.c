@@ -1,30 +1,30 @@
 #include "scripting.h"
 
-ScriptStatus init_command_interpreter() {
+Status init_command_interpreter() {
 	msg("Initialising script lua state");
-	c.cl = luaL_newstate();
-	luaL_openlibs(c.cl);
-	load_functions(c.cl);
+	scrp.cl = luaL_newstate();
+	luaL_openlibs(scrp.cl);
+	load_functions(scrp.cl);
 
-	return SCRIPTING_SUCCESS;
+	return SUCCESS;
 }
 
-ScriptStatus close_command_interpreter() {
+Status close_command_interpreter() {
 	msg("Closing command lua state");
-	lua_close(c.cl);
+	lua_close(scrp.cl);
 
-	return SCRIPTING_SUCCESS;
+	return SUCCESS;
 }
 
-ScriptStatus run_command(char *command) {
+Status run_command(char *command) {
 	msg("Running command \"%s\"", command);
 
-	if (luaL_dostring(c.cl, command) != LUA_OK) {
-		err("%s\n", lua_tostring(c.cl, -1));
-		return SCRIPTING_FAILURE;
+	if (luaL_dostring(scrp.cl, command) != LUA_OK) {
+		err("%s\n", lua_tostring(scrp.cl, -1));
+		return FAILURE;
 	}
 
-	r.restartRender = 1;
+	ren.restartRender = 1;
 
-	return SCRIPTING_SUCCESS;
+	return SUCCESS;
 }

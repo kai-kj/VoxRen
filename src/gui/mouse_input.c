@@ -2,62 +2,62 @@
 
 static void _fps_mode() {
 	if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-		add_voxel_at_mouse(g.selectedMaterial);
-		r.restartRender = 1;
+		add_voxel_at_mouse(gui.selectedMaterial);
+		ren.restartRender = 1;
 	}
 
 	if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
 		remove_voxel_at_mouse();
-		r.restartRender = 1;
+		ren.restartRender = 1;
 	}
 
 	if (IsMouseButtonPressed(MOUSE_MIDDLE_BUTTON)) {
 		VoxMaterial *material = get_material_at_mouse();
-		if (material != NULL) g.selectedMaterial = *material;
+		if (material != NULL) gui.selectedMaterial = *material;
 	}
 
-	if (g.mousePosX != g.prevMousePosX || g.mousePosY != g.prevMousePosY) {
-		int deltaX = g.mousePosX - g.prevMousePosX;
-		int deltaY = g.mousePosY - g.prevMousePosY;
+	if (gui.comp.mousePosX != gui.comp.prevMousePosX || gui.comp.mousePosY != gui.comp.prevMousePosY) {
+		int deltaX = gui.comp.mousePosX - gui.comp.prevMousePosX;
+		int deltaY = gui.comp.mousePosY - gui.comp.prevMousePosY;
 
-		r.camera.rot.x -= deltaX * TURN_SPEED * GetFrameTime();
-		r.camera.rot.y -= deltaY * TURN_SPEED * GetFrameTime();
+		ren.camera.rot.x -= deltaX * TURN_SPEED * GetFrameTime();
+		ren.camera.rot.y -= deltaY * TURN_SPEED * GetFrameTime();
 
-		r.restartRender = 1;
+		ren.restartRender = 1;
 	}
 
-	g.renderMousePosX = r.image.size.x / 2;
-	g.renderMousePosY = r.image.size.y / 2;
+	gui.renderMousePosX = ren.image.size.x / 2;
+	gui.renderMousePosY = ren.image.size.y / 2;
 }
 
 static void _editor_mode() {
 	if (!mouse_on_window()) {
 		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-			add_voxel_at_mouse(g.selectedMaterial);
-			r.restartRender = 1;
+			add_voxel_at_mouse(gui.selectedMaterial);
+			ren.restartRender = 1;
 		}
 
 		if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
 			remove_voxel_at_mouse();
-			r.restartRender = 1;
+			ren.restartRender = 1;
 		}
 
 		if (IsMouseButtonPressed(MOUSE_MIDDLE_BUTTON)) {
 			VoxMaterial *material = get_material_at_mouse();
-			if (material != NULL) g.selectedMaterial = *material;
+			if (material != NULL) gui.selectedMaterial = *material;
 		}
 	}
 
-	float scale = min(GetScreenWidth() / r.image.size.x, GetScreenHeight() / r.image.size.y);
-	g.renderMousePosX = (g.mousePosX - (GetScreenWidth() - r.image.size.x * scale) / 2) / scale;
-	g.renderMousePosY = (g.mousePosY - (GetScreenHeight() - r.image.size.y * scale) / 2) / scale;
+	float scale = min(GetScreenWidth() / ren.image.size.x, GetScreenHeight() / ren.image.size.y);
+	gui.renderMousePosX = (gui.comp.mousePosX - (GetScreenWidth() - ren.image.size.x * scale) / 2) / scale;
+	gui.renderMousePosY = (gui.comp.mousePosY - (GetScreenHeight() - ren.image.size.y * scale) / 2) / scale;
 }
 
 static void _text_input_mode() {
 }
 
-GUIStatus procces_mouse_input() {
-	switch (g.state) {
+Status procces_mouse_input() {
+	switch (gui.state) {
 		case 0:
 			_fps_mode();
 			break;
@@ -71,7 +71,7 @@ GUIStatus procces_mouse_input() {
 			break;
 	}
 
-	set_mouse_pos(g.renderMousePosX, g.renderMousePosY);
+	set_mouse_pos(gui.renderMousePosX, gui.renderMousePosY);
 
-	return GUI_SUCCESS;
+	return SUCCESS;
 }

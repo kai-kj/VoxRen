@@ -2,52 +2,52 @@
 
 //---- private ---------------------------------------------------------------//
 
-static ScriptStatus _load_script(char *fileName) {
+static Status _load_script(char *fileName) {
 	msg("Initialising script lua state");
-	c.sl = luaL_newstate();
-	luaL_openlibs(c.sl);
+	scrp.sl = luaL_newstate();
+	luaL_openlibs(scrp.sl);
 
-	load_functions(c.sl);
+	load_functions(scrp.sl);
 
 	msg("Loading script file \"%s\"", fileName);
 
-	if (luaL_loadfile(c.sl, fileName) != LUA_OK) {
-		err("%s\n", lua_tostring(c.sl, -1));
-		return SCRIPTING_FAILURE;
+	if (luaL_loadfile(scrp.sl, fileName) != LUA_OK) {
+		err("%s\n", lua_tostring(scrp.sl, -1));
+		return FAILURE;
 	}
 
-	if (lua_pcall(c.sl, 0, 0, 0) != LUA_OK) {
-		err("%s\n", lua_tostring(c.sl, -1));
-		return SCRIPTING_FAILURE;
+	if (lua_pcall(scrp.sl, 0, 0, 0) != LUA_OK) {
+		err("%s\n", lua_tostring(scrp.sl, -1));
+		return FAILURE;
 	}
 
-	return SCRIPTING_SUCCESS;
+	return SUCCESS;
 }
 
-static ScriptStatus _run_script(char *functionName) {
+static Status _run_script(char *functionName) {
 	msg("Running script function \"%s\"", functionName);
 
-	lua_getglobal(c.sl, functionName);
+	lua_getglobal(scrp.sl, functionName);
 
-	if (lua_pcall(c.sl, 0, 0, 0) != LUA_OK) {
-		err("%s\n", lua_tostring(c.sl, -1));
-		return SCRIPTING_FAILURE;
+	if (lua_pcall(scrp.sl, 0, 0, 0) != LUA_OK) {
+		err("%s\n", lua_tostring(scrp.sl, -1));
+		return FAILURE;
 	}
 
-	return SCRIPTING_SUCCESS;
+	return SUCCESS;
 }
 
 static void _destroy_script() {
 	msg("Closing script lua state");
-	lua_close(c.sl);
+	lua_close(scrp.sl);
 }
 
 //---- public ----------------------------------------------------------------//
 
-ScriptStatus run_script(char *fileName, char *functionName) {
-	if (_load_script(fileName) != SCRIPTING_SUCCESS) return SCRIPTING_FAILURE;
-	if (_run_script(functionName) != SCRIPTING_SUCCESS) return SCRIPTING_FAILURE;
+Status run_script(char *fileName, char *functionName) {
+	if (_load_script(fileName) != SUCCESS) return FAILURE;
+	if (_run_script(functionName) != SUCCESS) return FAILURE;
 	_destroy_script();
 
-	return SCRIPTING_SUCCESS;
+	return SUCCESS;
 }

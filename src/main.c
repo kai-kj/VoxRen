@@ -15,9 +15,9 @@
 #define SCREEN_HEIGHT 600
 
 int main(void) {
-	if (create_renderer() != RENDERER_SUCCESS) exit(-1);
-	if (init_command_interpreter() != RENDERER_SUCCESS) exit(-1);
-	if (run_script("data/scripts/main.lua", "Main") != SCRIPTING_SUCCESS) exit(-1);
+	if (create_renderer() != SUCCESS) exit(-1);
+	if (init_command_interpreter() != SUCCESS) exit(-1);
+	if (run_script("data/scripts/main.lua", "Main") != SUCCESS) exit(-1);
 
 	create_window();
 	start_main_loop();

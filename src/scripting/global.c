@@ -1,3 +1,3 @@
 #include "scripting.h"
 
-ScriptState c;
+ScriptState scrp;

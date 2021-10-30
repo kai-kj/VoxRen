@@ -1,3 +1,3 @@
 #include "renderer.h"
 
-Renderer r;
+Renderer ren;

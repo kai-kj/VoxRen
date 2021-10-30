@@ -1,3 +1,3 @@
 #include "gui.h"
 
-GUIState g;
+GUIState gui;

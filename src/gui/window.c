@@ -32,8 +32,10 @@ void _ray_log(int msgType, const char *text, va_list args) {
 #endif
 }
 
-GUIStatus create_window() {
+Status create_window() {
 	msg("Creating window");
+
+	set_comp_address(&gui.comp);
 
 	SetTraceLogCallback(_ray_log);
 	InitWindow(GetScreenWidth(), GetScreenWidth(), "VoxRen");
@@ -41,36 +43,36 @@ GUIStatus create_window() {
 
 	if (!IsWindowFullscreen()) ToggleFullscreen();
 
-	Image tmpImg = GenImageColor(r.image.size.x, r.image.size.x, BLACK);
-	g.renderTexture = LoadTextureFromImage(tmpImg);
+	Image tmpImg = GenImageColor(ren.image.size.x, ren.image.size.x, BLACK);
+	gui.renderTexture = LoadTextureFromImage(tmpImg);
 	UnloadImage(tmpImg);
 
-	g.commandLength = 1;
-	g.command = '\0';
-	g.windowIDs = 0;
-	g.windowCount = 0;
-	g.windows = NULL;
-	g.state = 1;
+	gui.commandLength = 1;
+	gui.command = '\0';
+	gui.windowIDs = 0;
+	gui.windowCount = 0;
+	gui.windows = NULL;
+	gui.state = 1;
 
-	g.settings.fontSize = 20;
-	g.settings.fontColor = BLACK;
-	g.settings.windowTitleSize = 30;
-	g.settings.windowColor = LIGHTGRAY;
-	g.settings.windowTitleColor = GRAY;
-	g.settings.borderSize = 4;
-	g.settings.borderColor = BLACK;
-	g.settings.buttonColor = GRAY;
-	g.settings.buttonBorderColor = DARKGRAY;
+	gui.comp.fontSize = 20;
+	gui.comp.fontColor = BLACK;
+	gui.comp.windowTitleSize = 30;
+	gui.comp.windowColor = LIGHTGRAY;
+	gui.comp.windowTitleColor = GRAY;
+	gui.comp.borderSize = 4;
+	gui.comp.borderColor = BLACK;
+	gui.comp.buttonColor = GRAY;
+	gui.comp.buttonBorderColor = DARKGRAY;
 
-	g.selectedMaterial = (VoxMaterial){2, (cl_float3){0.5, 0.5, 0.5}, 0, 0, 0};
+	gui.selectedMaterial = (VoxMaterial){2, (cl_float3){0.5, 0.5, 0.5}, 0, 0, 0};
 
 	create_ui();
 
-	return GUI_SUCCESS;
+	return SUCCESS;
 }
 
-GUIStatus close_window() {
+Status close_window() {
 	msg("Closing window");
 	CloseWindow();
-	return GUI_SUCCESS;
+	return SUCCESS;
 }

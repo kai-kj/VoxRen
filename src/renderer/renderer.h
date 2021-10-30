@@ -10,43 +10,40 @@
 #include <string.h>
 #include <time.h>
 
+#include "status.h"
 #include "structs.h"
 
-typedef char RendererStatus;
-#define RENDERER_SUCCESS 0
-#define RENDERER_FAILURE -1
-
-extern Renderer r;
+extern Renderer ren;
 
 //--------------------------------------------------------------------------------------------------------------------//
 // management                                                                                                         //
 //--------------------------------------------------------------------------------------------------------------------//
 
-RendererStatus create_renderer();
-RendererStatus destroy_renderer();
-RendererStatus begin_rendering();
-RendererStatus end_rendering();
+Status create_renderer();
+Status destroy_renderer();
+Status begin_rendering();
+Status end_rendering();
 k_Image *get_image();
 
 //--------------------------------------------------------------------------------------------------------------------//
 // scene                                                                                                              //
 //--------------------------------------------------------------------------------------------------------------------//
 
-RendererStatus set_output_properties(int width, int height);
-RendererStatus set_background_properties(float red, float green, float blue, float brightness);
-RendererStatus add_voxel(int x, int y, int z, VoxMaterial material);
-RendererStatus remove_voxel(int x, int y, int z);
+Status set_output_properties(int width, int height);
+Status set_background_properties(float red, float green, float blue, float brightness);
+Status add_voxel(int x, int y, int z, VoxMaterial material);
+Status remove_voxel(int x, int y, int z);
 
 //--------------------------------------------------------------------------------------------------------------------//
 // camera                                                                                                             //
 //--------------------------------------------------------------------------------------------------------------------//
 
-RendererStatus set_camera_properties(float sensorWidth, float focalLength, float aperture, float exposure);
-RendererStatus set_camera_pos(float x, float y, float z, float rx, float ry);
-RendererStatus set_mouse_pos(int x, int y);
+Status set_camera_properties(float sensorWidth, float focalLength, float aperture, float exposure);
+Status set_camera_pos(float x, float y, float z, float rx, float ry);
+Status set_mouse_pos(int x, int y);
 VoxMaterial *get_material_at_mouse();
-RendererStatus add_voxel_at_mouse(VoxMaterial material);
-RendererStatus remove_voxel_at_mouse();
+Status add_voxel_at_mouse(VoxMaterial material);
+Status remove_voxel_at_mouse();
 
 //--------------------------------------------------------------------------------------------------------------------//
 // materials                                                                                                          //

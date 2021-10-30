@@ -4,7 +4,7 @@
 
   - [ ] windows
 
-    - [ ] editable text boxes
+    - [x] editable text boxes
     - [ ] file IO window
     - [ ] command window
     - [ ] show / hide / minimize windows in title bar

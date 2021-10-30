@@ -1,8 +1,8 @@
 #include "renderer.h"
 
 static int _voxel_exists(int x, int y, int z) {
-	for (int i = 0; i < r.scene.voxelCount; i++) {
-		Voxel voxel = r.scene.voxels[i];
+	for (int i = 0; i < ren.scene.voxelCount; i++) {
+		Voxel voxel = ren.scene.voxels[i];
 		if (voxel.pos.x == x && voxel.pos.y == y && voxel.pos.z == z) return 1;
 	}
 
@@ -10,8 +10,8 @@ static int _voxel_exists(int x, int y, int z) {
 }
 
 static int _get_voxel_idx(int x, int y, int z) {
-	for (int i = 0; i < r.scene.voxelCount; i++) {
-		Voxel voxel = r.scene.voxels[i];
+	for (int i = 0; i < ren.scene.voxelCount; i++) {
+		Voxel voxel = ren.scene.voxels[i];
 		if (voxel.pos.x == x && voxel.pos.y == y && voxel.pos.z == z) return i;
 	}
 
@@ -23,26 +23,26 @@ static void _remove_voxel(int x, int y, int z) {
 
 	if (idx == -1) return;
 
-	r.scene.voxelCount--;
+	ren.scene.voxelCount--;
 
-	for (int i = idx; i < r.scene.voxelCount; i++)
-		r.scene.voxels[i] = r.scene.voxels[i + 1];
+	for (int i = idx; i < ren.scene.voxelCount; i++)
+		ren.scene.voxels[i] = ren.scene.voxels[i + 1];
 
-	r.scene.voxels = realloc(r.scene.voxels, sizeof(Voxel) * r.scene.voxelCount);
+	ren.scene.voxels = realloc(ren.scene.voxels, sizeof(Voxel) * ren.scene.voxelCount);
 }
 
 static void _get_chunk_pos(int vx, int vy, int vz, int *cx, int *cy, int *cz) {
-	*cx = vx / r.scene.chunkSize;
-	*cy = vy / r.scene.chunkSize;
-	*cz = vz / r.scene.chunkSize;
+	*cx = vx / ren.scene.chunkSize;
+	*cy = vy / ren.scene.chunkSize;
+	*cz = vz / ren.scene.chunkSize;
 }
 
 static int _get_chunk_idx_from_vector(int vx, int vy, int vz) {
 	int cx, cy, cz;
 	_get_chunk_pos(vx, vy, vz, &cx, &cy, &cz);
 
-	for (int i = 0; i < r.scene.chunkCount; i++) {
-		Chunk chunk = r.scene.chunks[i];
+	for (int i = 0; i < ren.scene.chunkCount; i++) {
+		Chunk chunk = ren.scene.chunks[i];
 		if (chunk.pos.x == cx && chunk.pos.y == cy && chunk.pos.z == cz) return i;
 	}
 
@@ -50,8 +50,8 @@ static int _get_chunk_idx_from_vector(int vx, int vy, int vz) {
 }
 
 static int _get_chunk_idx(int x, int y, int z) {
-	for (int i = 0; i < r.scene.chunkCount; i++) {
-		Chunk chunk = r.scene.chunks[i];
+	for (int i = 0; i < ren.scene.chunkCount; i++) {
+		Chunk chunk = ren.scene.chunks[i];
 		if (chunk.pos.x == x && chunk.pos.y == y && chunk.pos.z == z) return i;
 	}
 
@@ -59,8 +59,8 @@ static int _get_chunk_idx(int x, int y, int z) {
 }
 
 static int _chunk_exists(int x, int y, int z) {
-	for (int i = 0; i < r.scene.chunkCount; i++) {
-		Chunk chunk = r.scene.chunks[i];
+	for (int i = 0; i < ren.scene.chunkCount; i++) {
+		Chunk chunk = ren.scene.chunks[i];
 		if (chunk.pos.x == x && chunk.pos.y == y && chunk.pos.z == z) return 1;
 	}
 
@@ -68,65 +68,65 @@ static int _chunk_exists(int x, int y, int z) {
 }
 
 static void _create_chunk(int x, int y, int z) {
-	// dbg("new chunk (%d, %d, %d), total: %d", x, y, z, r.scene.chunkCount + 1);
-	Chunk chunk = (Chunk){(cl_int3){.x = x, .y = y, .z = z}, r.scene.voxelCount, 0};
+	// dbg("new chunk (%d, %d, %d), total: %d", x, y, z, ren.scene.chunkCount + 1);
+	Chunk chunk = (Chunk){(cl_int3){.x = x, .y = y, .z = z}, ren.scene.voxelCount, 0};
 
-	r.scene.chunkCount++;
-	r.scene.chunks = realloc(r.scene.chunks, r.scene.chunkCount * sizeof(Chunk));
+	ren.scene.chunkCount++;
+	ren.scene.chunks = realloc(ren.scene.chunks, ren.scene.chunkCount * sizeof(Chunk));
 
-	r.scene.chunks[r.scene.chunkCount - 1] = chunk;
+	ren.scene.chunks[ren.scene.chunkCount - 1] = chunk;
 }
 
 static void _remove_chunk(int x, int y, int z) {
-	// dbg("removing chunk (%d, %d, %d), total: %d", x, y, z, r.scene.chunkCount - 1);
+	// dbg("removing chunk (%d, %d, %d), total: %d", x, y, z, ren.scene.chunkCount - 1);
 
 	int idx = _get_chunk_idx(x, y, z);
 
 	if (idx == -1) return;
 
-	r.scene.chunkCount--;
+	ren.scene.chunkCount--;
 
-	for (int i = idx; i < r.scene.chunkCount; i++) {
-		r.scene.chunks[i] = r.scene.chunks[i + 1];
+	for (int i = idx; i < ren.scene.chunkCount; i++) {
+		ren.scene.chunks[i] = ren.scene.chunks[i + 1];
 	}
 
-	r.scene.chunks = realloc(r.scene.chunks, sizeof(Chunk) * r.scene.chunkCount);
+	ren.scene.chunks = realloc(ren.scene.chunks, sizeof(Chunk) * ren.scene.chunkCount);
 }
 
 static void _add_layers(int axis, int layers) {
-	int voxCount = r.scene.voxelCount;
+	int voxCount = ren.scene.voxelCount;
 	Voxel *oldVoxels = malloc(sizeof(Voxel) * voxCount);
-	memcpy(oldVoxels, r.scene.voxels, sizeof(Voxel) * voxCount);
+	memcpy(oldVoxels, ren.scene.voxels, sizeof(Voxel) * voxCount);
 
-	r.scene.voxelCount = 0;
-	r.scene.chunkCount = 0;
+	ren.scene.voxelCount = 0;
+	ren.scene.chunkCount = 0;
 
 	for (int i = 0; i < voxCount; i++) {
 		add_voxel(oldVoxels[i].pos.x + layers * (axis == 0), oldVoxels[i].pos.y + layers * (axis == 1),
 				  oldVoxels[i].pos.z + layers * (axis == 2), oldVoxels[i].material);
 	}
 
-	r.camera.pos.x += layers * (axis == 0);
-	r.camera.pos.y += layers * (axis == 1);
-	r.camera.pos.z += layers * (axis == 2);
+	ren.camera.pos.x += layers * (axis == 0);
+	ren.camera.pos.y += layers * (axis == 1);
+	ren.camera.pos.z += layers * (axis == 2);
 }
 
-RendererStatus set_output_properties(int width, int height) {
-	safe_free(r.image.data);
-	r.image.size = (cl_int2){.x = width, .y = height};
-	r.image.data = malloc(sizeof(cl_float3) * width * height);
+Status set_output_properties(int width, int height) {
+	safe_free(ren.image.data);
+	ren.image.size = (cl_int2){.x = width, .y = height};
+	ren.image.data = malloc(sizeof(cl_float3) * width * height);
 
-	return RENDERER_SUCCESS;
+	return SUCCESS;
 }
 
-RendererStatus set_background_properties(float red, float green, float blue, float brightness) {
-	r.scene.bgColor = (cl_float3){.x = red, .y = green, .z = blue};
-	r.scene.bgBrightness = brightness;
+Status set_background_properties(float red, float green, float blue, float brightness) {
+	ren.scene.bgColor = (cl_float3){.x = red, .y = green, .z = blue};
+	ren.scene.bgBrightness = brightness;
 
-	return RENDERER_SUCCESS;
+	return SUCCESS;
 }
 
-RendererStatus add_voxel(int x, int y, int z, VoxMaterial material) {
+Status add_voxel(int x, int y, int z, VoxMaterial material) {
 	if (x < 0) {
 		_add_layers(0, -x);
 		x = 0;
@@ -152,28 +152,28 @@ RendererStatus add_voxel(int x, int y, int z, VoxMaterial material) {
 	int idx = _get_chunk_idx_from_vector(voxel.pos.x, voxel.pos.y, voxel.pos.z);
 
 	// resize voxel buffer
-	r.scene.voxelCount++;
-	r.scene.voxels = realloc(r.scene.voxels, r.scene.voxelCount * sizeof(Voxel));
+	ren.scene.voxelCount++;
+	ren.scene.voxels = realloc(ren.scene.voxels, ren.scene.voxelCount * sizeof(Voxel));
 
 	// make space for new voxel
-	Chunk *chunk = &r.scene.chunks[idx];
+	Chunk *chunk = &ren.scene.chunks[idx];
 	int insertPos = chunk->firstVoxel + chunk->voxelCount;
-	int voxelsToMove = r.scene.voxelCount - insertPos - 1;
-	memcpy(&r.scene.voxels[insertPos + 1], &r.scene.voxels[insertPos], sizeof(Voxel) * voxelsToMove);
+	int voxelsToMove = ren.scene.voxelCount - insertPos - 1;
+	memcpy(&ren.scene.voxels[insertPos + 1], &ren.scene.voxels[insertPos], sizeof(Voxel) * voxelsToMove);
 
-	r.scene.voxels[insertPos] = voxel;
+	ren.scene.voxels[insertPos] = voxel;
 
 	// adjust firstVoxel of affected chunks
-	for (int i = idx + 1; i < r.scene.chunkCount; i++)
-		r.scene.chunks[i].firstVoxel++;
+	for (int i = idx + 1; i < ren.scene.chunkCount; i++)
+		ren.scene.chunks[i].firstVoxel++;
 
-	r.scene.chunks[idx].voxelCount++;
+	ren.scene.chunks[idx].voxelCount++;
 
-	return RENDERER_SUCCESS;
+	return SUCCESS;
 }
 
-RendererStatus remove_voxel(int x, int y, int z) {
-	if (!_voxel_exists(x, y, z)) return RENDERER_FAILURE;
+Status remove_voxel(int x, int y, int z) {
+	if (!_voxel_exists(x, y, z)) return FAILURE;
 
 	// remove voxel from voxel array
 	_remove_voxel(x, y, z);
@@ -181,16 +181,16 @@ RendererStatus remove_voxel(int x, int y, int z) {
 	// adjust chunks
 	int idx = _get_chunk_idx_from_vector(x, y, z);
 
-	for (int i = idx + 1; i < r.scene.chunkCount; i++)
-		r.scene.chunks[i].firstVoxel--;
+	for (int i = idx + 1; i < ren.scene.chunkCount; i++)
+		ren.scene.chunks[i].firstVoxel--;
 
-	r.scene.chunks[idx].voxelCount--;
+	ren.scene.chunks[idx].voxelCount--;
 
-	if (r.scene.chunks[idx].voxelCount == 0) {
+	if (ren.scene.chunks[idx].voxelCount == 0) {
 		int cx, cy, cz;
 		_get_chunk_pos(x, y, z, &cx, &cy, &cz);
 		_remove_chunk(cx, cy, cz);
 	}
 
-	return RENDERER_SUCCESS;
+	return SUCCESS;
 }

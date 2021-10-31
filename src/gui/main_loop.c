@@ -4,7 +4,7 @@
 #define FLT_TO_CHAR(f) (char)((f <= 0) ? 0 : (f >= 1) ? 255 : (int)(f * 255))
 
 char *_get_rendered_pixels() {
-	char *pixels = malloc(sizeof(char) * ren.image.size.x * ren.image.size.x * 4);
+	char *pixels = malloc(sizeof(char) * ren.image.size.x * ren.image.size.y * 4);
 
 	for (int i = 0; i < ren.image.size.x * ren.image.size.y; i++) {
 		pixels[i * 4 + 0] = FLT_TO_CHAR(GC_VALUE(ren.image.data[i].x));
@@ -30,10 +30,8 @@ Status start_main_loop() {
 		procces_kb_input();
 		procces_mouse_input();
 
-		update_info_window();
-		update_material_window();
-
 		update_gui_components();
+		update_windows();
 
 		char *pixels = _get_rendered_pixels();
 		UpdateTexture(gui.renderTexture, pixels);
@@ -47,7 +45,7 @@ Status start_main_loop() {
 		DrawTextureEx(gui.renderTexture, (Vector2){(GetScreenWidth() - ren.image.size.x * scale) / 2, 0}, 0, scale,
 					  WHITE);
 
-		if (gui.state == 0) draw_aim();
+		if (gui.comp.state == 0) draw_aim();
 
 		draw_gui_components();
 

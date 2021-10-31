@@ -215,12 +215,40 @@ int l_create_dielectric_material(lua_State *l) {
 	return 1;
 }
 
+int l_get_voxels(lua_State *l) {
+	lua_newtable(l);
+
+	for (int i = 0; i < ren.scene.voxelCount; i++) {
+		Voxel vox = ren.scene.voxels[i];
+
+		lua_pushnumber(l, i);
+
+		lua_newtable(l);
+
+		lua_newtable(l);
+		lua_pushnumber(l, vox.pos.x);
+		lua_setfield(l, -2, "x");
+		lua_pushnumber(l, vox.pos.y);
+		lua_setfield(l, -2, "y");
+		lua_pushnumber(l, vox.pos.z);
+		lua_setfield(l, -2, "z");
+		lua_setfield(l, -2, "pos");
+
+		_push_material(l, vox.material);
+		lua_setfield(l, -2, "material");
+
+		lua_settable(l, -3);
+	}
+
+	return 1;
+}
+
 Status load_functions(lua_State *l) {
 	lua_pushcfunction(l, l_set_output_properties);
-	lua_setglobal(l, "outputProperties");
+	lua_setglobal(l, "setOutputProperties");
 
 	lua_pushcfunction(l, l_set_background_properties);
-	lua_setglobal(l, "bgProperties");
+	lua_setglobal(l, "setBgProperties");
 
 	lua_pushcfunction(l, l_add_voxel);
 	lua_setglobal(l, "addVox");
@@ -229,22 +257,25 @@ Status load_functions(lua_State *l) {
 	lua_setglobal(l, "remVox");
 
 	lua_pushcfunction(l, l_set_camera_properties);
-	lua_setglobal(l, "cameraProperties");
+	lua_setglobal(l, "setCameraProperties");
 
 	lua_pushcfunction(l, l_set_camera_pos);
-	lua_setglobal(l, "cameraPos");
+	lua_setglobal(l, "setCameraPos");
 
 	lua_pushcfunction(l, l_create_light_source_material);
-	lua_setglobal(l, "lightSource");
+	lua_setglobal(l, "createLightSource");
 
 	lua_pushcfunction(l, l_create_lambertian_material);
-	lua_setglobal(l, "lambertMaterial");
+	lua_setglobal(l, "createLambertMaterial");
 
 	lua_pushcfunction(l, l_create_metal_material);
-	lua_setglobal(l, "metalMaterial");
+	lua_setglobal(l, "createMetalMaterial");
 
 	lua_pushcfunction(l, l_create_dielectric_material);
-	lua_setglobal(l, "glassMaterial");
+	lua_setglobal(l, "createGlassMaterial");
+
+	lua_pushcfunction(l, l_get_voxels);
+	lua_setglobal(l, "getVoxels");
 
 	return SUCCESS;
 }

@@ -54,4 +54,11 @@ VoxMaterial create_lambertian_material(float r, float g, float b);
 VoxMaterial create_metal_material(float r, float g, float b, float tint, float fuzz);
 VoxMaterial create_dielectric_material(float r, float g, float b, float tint, float fuzz, float refIdx);
 
+//--------------------------------------------------------------------------------------------------------------------//
+// io                                                                                                                 //
+//--------------------------------------------------------------------------------------------------------------------//
+
+Status save_scene(char *fileName);
+Status load_scene(char *fileName);
+
 #endif

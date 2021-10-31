@@ -34,12 +34,20 @@ VoxMaterial *get_material_at_mouse() {
 }
 
 Status add_voxel_at_mouse(VoxMaterial material) {
-	int x = ren.lookingAtPos.x + ren.lookingAtNormal.x;
-	int y = ren.lookingAtPos.y + ren.lookingAtNormal.y;
-	int z = ren.lookingAtPos.z + ren.lookingAtNormal.z;
+	if (ren.scene.voxelCount == 0) {
+		msg("Adding voxel (0, 0, 0)");
+		add_voxel(0, 0, 0, material);
+		return FAILURE;
+	}
 
-	msg("Adding voxel (%d, %d, %d)", x, y, z);
-	add_voxel(x, y, z, material);
+	if (ren.lookingAt) {
+		int x = ren.lookingAtPos.x + ren.lookingAtNormal.x;
+		int y = ren.lookingAtPos.y + ren.lookingAtNormal.y;
+		int z = ren.lookingAtPos.z + ren.lookingAtNormal.z;
+
+		msg("Adding voxel (%d, %d, %d)", x, y, z);
+		add_voxel(x, y, z, material);
+	}
 
 	return SUCCESS;
 }

@@ -16,12 +16,7 @@ typedef struct GUIState {
 	int renderMousePosX;
 	int renderMousePosY;
 
-	int firstChar;
-	int commandLength;
-	char *command;
-
 	int quit;
-	int state;
 
 	int windowIDs;
 	int windowCount;
@@ -29,8 +24,19 @@ typedef struct GUIState {
 
 	int infoWindow;
 	int materialWindow;
+	int fileWindow;
+	int cameraWindow;
 
 	VoxMaterial selectedMaterial;
+	cl_float3 selectedBgColor;
+
+	char *fileName;
+
+	int scriptCount;
+	char **scripts;
+
+	float cameraMoveSpeed;
+	float cameraLookSpeed;
 
 } GUIState;
 

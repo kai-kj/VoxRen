@@ -27,7 +27,7 @@ Status change_text_input_text(int winID, int idx, char *text) {
 }
 
 Status procces_text_inputs(Window *win) {
-	if (comp->state != 1) return FAILURE;
+	if (!(comp->state == 1 || comp->state == 2)) return FAILURE;
 
 	for (int i = 0; i < win->textInputBoxCount; i++) {
 		TextInputBox *t = &win->textInputBoxes[i];
@@ -39,7 +39,7 @@ Status procces_text_inputs(Window *win) {
 			comp->state = 2;
 		}
 
-		if ((IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !onBox) || IsKeyPressed(KEY_ENTER)) {
+		if (t->editing && ((IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !onBox) || IsKeyPressed(KEY_ENTER))) {
 			t->fn(t->text);
 			t->editing = 0;
 			comp->state = 1;

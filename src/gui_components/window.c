@@ -1,6 +1,8 @@
 #include "gui_components.h"
 
 int add_window(int x, int y, int width, int height, char *title) {
+	dbg("Creating window %s", title);
+
 	Window w = (Window){comp->windowIDs++, x, y, width, height, title, 0, 0, NULL, 0, NULL, 0, NULL, 0, NULL};
 
 	comp->windowCount++;

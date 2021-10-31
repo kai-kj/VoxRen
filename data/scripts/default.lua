@@ -1,5 +1,5 @@
 function Main()
-	outputProperties(800, 600)
+	setOutputProperties(600, 600)
 
 	local size = 10
 
@@ -7,14 +7,14 @@ function Main()
 	local height = size
 	local depth = size
 
-	bgProperties(0.5, 0.5, 1, 0.5)
+	setBgProperties(0.5, 0.5, 1, 0.5)
 
-	local white = lambertMaterial(0.8, 0.8, 0.8)
-	local red = lambertMaterial(1, 0, 0)
-	local green = lambertMaterial(0, 1, 0)
-	local blue = lambertMaterial(0, 0, 1)
-	local light = lightSource(1, 1, 0.5, 2)
-	local metal = metalMaterial(0.5, 0.5, 0.5, 1, 0, 0.5);
+	local white = createLambertMaterial(0.8, 0.8, 0.8)
+	local red = createLambertMaterial(1, 0, 0)
+	local green = createLambertMaterial(0, 1, 0)
+	local blue = createLambertMaterial(0, 0, 1)
+	local light = createLightSource(1, 1, 0.5, 2)
+	local metal = createMetalMaterial(0.5, 0.5, 0.5, 1, 0, 0.5);
 
 	-- side walls
 	for y = 0, height - 1, 1 do
@@ -52,7 +52,6 @@ function Main()
 
 	addVox(width * 0.5, height - 2, depth * 0.5, red)
 
-	cameraProperties(1, 1, 0.001, 1000)
-	cameraPos(5.5, -2, -10, 0, -math.pi / 8)
-
+	setCameraProperties(1, 1, 0.001, 1000)
+	setCameraPos(5.5, -2, -10, 0, -math.pi / 8)
 end

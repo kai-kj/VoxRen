@@ -71,6 +71,7 @@ typedef struct Renderer {
 	double dt;
 	double prevTime;
 
+	int lookingAt;
 	cl_int2 mousePos;
 	cl_int3 lookingAtPos;
 	cl_int3 lookingAtNormal;
@@ -79,6 +80,8 @@ typedef struct Renderer {
 	CLImage image;
 	Scene scene;
 	VoxCamera camera;
+
+	char *fileName;
 } Renderer;
 
 #endif

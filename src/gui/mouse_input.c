@@ -20,8 +20,8 @@ static void _fps_mode() {
 		int deltaX = gui.comp.mousePosX - gui.comp.prevMousePosX;
 		int deltaY = gui.comp.mousePosY - gui.comp.prevMousePosY;
 
-		ren.camera.rot.x -= deltaX * TURN_SPEED * GetFrameTime();
-		ren.camera.rot.y -= deltaY * TURN_SPEED * GetFrameTime();
+		ren.camera.rot.x -= deltaX * gui.cameraLookSpeed * GetFrameTime();
+		ren.camera.rot.y -= deltaY * gui.cameraLookSpeed * GetFrameTime();
 
 		ren.restartRender = 1;
 	}
@@ -57,7 +57,7 @@ static void _text_input_mode() {
 }
 
 Status procces_mouse_input() {
-	switch (gui.state) {
+	switch (gui.comp.state) {
 		case 0:
 			_fps_mode();
 			break;

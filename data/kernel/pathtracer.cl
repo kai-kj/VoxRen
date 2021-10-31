@@ -344,7 +344,7 @@ kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount, glo
 			lookingAt[0] = voxel.pos;
 			lookingAt[1] = normal;
 		} else {
-			lookingAt[0].z = -1;
+			lookingAt[1].x = 2;
 		}
 	}
 

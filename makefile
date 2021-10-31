@@ -3,7 +3,7 @@
 #------------------------------------------------------------------------------#
 
 # binary name 
-BIN := pathtracer
+BIN := VoxRen
 
 # include dir
 INC := -I include/
@@ -44,7 +44,7 @@ SRC := src
 default: clean $(BIN)
 
 run: clean $(BIN)
-	./$(BIN)
+	./$(BIN) data/scenes/default
 
 debug: CC += -g
 debug: clean $(BIN)
@@ -63,6 +63,7 @@ $(BIN): $(BUILD)
 	$(CC) -c $(SRC)/renderer/camera.c -o $(BUILD)/renderer/camera.a
 	$(CC) -c $(SRC)/renderer/material.c -o $(BUILD)/renderer/material.a
 	$(CC) -c $(SRC)/renderer/global.c -o $(BUILD)/renderer/global.a
+	$(CC) -c $(SRC)/renderer/io.c -o $(BUILD)/renderer/io.a
 
 	$(CC) -c $(SRC)/gui/window.c -o $(BUILD)/gui/window.a
 	$(CC) -c $(SRC)/gui/main_loop.c -o $(BUILD)/gui/main_loop.a
@@ -70,6 +71,7 @@ $(BIN): $(BUILD)
 	$(CC) -c $(SRC)/gui/interface.c -o $(BUILD)/gui/interface.a
 	$(CC) -c $(SRC)/gui/mouse_input.c -o $(BUILD)/gui/mouse_input.a
 	$(CC) -c $(SRC)/gui/kb_input.c -o $(BUILD)/gui/kb_input.a
+	$(CC) -c $(SRC)/gui/files_scripts.c -o $(BUILD)/gui/files_scripts.a
 
 	$(CC) -c $(SRC)/gui_components/control.c -o $(BUILD)/gui_components/control.a
 	$(CC) -c $(SRC)/gui_components/window.c -o $(BUILD)/gui_components/window.a

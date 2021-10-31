@@ -1,7 +1,11 @@
 #ifndef GUI_H
 #define GUI_H
 
+#include <dirent.h>
+#include <stdio.h>
 #include <string.h>
+#include <time.h>
+#include <unistd.h>
 
 #include "raylib/raylib.h"
 #include "status.h"
@@ -10,9 +14,6 @@
 #include "../renderer/renderer.h"
 #include "../scripting/scripting.h"
 #include "structs.h"
-
-#define MOV_SPEED 4
-#define TURN_SPEED M_PI / 64
 
 extern GUIState gui;
 
@@ -34,8 +35,7 @@ Status start_main_loop();
 //--------------------------------------------------------------------------------------------------------------------//
 
 Status draw_aim();
-Status update_info_window();
-Status update_material_window();
+Status update_windows();
 Status create_ui();
 
 //--------------------------------------------------------------------------------------------------------------------//
@@ -44,5 +44,12 @@ Status create_ui();
 
 Status procces_mouse_input();
 Status procces_kb_input();
+
+//--------------------------------------------------------------------------------------------------------------------//
+// files and scripts                                                                                                  //
+//--------------------------------------------------------------------------------------------------------------------//
+
+char *get_root_folder();
+Status get_files();
 
 #endif

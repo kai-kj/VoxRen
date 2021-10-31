@@ -34,6 +34,8 @@ static Status _run_script(char *functionName) {
 		return FAILURE;
 	}
 
+	save_scene("scene");
+
 	return SUCCESS;
 }
 

@@ -47,13 +47,13 @@ Status create_window() {
 	gui.renderTexture = LoadTextureFromImage(tmpImg);
 	UnloadImage(tmpImg);
 
-	gui.commandLength = 1;
-	gui.command = '\0';
 	gui.windowIDs = 0;
 	gui.windowCount = 0;
 	gui.windows = NULL;
-	gui.state = 1;
+	gui.cameraMoveSpeed = 4;
+	gui.cameraLookSpeed = 0.1;
 
+	gui.comp.state = 1;
 	gui.comp.fontSize = 20;
 	gui.comp.fontColor = BLACK;
 	gui.comp.windowTitleSize = 30;

@@ -83,8 +83,13 @@ static Status _render_frame(int sampleNumber) {
 	cl_int3 data[3];
 	cl_read_buffer(ren.program.queue, ren.program.lookingAtBuff, 0, sizeof(cl_int3) * 3, data);
 
-	ren.lookingAtPos = data[0];
-	ren.lookingAtNormal = data[1];
+	if (data[1].x == 2) {
+		ren.lookingAt = 0;
+	} else {
+		ren.lookingAt = 1;
+		ren.lookingAtPos = data[0];
+		ren.lookingAtNormal = data[1];
+	}
 
 	double currentTime = get_time();
 	ren.dt = currentTime - ren.prevTime;

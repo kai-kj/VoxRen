@@ -11,13 +11,20 @@
 #include "renderer/renderer.h"
 #include "scripting/scripting.h"
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
+int main(int argc, char *argv[]) {
+	msg("argc: %d", argc);
 
-int main(void) {
 	if (create_renderer() != SUCCESS) exit(-1);
 	if (init_command_interpreter() != SUCCESS) exit(-1);
-	if (run_script("data/scripts/main.lua", "Main") != SUCCESS) exit(-1);
+	// if (run_script("data/scripts/default.lua", "Main") != SUCCESS) exit(-1);
+
+	set_output_properties(600, 600);
+
+	if (argc < 2) {
+		load_scene(NULL);
+	} else {
+		load_scene(argv[1]);
+	}
 
 	create_window();
 	start_main_loop();

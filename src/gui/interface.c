@@ -215,7 +215,7 @@ void _set_bg_b(char *text) {
 }
 
 void _set_bg_br(char *text) {
-	float brightness = (float)atoi(text);
+	float brightness = (float)atof(text);
 	if (brightness < 0) brightness = 0;
 
 	ren.scene.bgBrightness = brightness;

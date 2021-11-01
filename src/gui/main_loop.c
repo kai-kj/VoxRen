@@ -4,7 +4,7 @@
 #define FLT_TO_CHAR(f) (char)((f <= 0) ? 0 : (f >= 1) ? 255 : (int)(f * 255))
 
 char *_get_rendered_pixels() {
-	char *pixels = malloc(sizeof(char) * ren.image.size.x * ren.image.size.y * 4);
+	char *pixels = malloc(ren.image.size.x * ren.image.size.y * 4);
 
 	for (int i = 0; i < ren.image.size.x * ren.image.size.y; i++) {
 		pixels[i * 4 + 0] = FLT_TO_CHAR(GC_VALUE(ren.image.data[i].x));

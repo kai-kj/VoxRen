@@ -5,13 +5,12 @@
   - [ ] windows
 
     - [x] editable text boxes
-    - [ ] file IO window
-    - [ ] bgColor window 
-    - [ ] camera window
+    - [x] file IO window
+    - [x] bgColor window 
+    - [x] camera window
     - [ ] image properties window
     - [ ] command window
-    - [ ] show / hide / minimize windows in title bar
-    - [ ] window manager (select which windows to show)
+    - [ ] file name when loading lua scripts
     - [x] info window
       - fps
       - image size
@@ -20,9 +19,19 @@
 
   - [ ] non-full screen support 
 
-- [ ] saving / loading
+- [x] saving / loading
 
-- [ ] headless mode
+- [x] command line arguments 
+
+  `VoxRen [mode] [file name] [(script file)]`
+
+  - `mode`
+    - `g`: graphic mode
+    - `h`: headless mode
+  - `file type`
+    - `b`: binary
+    - `l`: lua
+  - `file name`
 
 - [ ] ray tracing
 

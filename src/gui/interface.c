@@ -223,13 +223,13 @@ void _set_bg_br(char *text) {
 }
 
 void _save_file() {
-	save_scene(ren.fileName);
+	save_scene_to_file(ren.fileName);
 }
 
 void _save_new_file() {
 	char newFileName[1000];
 	sprintf(newFileName, "%s%d", ren.fileName, (int)time(NULL));
-	save_scene(newFileName);
+	save_scene_to_file(newFileName);
 }
 
 void _set_move_speed(char *text) {
@@ -430,6 +430,8 @@ Status update_windows() {
 	_update_material_window();
 	_update_file_window();
 	_update_camera_window();
+
+	return SUCCESS;
 }
 
 Status create_ui() {

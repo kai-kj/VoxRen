@@ -56,6 +56,7 @@ $(BUILD):
 	$(MKDIR) $(BUILD)/gui
 	$(MKDIR) $(BUILD)/scripting
 	$(MKDIR) $(BUILD)/gui_components
+	$(MKDIR) $(BUILD)/headless
 
 $(BIN): $(BUILD)
 	$(CC) -c $(SRC)/renderer/management.c -o $(BUILD)/renderer/management.a
@@ -86,9 +87,11 @@ $(BIN): $(BUILD)
 	$(CC) -c $(SRC)/scripting/command_wrapper.c -o $(BUILD)/scripting/command_wrapper.a
 	$(CC) -c $(SRC)/scripting/global.c -o $(BUILD)/scripting/global.a
 
+	$(CC) -c $(SRC)/headless/headless.c -o $(BUILD)/headless/headless.a
+
 	$(CC) -c $(SRC)/main.c -o $(BUILD)/main.o
 
-	$(CC) $(BUILD)/main.o $(BUILD)/renderer/* $(BUILD)/gui/* $(BUILD)/scripting/* $(BUILD)/gui_components/* -o $(BIN) $(LIBS)
+	$(CC) $(BUILD)/main.o $(BUILD)/renderer/* $(BUILD)/gui/* $(BUILD)/scripting/* $(BUILD)/gui_components/* $(BUILD)/headless/* -o $(BIN) $(LIBS)
 
 clean:
 	$(RM) $(BIN) $(BUILD) log.txt

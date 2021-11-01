@@ -4,7 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "k_tools/k_util.h"
 #include "raylib/raylib.h"
+
 #include "status.h"
 #include "structs.h"
 

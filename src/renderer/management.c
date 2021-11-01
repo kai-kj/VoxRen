@@ -5,27 +5,7 @@
 #define ARGS "-Werror -cl-mad-enable -cl-no-signed-zeros -cl-fast-relaxed-math"
 #define CHUNK_SIZE 3
 
-static k_Image *_CLImage_to_k_Image(CLImage clImage) {
-	k_Image *image = k_create_image(clImage.size.x, clImage.size.y);
-
-	for (int i = 0; i < image->width * image->height; i++) {
-		if (clImage.data[i].x < 0) clImage.data[i].x = 0;
-		if (clImage.data[i].y < 0) clImage.data[i].y = 0;
-		if (clImage.data[i].z < 0) clImage.data[i].z = 0;
-
-		if (clImage.data[i].x > 1) clImage.data[i].x = 1;
-		if (clImage.data[i].y > 1) clImage.data[i].y = 1;
-		if (clImage.data[i].z > 1) clImage.data[i].z = 1;
-
-		image->data[i * 3 + 0] = (int)(clImage.data[i].x * 255);
-		image->data[i * 3 + 1] = (int)(clImage.data[i].y * 255);
-		image->data[i * 3 + 2] = (int)(clImage.data[i].z * 255);
-	}
-
-	return image;
-}
-
-static void _setup_renderer_args() {
+Status setup_renderer_args() {
 	int imageSize = ren.image.size.x * ren.image.size.y;
 
 	cl_destroy_buffer(ren.program.imageBuff);
@@ -53,9 +33,11 @@ static void _setup_renderer_args() {
 	cl_set_kernel_arg(ren.program.kernel, 7, sizeof(cl_float3), &ren.scene.bgColor);
 	cl_set_kernel_arg(ren.program.kernel, 8, sizeof(cl_float3), &ren.scene.bgBrightness);
 	cl_set_kernel_arg(ren.program.kernel, 9, sizeof(VoxCamera), &ren.camera);
+
+	return SUCCESS;
 }
 
-static Status _render_frame(int sampleNumber) {
+Status render_frame(int sampleNumber) {
 	cl_ulong seed = rand();
 
 	// non-constant arguments
@@ -109,10 +91,10 @@ static void *_start_renderer_loop() {
 			ren.restartRender = 0;
 			ren.readFirstFrame = 0;
 			i = 0;
-			_setup_renderer_args();
+			setup_renderer_args();
 		}
 
-		if (_render_frame(i) == FAILURE) panic("Failed to run kernel");
+		if (render_frame(i) == FAILURE) panic("Failed to run kernel");
 
 		i++;
 	}
@@ -202,10 +184,4 @@ Status end_rendering() {
 
 	ren.stopRender = 1;
 	return SUCCESS;
-}
-
-k_Image *get_image() {
-	k_Image *image = _CLImage_to_k_Image(ren.image);
-	k_gamma_correct_image(image);
-	return image;
 }

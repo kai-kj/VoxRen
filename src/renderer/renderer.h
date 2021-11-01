@@ -1,7 +1,6 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include <k_tools/k_image.h>
 #include <k_tools/k_opencl_util.h>
 #include <k_tools/k_util.h>
 #include <math.h>
@@ -23,7 +22,8 @@ Status create_renderer();
 Status destroy_renderer();
 Status begin_rendering();
 Status end_rendering();
-k_Image *get_image();
+Status setup_renderer_args();
+Status render_frame(int sampleNumber);
 
 //--------------------------------------------------------------------------------------------------------------------//
 // scene                                                                                                              //
@@ -58,7 +58,7 @@ VoxMaterial create_dielectric_material(float r, float g, float b, float tint, fl
 // io                                                                                                                 //
 //--------------------------------------------------------------------------------------------------------------------//
 
-Status save_scene(char *fileName);
-Status load_scene(char *fileName);
+Status save_scene_to_file(char *fileName);
+Status load_scene_from_file(char *fileName);
 
 #endif

@@ -40,7 +40,7 @@ void _fps_mode() {
 		if (material != NULL) gui.selectedMaterial = *material;
 	}
 
-	if (IsKeyPressed(KEY_E)) {
+	if (IsKeyPressed(KEY_E) || IsKeyPressed(KEY_ESCAPE)) {
 		if (gui.comp.state == 1) {
 			HideCursor();
 			DisableCursor();

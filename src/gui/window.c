@@ -41,6 +41,8 @@ Status create_window() {
 	InitWindow(GetScreenWidth(), GetScreenWidth(), "VoxRen");
 	SetTargetFPS(30);
 
+	SetExitKey(0);
+
 	if (!IsWindowFullscreen()) ToggleFullscreen();
 
 	Image tmpImg = GenImageColor(ren.image.size.x, ren.image.size.x, BLACK);

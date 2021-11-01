@@ -1,6 +1,8 @@
 #include "gui_components.h"
 
 Status update_gui_components() {
+	if (comp->state == 0) return FAILURE;
+
 	for (int i = 0; i < comp->windowCount; i++) {
 		update_window_pos(&comp->windows[i]);
 		process_buttons(&comp->windows[i]);

@@ -8,9 +8,13 @@
     - [x] file IO window
     - [x] bgColor window 
     - [x] camera window
+    - [ ] title bar
+      - show mode
+      - fps
+      - quit button
     - [ ] image properties window
     - [ ] command window
-    - [ ] file name when loading lua scripts
+    - [x] file name when loading lua scripts
     - [x] info window
       - fps
       - image size

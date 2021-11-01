@@ -39,7 +39,9 @@ Status procces_text_inputs(Window *win) {
 			comp->state = 2;
 		}
 
-		if (t->editing && ((IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !onBox) || IsKeyPressed(KEY_ENTER))) {
+		if (t->editing &&
+			((IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !onBox) || IsKeyPressed(KEY_ENTER) ||
+			 IsKeyPressed(KEY_ESCAPE))) {
 			t->fn(t->text);
 			t->editing = 0;
 			comp->state = 1;

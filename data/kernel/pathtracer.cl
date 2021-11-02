@@ -148,10 +148,13 @@ bool ray_voxel(Ray ray, global Voxel *voxel, float3 dirFrac, float *tMin) {
 	return tMax > *tMin && tMax >= 0;
 }
 
-constant int3 returnValues[6] = {(int3){-1, 0, 0}, (int3){1, 0, 0},	 (int3){0, -1, 0},
-								 (int3){0, 1, 0},  (int3){0, 0, -1}, (int3){0, 0, 1}};
+// constant int3 returnValues[6] = {(int3){-1, 0, 0}, (int3){1, 0, 0},	 (int3){0, -1, 0},
+// 								 (int3){0, 1, 0},  (int3){0, 0, -1}, (int3){0, 0, 1}};
 
 int3 get_ray_voxel_normal(Ray ray, global Voxel *voxel, float3 dirFrac) {
+	int3 returnValues[6] = {(int3){-1, 0, 0}, (int3){1, 0, 0},	(int3){0, -1, 0},
+							(int3){0, 1, 0},  (int3){0, 0, -1}, (int3){0, 0, 1}};
+
 	float t[6];
 
 	t[0] = (voxel->pos.x - ray.origin.x) * dirFrac.x;

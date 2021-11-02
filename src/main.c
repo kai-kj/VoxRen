@@ -59,8 +59,6 @@ int main(int argc, char **argv) {
 	if (create_renderer() != SUCCESS) exit(-1);
 	if (init_command_interpreter() != SUCCESS) exit(-1);
 
-	msg("%d", argc);
-
 	load_scene(argc, argv);
 
 	return 0;

@@ -35,7 +35,7 @@ VoxMaterial *get_material_at_mouse() {
 
 Status add_voxel_at_mouse(VoxMaterial material) {
 	if (ren.scene.voxelCount == 0) {
-		msg("Adding voxel (0, 0, 0)");
+		dbg("Adding voxel (0, 0, 0)");
 		add_voxel(0, 0, 0, material);
 		return FAILURE;
 	}
@@ -45,7 +45,7 @@ Status add_voxel_at_mouse(VoxMaterial material) {
 		int y = ren.lookingAtPos.y + ren.lookingAtNormal.y;
 		int z = ren.lookingAtPos.z + ren.lookingAtNormal.z;
 
-		msg("Adding voxel (%d, %d, %d)", x, y, z);
+		dbg("Adding voxel (%d, %d, %d)", x, y, z);
 		add_voxel(x, y, z, material);
 	}
 
@@ -59,7 +59,7 @@ Status remove_voxel_at_mouse(VoxMaterial material) {
 	int y = ren.lookingAtPos.y;
 	int z = ren.lookingAtPos.z;
 
-	msg("Removing voxel (%d, %d, %d)", x, y, z);
+	dbg("Removing voxel (%d, %d, %d)", x, y, z);
 	remove_voxel(x, y, z);
 
 	return SUCCESS;

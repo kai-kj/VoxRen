@@ -11,7 +11,6 @@ void _r_plus() {
 }
 
 void _r_minus() {
-	msg("r-");
 	gui.selectedMaterial.color.x -= 1.0f / 255.0f * COLOR_STEP;
 	if (gui.selectedMaterial.color.x < 0) gui.selectedMaterial.color.x = 0;
 }

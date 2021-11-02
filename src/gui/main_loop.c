@@ -41,7 +41,9 @@ Status start_main_loop() {
 
 		ClearBackground(BLACK);
 
-		float scale = min(GetScreenWidth() / ren.image.size.x, GetScreenHeight() / ren.image.size.y);
+		float scale =
+			min((float)GetScreenWidth() / (float)ren.image.size.x, (float)GetScreenHeight() / (float)ren.image.size.y);
+
 		DrawTextureEx(gui.renderTexture, (Vector2){(GetScreenWidth() - ren.image.size.x * scale) / 2, 0}, 0, scale,
 					  WHITE);
 

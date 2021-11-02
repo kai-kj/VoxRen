@@ -31,7 +31,7 @@ Status setup_renderer_args() {
 	cl_set_kernel_arg(ren.program.kernel, 5, sizeof(cl_int), &ren.scene.chunkCount);
 	cl_set_kernel_arg(ren.program.kernel, 6, sizeof(cl_mem), &ren.program.chunkBuff);
 	cl_set_kernel_arg(ren.program.kernel, 7, sizeof(cl_float3), &ren.scene.bgColor);
-	cl_set_kernel_arg(ren.program.kernel, 8, sizeof(cl_float3), &ren.scene.bgBrightness);
+	cl_set_kernel_arg(ren.program.kernel, 8, sizeof(cl_float), &ren.scene.bgBrightness);
 	cl_set_kernel_arg(ren.program.kernel, 9, sizeof(VoxCamera), &ren.camera);
 
 	return SUCCESS;

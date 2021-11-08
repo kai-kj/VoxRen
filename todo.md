@@ -37,9 +37,7 @@
     - `l`: lua
   - `file name`
 
-- [ ] ray tracing
-
-  - [ ] transparent material
+- [ ] transparent material
 
 - [ ] windows support
 

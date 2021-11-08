@@ -44,7 +44,7 @@ SRC := src
 default: clean $(BIN)
 
 run: clean $(BIN)
-	./$(BIN) data/scenes/default
+	./$(BIN) g data/scenes/car
 
 debug: CC += -g
 debug: clean $(BIN)
@@ -69,7 +69,8 @@ $(BIN): $(BUILD)
 	$(CC) -c $(SRC)/gui/window.c -o $(BUILD)/gui/window.a
 	$(CC) -c $(SRC)/gui/main_loop.c -o $(BUILD)/gui/main_loop.a
 	$(CC) -c $(SRC)/gui/global.c -o $(BUILD)/gui/global.a
-	$(CC) -c $(SRC)/gui/interface.c -o $(BUILD)/gui/interface.a
+	$(CC) -c $(SRC)/gui/interface_creation.c -o $(BUILD)/gui/interface_creation.a
+	$(CC) -c $(SRC)/gui/interface_update.c -o $(BUILD)/gui/interface_update.a
 	$(CC) -c $(SRC)/gui/mouse_input.c -o $(BUILD)/gui/mouse_input.a
 	$(CC) -c $(SRC)/gui/kb_input.c -o $(BUILD)/gui/kb_input.a
 	$(CC) -c $(SRC)/gui/files_scripts.c -o $(BUILD)/gui/files_scripts.a

@@ -32,19 +32,20 @@ void _ray_log(int msgType, const char *text, va_list args) {
 #endif
 }
 
-Status create_window() {
+Status create_interface() {
 	msg("Creating window");
 
-	set_comp_address(&gui.comp);
-
+	// raylib init
 	SetTraceLogCallback(_ray_log);
 	InitWindow(GetScreenWidth(), GetScreenWidth(), "VoxRen");
 	SetTargetFPS(30);
-
 	SetExitKey(0);
+	ToggleFullscreen();
 
-	if (!IsWindowFullscreen()) ToggleFullscreen();
+	// init kGui
+	init_gui();
 
+	// init gui state
 	Image tmpImg = GenImageColor(ren.image.size.x, ren.image.size.x, BLACK);
 	gui.renderTexture = LoadTextureFromImage(tmpImg);
 	UnloadImage(tmpImg);
@@ -54,26 +55,15 @@ Status create_window() {
 	gui.windows = NULL;
 	gui.cameraMoveSpeed = 4;
 	gui.cameraLookSpeed = 0.1;
-
-	gui.comp.state = 1;
-	gui.comp.fontSize = 20;
-	gui.comp.fontColor = BLACK;
-	gui.comp.windowTitleSize = 30;
-	gui.comp.windowColor = LIGHTGRAY;
-	gui.comp.windowTitleColor = GRAY;
-	gui.comp.borderSize = 4;
-	gui.comp.borderColor = BLACK;
-	gui.comp.buttonColor = GRAY;
-	gui.comp.buttonBorderColor = DARKGRAY;
-
 	gui.selectedMaterial = (VoxMaterial){2, (cl_float3){0.5, 0.5, 0.5}, 0, 0, 0};
 
-	create_ui();
+	// create ui components
+	// create_ui();
 
 	return SUCCESS;
 }
 
-Status close_window() {
+Status destroy_interface() {
 	msg("Closing window");
 	CloseWindow();
 	return SUCCESS;

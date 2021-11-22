@@ -10,9 +10,8 @@
 #include "raylib/raylib.h"
 #include "status.h"
 
-#include "../gui_components/gui_components.h"
+#include "../kGui/kGui.h"
 #include "../renderer/renderer.h"
-#include "../scripting/scripting.h"
 #include "structs.h"
 
 extern GUIState gui;
@@ -21,8 +20,8 @@ extern GUIState gui;
 // window                                                                                                             //
 //--------------------------------------------------------------------------------------------------------------------//
 
-Status create_window();
-Status close_window();
+Status create_interface();
+Status destroy_interface();
 
 //--------------------------------------------------------------------------------------------------------------------//
 // main loop                                                                                                          //
@@ -35,8 +34,6 @@ Status start_main_loop();
 //--------------------------------------------------------------------------------------------------------------------//
 
 Status draw_aim();
-Status update_windows();
-Status create_ui();
 
 //--------------------------------------------------------------------------------------------------------------------//
 // input                                                                                                              //

@@ -55,7 +55,7 @@ $(BUILD):
 	$(MKDIR) $(BUILD)/renderer
 	$(MKDIR) $(BUILD)/gui
 	$(MKDIR) $(BUILD)/scripting
-	$(MKDIR) $(BUILD)/gui_components
+	$(MKDIR) $(BUILD)/kGui
 	$(MKDIR) $(BUILD)/headless
 
 $(BIN): $(BUILD)
@@ -69,19 +69,19 @@ $(BIN): $(BUILD)
 	$(CC) -c $(SRC)/gui/window.c -o $(BUILD)/gui/window.a
 	$(CC) -c $(SRC)/gui/main_loop.c -o $(BUILD)/gui/main_loop.a
 	$(CC) -c $(SRC)/gui/global.c -o $(BUILD)/gui/global.a
-	$(CC) -c $(SRC)/gui/interface_creation.c -o $(BUILD)/gui/interface_creation.a
-	$(CC) -c $(SRC)/gui/interface_update.c -o $(BUILD)/gui/interface_update.a
 	$(CC) -c $(SRC)/gui/mouse_input.c -o $(BUILD)/gui/mouse_input.a
 	$(CC) -c $(SRC)/gui/kb_input.c -o $(BUILD)/gui/kb_input.a
-	$(CC) -c $(SRC)/gui/files_scripts.c -o $(BUILD)/gui/files_scripts.a
 
-	$(CC) -c $(SRC)/gui_components/control.c -o $(BUILD)/gui_components/control.a
-	$(CC) -c $(SRC)/gui_components/window.c -o $(BUILD)/gui_components/window.a
-	$(CC) -c $(SRC)/gui_components/textbox.c -o $(BUILD)/gui_components/textbox.a
-	$(CC) -c $(SRC)/gui_components/text_input.c -o $(BUILD)/gui_components/text_input.a
-	$(CC) -c $(SRC)/gui_components/button.c -o $(BUILD)/gui_components/button.a
-	$(CC) -c $(SRC)/gui_components/colored_box.c -o $(BUILD)/gui_components/colored_box.a
-	$(CC) -c $(SRC)/gui_components/global.c -o $(BUILD)/gui_components/global.a
+	$(CC) -c $(SRC)/kGui/kGui.c -o $(BUILD)/kGui/kGui.a
+	$(CC) -c $(SRC)/kGui/global.c -o $(BUILD)/kGui/global.a
+	$(CC) -c $(SRC)/kGui/utils.c -o $(BUILD)/kGui/utils.a
+	$(CC) -c $(SRC)/kGui/component.c -o $(BUILD)/kGui/component.a
+	$(CC) -c $(SRC)/kGui/grid.c -o $(BUILD)/kGui/grid.a
+	$(CC) -c $(SRC)/kGui/window.c -o $(BUILD)/kGui/window.a
+	$(CC) -c $(SRC)/kGui/label.c -o $(BUILD)/kGui/label.a
+	$(CC) -c $(SRC)/kGui/button.c -o $(BUILD)/kGui/button.a
+	$(CC) -c $(SRC)/kGui/textbox.c -o $(BUILD)/kGui/textbox.a
+	$(CC) -c $(SRC)/kGui/pos_tracker.c -o $(BUILD)/kGui/pos_tracker.a
 
 	$(CC) -c $(SRC)/scripting/script.c -o $(BUILD)/scripting/script.a
 	$(CC) -c $(SRC)/scripting/command.c -o $(BUILD)/scripting/command.a
@@ -92,7 +92,7 @@ $(BIN): $(BUILD)
 
 	$(CC) -c $(SRC)/main.c -o $(BUILD)/main.o
 
-	$(CC) $(BUILD)/main.o $(BUILD)/renderer/* $(BUILD)/gui/* $(BUILD)/scripting/* $(BUILD)/gui_components/* $(BUILD)/headless/* -o $(BIN) $(LIBS)
+	$(CC) $(BUILD)/main.o $(BUILD)/renderer/* $(BUILD)/gui/* $(BUILD)/scripting/* $(BUILD)/kGui/* $(BUILD)/headless/* -o $(BIN) $(LIBS)
 
 clean:
 	$(RM) $(BIN) $(BUILD) log.txt

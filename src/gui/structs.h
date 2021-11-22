@@ -9,8 +9,6 @@ typedef struct GUIState {
 	int width;
 	int height;
 
-	GUI comp;
-
 	double prevTime;
 
 	int renderMousePosX;

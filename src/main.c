@@ -33,10 +33,9 @@ void load_scene(int argc, char **argv) {
 			if (run_script(argv[3], "Main") == FAILURE) panic("Failed to run script");
 		}
 
-		create_window();
+		create_interface();
 		start_main_loop();
 
-		close_window();
 		close_command_interpreter();
 		destroy_renderer();
 

@@ -24,37 +24,28 @@ Status start_main_loop() {
 	while (!WindowShouldClose()) {
 		ren.readFirstFrame = 1;
 
-		gui.comp.mousePosX = GetMouseX();
-		gui.comp.mousePosY = GetMouseY();
-
 		procces_kb_input();
 		procces_mouse_input();
+		process_gui();
 
-		update_gui_components();
-		update_windows();
-
+		// update render image
 		char *pixels = _get_rendered_pixels();
 		UpdateTexture(gui.renderTexture, pixels);
 		free(pixels);
 
 		BeginDrawing();
-
 		ClearBackground(BLACK);
 
-		float scale =
-			min((float)GetScreenWidth() / (float)ren.image.size.x, (float)GetScreenHeight() / (float)ren.image.size.y);
+		// draw render image
+		float scale = min((float)GetScreenWidth() / ren.image.size.x, (float)GetScreenHeight() / ren.image.size.y);
+		int xPos = (GetScreenWidth() - ren.image.size.x * scale) / 2;
+		int yPos = (GetScreenHeight() - ren.image.size.y * scale) / 2;
+		DrawTextureEx(gui.renderTexture, (Vector2){xPos, yPos}, 0, scale, WHITE);
 
-		DrawTextureEx(gui.renderTexture, (Vector2){(GetScreenWidth() - ren.image.size.x * scale) / 2, 0}, 0, scale,
-					  WHITE);
-
-		if (gui.comp.state == 0) draw_aim();
-
-		draw_gui_components();
+		// draw gui
+		draw_gui();
 
 		EndDrawing();
-
-		gui.comp.prevMousePosX = gui.comp.mousePosX;
-		gui.comp.prevMousePosY = gui.comp.mousePosY;
 	}
 
 	return SUCCESS;

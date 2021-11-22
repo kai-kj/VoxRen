@@ -1,7 +1,7 @@
 #ifndef GUI_STRUCTS_H
 #define GUI_STRUCTS_H
 
-#include "gui.h"
+#include "interface.h"
 
 typedef struct GUIState {
 	Texture2D renderTexture;

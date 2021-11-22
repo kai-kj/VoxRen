@@ -7,8 +7,8 @@
 // #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb/stb_image_write.h>
 
-#include "gui/gui.h"
 #include "headless/headless.h"
+#include "interface/interface.h"
 #include "renderer/renderer.h"
 #include "scripting/scripting.h"
 

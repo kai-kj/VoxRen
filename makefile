@@ -53,7 +53,7 @@ debug: clean $(BIN)
 $(BUILD):
 	$(MKDIR) $(BUILD)
 	$(MKDIR) $(BUILD)/renderer
-	$(MKDIR) $(BUILD)/gui
+	$(MKDIR) $(BUILD)/interface
 	$(MKDIR) $(BUILD)/scripting
 	$(MKDIR) $(BUILD)/kGui
 	$(MKDIR) $(BUILD)/headless
@@ -66,11 +66,11 @@ $(BIN): $(BUILD)
 	$(CC) -c $(SRC)/renderer/global.c -o $(BUILD)/renderer/global.a
 	$(CC) -c $(SRC)/renderer/io.c -o $(BUILD)/renderer/io.a
 
-	$(CC) -c $(SRC)/gui/window.c -o $(BUILD)/gui/window.a
-	$(CC) -c $(SRC)/gui/main_loop.c -o $(BUILD)/gui/main_loop.a
-	$(CC) -c $(SRC)/gui/global.c -o $(BUILD)/gui/global.a
-	$(CC) -c $(SRC)/gui/mouse_input.c -o $(BUILD)/gui/mouse_input.a
-	$(CC) -c $(SRC)/gui/kb_input.c -o $(BUILD)/gui/kb_input.a
+	$(CC) -c $(SRC)/interface/interface.c -o $(BUILD)/interface/interface.a
+	$(CC) -c $(SRC)/interface/main_loop.c -o $(BUILD)/interface/main_loop.a
+	$(CC) -c $(SRC)/interface/global.c -o $(BUILD)/interface/global.a
+	$(CC) -c $(SRC)/interface/mouse_input.c -o $(BUILD)/interface/mouse_input.a
+	$(CC) -c $(SRC)/interface/kb_input.c -o $(BUILD)/interface/kb_input.a
 
 	$(CC) -c $(SRC)/kGui/kGui.c -o $(BUILD)/kGui/kGui.a
 	$(CC) -c $(SRC)/kGui/global.c -o $(BUILD)/kGui/global.a
@@ -92,7 +92,7 @@ $(BIN): $(BUILD)
 
 	$(CC) -c $(SRC)/main.c -o $(BUILD)/main.o
 
-	$(CC) $(BUILD)/main.o $(BUILD)/renderer/* $(BUILD)/gui/* $(BUILD)/scripting/* $(BUILD)/kGui/* $(BUILD)/headless/* -o $(BIN) $(LIBS)
+	$(CC) $(BUILD)/main.o $(BUILD)/renderer/* $(BUILD)/interface/* $(BUILD)/scripting/* $(BUILD)/kGui/* $(BUILD)/headless/* -o $(BIN) $(LIBS)
 
 clean:
 	$(RM) $(BIN) $(BUILD) log.txt

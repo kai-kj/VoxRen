@@ -1,4 +1,4 @@
-#include "gui.h"
+#include "interface.h"
 
 void _ray_log(int msgType, const char *text, va_list args) {
 #ifndef K_UTIL_DEBUG

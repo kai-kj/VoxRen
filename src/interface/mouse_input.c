@@ -1,4 +1,4 @@
-#include "gui.h"
+#include "interface.h"
 
 void _update_camera_direction() {
 	dbg("((%d, %d) -> (%d, %d)", get_prev_mouse_x(), get_prev_mouse_y(), GetMouseX(), GetMouseY());

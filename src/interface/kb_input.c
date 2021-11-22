@@ -1,4 +1,4 @@
-#include "gui.h"
+#include "interface.h"
 
 Status procces_kb_input() {
 	if (IsKeyDown(KEY_W)) {

@@ -1,4 +1,4 @@
-#include "gui.h"
+#include "interface.h"
 
 #define GC_VALUE(v) sqrt(v)
 #define FLT_TO_CHAR(f) (char)((f <= 0) ? 0 : (f >= 1) ? 255 : (int)(f * 255))

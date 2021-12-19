@@ -14,6 +14,10 @@
 		0, 0, -1                                                                                                       \
 	}
 
+#define KGS_LEFT_ALIGNED 0
+#define KGS_CENTER_ALIGNED 1
+#define KGS_RIGHT_ALIGNED 2
+
 extern KGuiState kGS;
 
 // kGui
@@ -61,6 +65,10 @@ Component create_pos_tracker();
 int get_pos_tracker_x(ComponentID id);
 int get_pos_tracker_y(ComponentID id);
 void _process_pos_tracker(PositionTracker *tracker, int x, int y);
+
+// customComponent
+Component create_custom_component(void (*fn)(int, int));
+void _draw_custom_component(CustomComponent *customComponent, int x, int y);
 
 // util
 void _draw_rectangle(Rectangle rectangle, Color color);

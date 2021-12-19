@@ -1,4 +1,6 @@
 #include "interface.h"
+#include "windows/info.h"
+#include "windows/material.h"
 
 void _ray_log(int msgType, const char *text, va_list args) {
 #ifndef K_UTIL_DEBUG
@@ -32,7 +34,7 @@ void _ray_log(int msgType, const char *text, va_list args) {
 #endif
 }
 
-Status create_interface() {
+Status initialise_interface() {
 	msg("Creating window");
 
 	// raylib init
@@ -41,30 +43,42 @@ Status create_interface() {
 	SetTargetFPS(30);
 	SetExitKey(0);
 	ToggleFullscreen();
-
-	// init kGui
-	init_gui();
+	HideCursor();
 
 	// init gui state
 	Image tmpImg = GenImageColor(ren.image.size.x, ren.image.size.x, BLACK);
 	gui.renderTexture = LoadTextureFromImage(tmpImg);
 	UnloadImage(tmpImg);
 
-	gui.windowIDs = 0;
-	gui.windowCount = 0;
-	gui.windows = NULL;
+	gui.removeVoxel = 0;
 	gui.cameraMoveSpeed = 4;
 	gui.cameraLookSpeed = 0.1;
 	gui.selectedMaterial = (VoxMaterial){2, (cl_float3){0.5, 0.5, 0.5}, 0, 0, 0};
 
+	// init kGui
+	init_gui();
+
 	// create ui components
-	// create_ui();
+	create_interface();
 
 	return SUCCESS;
 }
 
-Status destroy_interface() {
+Status terminate_interface() {
 	msg("Closing window");
 	CloseWindow();
+	return SUCCESS;
+}
+
+Status create_interface() {
+	_create_material_window();
+	_create_info_window();
+
+	return SUCCESS;
+}
+
+Status update_interface() {
+	_update_material_window();
+	_update_info_window();
 	return SUCCESS;
 }

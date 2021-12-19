@@ -33,7 +33,7 @@ void load_scene(int argc, char **argv) {
 			if (run_script(argv[3], "Main") == FAILURE) panic("Failed to run script");
 		}
 
-		create_interface();
+		initialise_interface();
 		start_main_loop();
 
 		close_command_interpreter();

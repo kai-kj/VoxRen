@@ -18,7 +18,7 @@ Status procces_mouse_input() {
 
 	if (!mouse_on_windows()) {
 		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-			add_voxel_at_mouse(gui.selectedMaterial);
+			gui.removeVoxel ? remove_voxel_at_mouse() : add_voxel_at_mouse(gui.selectedMaterial);
 			ren.restartRender = 1;
 		}
 

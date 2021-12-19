@@ -28,6 +28,8 @@ Status start_main_loop() {
 		procces_mouse_input();
 		process_gui();
 
+		update_interface();
+
 		// update render image
 		char *pixels = _get_rendered_pixels();
 		UpdateTexture(gui.renderTexture, pixels);
@@ -44,6 +46,7 @@ Status start_main_loop() {
 
 		// draw gui
 		draw_gui();
+		draw_additional_interface();
 
 		EndDrawing();
 	}

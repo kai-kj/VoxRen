@@ -22,9 +22,10 @@ void _draw_button(Button *button, int x, int y) {
 		_draw_rectangle(btnRect, kGS.settings.buttonReleasedColor);
 
 	DrawRectangleLinesEx(btnRect, kGS.settings.buttonBorderSize, kGS.settings.borderColor);
+	int xPos = x + (button->width - MeasureText(button->text, kGS.settings.fontSize)) / 2;
+	int yPos = y + (button->height - kGS.settings.fontSize) / 2;
 
-	DrawText(button->text, x + kGS.settings.padding, y + kGS.settings.padding, kGS.settings.fontSize,
-			 kGS.settings.fontColor);
+	DrawText(button->text, xPos, yPos, kGS.settings.fontSize, kGS.settings.fontColor);
 }
 
 void _process_button(Button *button, int x, int y) {

@@ -3,38 +3,36 @@
 
 #include "interface.h"
 
+typedef struct ComponentsIDs {
+	ComponentID red;
+	ComponentID green;
+	ComponentID blue;
+	ComponentID material;
+	ComponentID v1;
+	ComponentID v2;
+	ComponentID v3;
+
+	ComponentID fps;
+	ComponentID rps;
+	ComponentID lookingAtPixel;
+	ComponentID lookingAtVoxel;
+	ComponentID lookingAtNormal;
+} ComponentIDs;
+
 typedef struct GUIState {
 	Texture2D renderTexture;
-
-	int width;
-	int height;
-
-	double prevTime;
 
 	int renderMousePosX;
 	int renderMousePosY;
 
-	int quit;
-
-	int windowIDs;
-	int windowCount;
-	Window *windows;
-
-	int infoWindow;
-	int materialWindow;
-	int fileWindow;
-	int cameraWindow;
-
+	int removeVoxel;
 	VoxMaterial selectedMaterial;
 	cl_float3 selectedBgColor;
 
-	char *fileName;
-
-	int scriptCount;
-	char **scripts;
-
 	float cameraMoveSpeed;
 	float cameraLookSpeed;
+
+	ComponentIDs components;
 
 } GUIState;
 

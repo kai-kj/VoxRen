@@ -1,7 +1,5 @@
 #include "kGui.h"
 
-#include "kGui.h"
-
 Component create_textbox(int width, int height, char *text, void (*fn)(char *)) {
 	Component component;
 	component.type = 3;

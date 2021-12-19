@@ -71,17 +71,19 @@ $(BIN): $(BUILD)
 	$(CC) -c $(SRC)/interface/global.c -o $(BUILD)/interface/global.a
 	$(CC) -c $(SRC)/interface/mouse_input.c -o $(BUILD)/interface/mouse_input.a
 	$(CC) -c $(SRC)/interface/kb_input.c -o $(BUILD)/interface/kb_input.a
+	$(CC) -c $(SRC)/interface/draw_additional_interface.c -o $(BUILD)/interface/draw_additional_interface.a
 
 	$(CC) -c $(SRC)/kGui/kGui.c -o $(BUILD)/kGui/kGui.a
 	$(CC) -c $(SRC)/kGui/global.c -o $(BUILD)/kGui/global.a
 	$(CC) -c $(SRC)/kGui/utils.c -o $(BUILD)/kGui/utils.a
 	$(CC) -c $(SRC)/kGui/component.c -o $(BUILD)/kGui/component.a
-	$(CC) -c $(SRC)/kGui/grid.c -o $(BUILD)/kGui/grid.a
 	$(CC) -c $(SRC)/kGui/window.c -o $(BUILD)/kGui/window.a
-	$(CC) -c $(SRC)/kGui/label.c -o $(BUILD)/kGui/label.a
-	$(CC) -c $(SRC)/kGui/button.c -o $(BUILD)/kGui/button.a
-	$(CC) -c $(SRC)/kGui/textbox.c -o $(BUILD)/kGui/textbox.a
-	$(CC) -c $(SRC)/kGui/pos_tracker.c -o $(BUILD)/kGui/pos_tracker.a
+	$(CC) -c $(SRC)/kGui/c00_grid.c -o $(BUILD)/kGui/c00_grid.a
+	$(CC) -c $(SRC)/kGui/c01_label.c -o $(BUILD)/kGui/c01_label.a
+	$(CC) -c $(SRC)/kGui/c02_button.c -o $(BUILD)/kGui/c02_button.a
+	$(CC) -c $(SRC)/kGui/c03_textbox.c -o $(BUILD)/kGui/c03_textbox.a
+	$(CC) -c $(SRC)/kGui/c04_pos_tracker.c -o $(BUILD)/kGui/c04_pos_tracker.a
+	$(CC) -c $(SRC)/kGui/c05_custom_component.c -o $(BUILD)/kGui/c05_custom_component.a
 
 	$(CC) -c $(SRC)/scripting/script.c -o $(BUILD)/scripting/script.a
 	$(CC) -c $(SRC)/scripting/command.c -o $(BUILD)/scripting/command.a

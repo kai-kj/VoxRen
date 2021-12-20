@@ -12,7 +12,7 @@ INC := -I include/
 LIB := -L lib/
 
 # libraries 
-LIBS := -lOpenCL -lm -pthread -llua5.4 -lraylib -lGL -ldl -lrt -lX11
+LIBS := -lOpenCL -lm -pthread -lraylib -lGL -ldl -lrt -lX11
 
 # flags 
 FLAGS := -Wall -Wno-missing-braces 
@@ -54,7 +54,6 @@ $(BUILD):
 	$(MKDIR) $(BUILD)
 	$(MKDIR) $(BUILD)/renderer
 	$(MKDIR) $(BUILD)/interface
-	$(MKDIR) $(BUILD)/scripting
 	$(MKDIR) $(BUILD)/kGui
 	$(MKDIR) $(BUILD)/headless
 
@@ -85,16 +84,11 @@ $(BIN): $(BUILD)
 	$(CC) -c $(SRC)/kGui/c04_pos_tracker.c -o $(BUILD)/kGui/c04_pos_tracker.a
 	$(CC) -c $(SRC)/kGui/c05_custom_component.c -o $(BUILD)/kGui/c05_custom_component.a
 
-	$(CC) -c $(SRC)/scripting/script.c -o $(BUILD)/scripting/script.a
-	$(CC) -c $(SRC)/scripting/command.c -o $(BUILD)/scripting/command.a
-	$(CC) -c $(SRC)/scripting/command_wrapper.c -o $(BUILD)/scripting/command_wrapper.a
-	$(CC) -c $(SRC)/scripting/global.c -o $(BUILD)/scripting/global.a
-
 	$(CC) -c $(SRC)/headless/headless.c -o $(BUILD)/headless/headless.a
 
 	$(CC) -c $(SRC)/main.c -o $(BUILD)/main.o
 
-	$(CC) $(BUILD)/main.o $(BUILD)/renderer/* $(BUILD)/interface/* $(BUILD)/scripting/* $(BUILD)/kGui/* $(BUILD)/headless/* -o $(BIN) $(LIBS)
+	$(CC) $(BUILD)/main.o $(BUILD)/renderer/* $(BUILD)/interface/* $(BUILD)/kGui/* $(BUILD)/headless/* -o $(BIN) $(LIBS)
 
 clean:
 	$(RM) $(BIN) $(BUILD) log.txt

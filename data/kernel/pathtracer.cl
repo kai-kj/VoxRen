@@ -287,7 +287,7 @@ float3 get_color(Renderer *r, Ray ray, int maxDepth) {
 
 // TODO: better sampling
 
-Ray get_first_ray(Renderer *r, int id) {
+Ray get_first_ray(Renderer *r, int id, bool blur) {
 	float aspectRatio = (float)r->imageSize.x / (float)r->imageSize.y;
 
 	int x = id % r->imageSize.x;
@@ -298,7 +298,7 @@ Ray get_first_ray(Renderer *r, int id) {
 							 r->camera.focalLength};
 
 	float3 origin = r->camera.pos + offset;
-	float3 target = r->camera.pos;
+	float3 target = blur ? r->camera.pos + get_random_unit_vector(r->rng) * r->camera.aperture : r->camera.pos;
 
 	float3 direction = -normalize(target - origin);
 
@@ -332,9 +332,7 @@ kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount, glo
 	Renderer r = (Renderer){imageSize, image,	voxelCount,	  voxels, chunkSize, chunkCount,
 							chunks,	   bgColor, bgBrightness, camera, &rng};
 
-	Ray ray = get_first_ray(&r, id);
-
-	float3 color = get_color(&r, ray, 10);
+	float3 color = get_color(&r, get_first_ray(&r, id, true), 10);
 
 	color = adjust_color(&r, color);
 
@@ -343,11 +341,12 @@ kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount, glo
 		int3 normal;
 		Voxel voxel;
 
-		if (cast_ray(&r, ray, &hitPos, &normal, &voxel)) {
+		if (cast_ray(&r, get_first_ray(&r, id, false), &hitPos, &normal, &voxel)) {
 			lookingAt[0] = voxel.pos;
 			lookingAt[1] = normal;
+			lookingAt[2].z = (int)(distance(camera.pos.x, hitPos) * 100);
 		} else {
-			lookingAt[1].x = 2;
+			lookingAt[2].z = -1;
 		}
 	}
 

@@ -16,12 +16,12 @@ void _set_z(char *text) {
 }
 
 void _set_yaw(char *text) {
-	ren.camera.rot.x = atof(text);
+	set_camera_pos(ren.camera.pos.x, ren.camera.pos.y, ren.camera.pos.z, atof(text), ren.camera.rot.y);
 	ren.restartRender = 1;
 }
 
 void _set_pitch(char *text) {
-	ren.camera.rot.y = atof(text);
+	set_camera_pos(ren.camera.pos.x, ren.camera.pos.y, ren.camera.pos.z, ren.camera.rot.x, atof(text));
 	ren.restartRender = 1;
 }
 
@@ -158,12 +158,12 @@ void _update_scene_window() {
 	change_component_text(gui.components.cameraYaw, "%.01f", pitch);
 	change_component_text(gui.components.cameraSensorWidth, "%.01f", ren.camera.sensorWidth);
 	change_component_text(gui.components.cameraFocalLength, "%.01f", ren.camera.focalLength);
-	change_component_text(gui.components.cameraAperture, "%.01f", ren.camera.aperture);
+	change_component_text(gui.components.cameraAperture, "%.04f", ren.camera.aperture);
 	change_component_text(gui.components.cameraExposure, "%.01f", ren.camera.exposure);
 	change_component_text(gui.components.lookSensitivity, "%.01f", gui.cameraLookSpeed);
 	change_component_text(gui.components.moveSensitivity, "%.01f", gui.cameraMoveSpeed);
-	change_component_text(gui.components.bgRed, "%03d", (int)ren.scene.bgColor.x * 255);
-	change_component_text(gui.components.bgGreen, "%03d", (int)ren.scene.bgColor.y * 255);
-	change_component_text(gui.components.bgBlue, "%03d", (int)ren.scene.bgColor.z * 255);
+	change_component_text(gui.components.bgRed, "%03d", (int)(ren.scene.bgColor.x * 255));
+	change_component_text(gui.components.bgGreen, "%03d", (int)(ren.scene.bgColor.y * 255));
+	change_component_text(gui.components.bgBlue, "%03d", (int)(ren.scene.bgColor.z * 255));
 	change_component_text(gui.components.bgBrightness, "%.01f", ren.scene.bgBrightness);
 }

@@ -17,6 +17,7 @@ typedef struct ComponentsIDs {
 	ComponentID lookingAtPixel;
 	ComponentID lookingAtVoxel;
 	ComponentID lookingAtNormal;
+	ComponentID lookingAtDistance;
 
 	ComponentID cameraX;
 	ComponentID cameraY;

@@ -39,7 +39,10 @@ void _draw_textbox(Textbox *textbox, int x, int y) {
 void _process_textbox(Textbox *textbox, int x, int y) {
 	int mouseOnTextbox = _mouse_in_area(x, y, textbox->width, textbox->height);
 
-	if (mouseOnTextbox && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) textbox->editing = 1;
+	if (mouseOnTextbox && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+		textbox->editing = 1;
+		textbox->firstLetter = 1;
+	}
 	if (mouseOnTextbox) textbox->mouseInBounds = 1;
 }
 
@@ -57,10 +60,11 @@ void _manage_textbox(Textbox *textbox) {
 		while (key > 0) {
 			if ((textbox->onlyDigits && ((key >= 48 && key <= 57) || key == 46)) ||
 				(!textbox->onlyDigits && (key >= 32 && key <= 126))) {
-				int length = strlen(textbox->text);
+				int length = textbox->firstLetter ? 0 : strlen(textbox->text);
 				textbox->text = realloc(textbox->text, length + 2);
 				textbox->text[length] = (char)key;
 				textbox->text[length + 1] = '\0';
+				textbox->firstLetter = 0;
 			}
 
 			key = GetCharPressed();

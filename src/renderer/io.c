@@ -46,8 +46,11 @@ Status load_scene_from_file(char *fileName) {
 		fread(&ren.camera.pos.y, sizeof(cl_float), 1, fp);
 		fread(&ren.camera.pos.z, sizeof(cl_float), 1, fp);
 
-		fread(&ren.camera.rot.x, sizeof(cl_float), 1, fp);
-		fread(&ren.camera.rot.y, sizeof(cl_float), 1, fp);
+		float rx, ry;
+		fread(&rx, sizeof(cl_float), 1, fp);
+		fread(&ry, sizeof(cl_float), 1, fp);
+
+		set_camera_pos(ren.camera.pos.x, ren.camera.pos.y, ren.camera.pos.z, rx, ry);
 
 		fread(&ren.camera.sensorWidth, sizeof(cl_float), 1, fp);
 		fread(&ren.camera.focalLength, sizeof(cl_float), 1, fp);

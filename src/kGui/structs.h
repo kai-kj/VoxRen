@@ -31,6 +31,7 @@ typedef struct Textbox {
 	int height;
 	void (*fn)();
 	int editing;
+	int firstLetter;
 	int mouseInBounds;
 } Textbox;
 

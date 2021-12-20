@@ -75,6 +75,7 @@ typedef struct Renderer {
 	cl_int2 mousePos;
 	cl_int3 lookingAtPos;
 	cl_int3 lookingAtNormal;
+	cl_float lookingAtDistance;
 
 	CLProgram program;
 	CLImage image;

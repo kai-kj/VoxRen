@@ -65,12 +65,13 @@ Status render_frame(int sampleNumber) {
 	cl_int3 data[3];
 	cl_read_buffer(ren.program.queue, ren.program.lookingAtBuff, 0, sizeof(cl_int3) * 3, data);
 
-	if (data[1].x == 2) {
+	if (data[2].z == -1) {
 		ren.lookingAt = 0;
 	} else {
 		ren.lookingAt = 1;
 		ren.lookingAtPos = data[0];
 		ren.lookingAtNormal = data[1];
+		ren.lookingAtDistance = (float)data[2].z / 100.0;
 	}
 
 	double currentTime = get_time();

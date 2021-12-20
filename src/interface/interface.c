@@ -1,6 +1,7 @@
 #include "interface.h"
 #include "windows/info.h"
 #include "windows/material.h"
+#include "windows/scene.h"
 
 void _ray_log(int msgType, const char *text, va_list args) {
 #ifndef K_UTIL_DEBUG
@@ -73,12 +74,13 @@ Status terminate_interface() {
 Status create_interface() {
 	_create_material_window();
 	_create_info_window();
-
+	_create_scene_window();
 	return SUCCESS;
 }
 
 Status update_interface() {
 	_update_material_window();
 	_update_info_window();
+	_update_scene_window();
 	return SUCCESS;
 }

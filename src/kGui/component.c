@@ -33,7 +33,10 @@ void change_component_text(ComponentID compId, char *format, ...) {
 			dest = kGS.components[compId].data.button.text;
 			break;
 		case 3:
-			dest = kGS.components[compId].data.textbox.text;
+			if (kGS.components[compId].data.textbox.editing)
+				return;
+			else
+				dest = kGS.components[compId].data.textbox.text;
 			break;
 		default:
 			return;

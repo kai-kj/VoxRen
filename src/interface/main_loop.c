@@ -51,5 +51,7 @@ Status start_main_loop() {
 		EndDrawing();
 	}
 
+	end_rendering();
+
 	return SUCCESS;
 }

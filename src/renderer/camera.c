@@ -1,5 +1,9 @@
 #include "renderer.h"
 
+int sign(float a) {
+	return a < 0 ? -1 : 1;
+}
+
 Status set_camera_properties(float sensorWidth, float focalLength, float aperture, float exposure) {
 	ren.camera.sensorWidth = sensorWidth;
 	ren.camera.focalLength = focalLength;
@@ -12,6 +16,26 @@ Status set_camera_properties(float sensorWidth, float focalLength, float apertur
 Status set_camera_pos(float x, float y, float z, float rx, float ry) {
 	ren.camera.pos = (cl_float3){.x = x, .y = y, .z = z};
 	ren.camera.rot = (cl_float2){.x = rx, .y = ry};
+
+	while (1) {
+		if (abs(ren.camera.rot.x) > 2 * M_PI)
+			ren.camera.rot.x -= 2 * M_PI * sign(ren.camera.rot.x);
+		else
+			break;
+	}
+
+	while (1) {
+		if (abs(ren.camera.rot.y) > 2 * M_PI)
+			ren.camera.rot.y -= 2 * M_PI * sign(ren.camera.rot.y);
+		else
+			break;
+	}
+
+	if (ren.camera.rot.y < -M_PI / 2) ren.camera.rot.y = -M_PI / 2;
+	if (ren.camera.rot.y > M_PI / 2) ren.camera.rot.y = M_PI / 2;
+
+	if (ren.camera.rot.x < -M_PI) ren.camera.rot.x = 2 * M_PI + ren.camera.rot.x;
+	if (ren.camera.rot.x > M_PI) ren.camera.rot.x = -2 * M_PI + ren.camera.rot.x;
 
 	return SUCCESS;
 }

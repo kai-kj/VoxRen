@@ -25,21 +25,22 @@
     	Normal: (x, y, z)
     ```
 
-- Settings
-    ```
-    Render
-    	width: 000
-    	height 000
-    Sensitivity
-    	look: + 0.0 -
-    	move: + 0.0 -
-    ```
-
 - Scene
 
   ```
   Camera
-  	...
+  	x: 000
+  	y: 000
+  	z: 000
+  	rx: 0.0
+  	ry: 0.0
+  	sensorWidth: 0.0
+  	focalLength: 0.0
+  	aperture: 0.0
+  	exposure: 0.0
+  Sensitivity
+  	look: + 0.0 -
+  	move: + 0.0 -
   Background
   	r: - 000 +
   	g: - 000 +

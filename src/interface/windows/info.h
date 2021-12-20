@@ -15,22 +15,25 @@ void _draw_mode_indicator(int x, int y) {
 }
 
 void _create_info_window() {
-	ComponentID w = create_window(250 + 40, 20, 1, 9, 250, 40, "Info");
+	ComponentID w = create_window(250 + 40, 20, 1, 11, 250, 40, "Info");
 
 	add_component(w, 0, 0, create_label("Mode"));
 	add_component(w, 0, 1, create_custom_component(_draw_mode_indicator));
 	add_component(w, 0, 2, create_label("Performance"));
-	gui.components.fps = add_component(w, 0, 3, create_label("  fps:"));
-	gui.components.rps = add_component(w, 0, 4, create_label("  rps:"));
-	add_component(w, 0, 5, create_label("Looking at"));
+	gui.components.fps = add_component(w, 0, 3, create_label("  FPS:"));
+	gui.components.rps = add_component(w, 0, 4, create_label("  RPS:"));
+	add_component(w, 0, 5, create_label("Looking At"));
 	gui.components.lookingAtPixel = add_component(w, 0, 6, create_label("  Pixel:"));
 	gui.components.lookingAtVoxel = add_component(w, 0, 7, create_label("  Voxel:"));
 	gui.components.lookingAtNormal = add_component(w, 0, 8, create_label("  Normal:"));
+	add_component(w, 0, 9, create_label("Render Image"));
+	ComponentID l = add_component(w, 0, 10, create_label("  000x000 px"));
+	change_component_text(l, "  %dx%d px", ren.image.size.x, ren.image.size.x);
 }
 
 void _update_info_window() {
-	change_component_text(gui.components.fps, "  fps: %03d", (int)(GetFPS()));
-	change_component_text(gui.components.rps, "  rps: %03d", (int)(1.0 / ren.dt));
+	change_component_text(gui.components.fps, "  FPS: %03d", (int)(GetFPS()));
+	change_component_text(gui.components.rps, "  RPS: %03d", (int)(1.0 / ren.dt));
 	change_component_text(gui.components.lookingAtPixel, "  Pixel:  (%d, %d)", gui.renderMousePosX,
 						  gui.renderMousePosY);
 	change_component_text(gui.components.lookingAtVoxel, "  Voxel:  (%d, %d, %d)", ren.lookingAtPos.x,

@@ -1,13 +1,14 @@
 #include "interface.h"
 
 void _update_camera_direction() {
-	dbg("((%d, %d) -> (%d, %d)", get_prev_mouse_x(), get_prev_mouse_y(), GetMouseX(), GetMouseY());
 	if (GetMouseX() != get_prev_mouse_x() || GetMouseY() != get_prev_mouse_y()) {
 		int deltaX = GetMouseX() - get_prev_mouse_x();
 		int deltaY = GetMouseY() - get_prev_mouse_y();
 
-		ren.camera.rot.x += deltaX * gui.cameraLookSpeed * GetFrameTime();
-		ren.camera.rot.y += deltaY * gui.cameraLookSpeed * GetFrameTime();
+		float rx = ren.camera.rot.x + deltaX * gui.cameraLookSpeed * GetFrameTime();
+		float ry = ren.camera.rot.y + deltaY * gui.cameraLookSpeed * GetFrameTime();
+
+		set_camera_pos(ren.camera.pos.x, ren.camera.pos.y, ren.camera.pos.z, rx, ry);
 
 		ren.restartRender = 1;
 	}

@@ -58,25 +58,26 @@ void _draw_color_indicator(int x, int y) {
 
 void _create_material_window() {
 	ComponentID w = create_window(20, 20, 1, 10, 250, 40, "Material");
+	ComponentID g;
 
-	ComponentID g = add_component(w, 0, 0, create_grid(2, 1, 120, 20));
+	g = add_component(w, 0, 0, create_grid(2, 1, 120, 20));
 	add_component(g, 0, 0, create_label("Color"));
 	add_component(g, 1, 0, create_custom_component(_draw_color_indicator));
 
 	g = add_component(w, 0, 1, create_grid(4, 1, 60, 20));
-	add_component(g, 0, 0, create_label("R:"));
+	add_component(g, 0, 0, create_label("  R:"));
 	add_component(g, 1, 0, create_button(50, 25, "-", _r_minus));
 	gui.components.red = add_component(g, 2, 0, create_textbox(50, 25, "000", _set_r));
 	add_component(g, 3, 0, create_button(50, 25, "+", _r_plus));
 
 	g = add_component(w, 0, 2, create_grid(4, 1, 60, 20));
-	add_component(g, 0, 0, create_label("G:"));
+	add_component(g, 0, 0, create_label("  G:"));
 	add_component(g, 1, 0, create_button(50, 25, "-", _g_minus));
 	gui.components.green = add_component(g, 2, 0, create_textbox(50, 25, "000", _set_g));
 	add_component(g, 3, 0, create_button(50, 25, "+", _g_plus));
 
 	g = add_component(w, 0, 3, create_grid(4, 1, 60, 20));
-	add_component(g, 0, 0, create_label("B:"));
+	add_component(g, 0, 0, create_label("  B:"));
 	add_component(g, 1, 0, create_button(50, 25, "-", _b_minus));
 	gui.components.blue = add_component(g, 2, 0, create_textbox(50, 25, "000", _set_b));
 	add_component(g, 3, 0, create_button(50, 25, "+", _b_plus));
@@ -91,19 +92,19 @@ void _create_material_window() {
 	add_component(w, 0, 6, create_label("Properties"));
 
 	g = add_component(w, 0, 7, create_grid(4, 1, 60, 20));
-	add_component(g, 0, 0, create_label("v1:"));
+	add_component(g, 0, 0, create_label("  v1:"));
 	add_component(g, 1, 0, create_button(50, 25, "-", NULL));
 	gui.components.v1 = add_component(g, 2, 0, create_textbox(50, 25, "0.0", NULL));
 	add_component(g, 3, 0, create_button(50, 25, "+", NULL));
 
 	g = add_component(w, 0, 8, create_grid(4, 1, 60, 20));
-	add_component(g, 0, 0, create_label("v2:"));
+	add_component(g, 0, 0, create_label("  v2:"));
 	add_component(g, 1, 0, create_button(50, 25, "-", NULL));
 	gui.components.v2 = add_component(g, 2, 0, create_textbox(50, 25, "0.0", NULL));
 	add_component(g, 3, 0, create_button(50, 25, "+", NULL));
 
 	g = add_component(w, 0, 9, create_grid(4, 1, 60, 20));
-	add_component(g, 0, 0, create_label("v3:"));
+	add_component(g, 0, 0, create_label("  v3:"));
 	add_component(g, 1, 0, create_button(50, 25, "-", NULL));
 	gui.components.v3 = add_component(g, 2, 0, create_textbox(50, 25, "0.0", NULL));
 	add_component(g, 3, 0, create_button(50, 25, "+", NULL));

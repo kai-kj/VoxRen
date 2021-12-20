@@ -44,7 +44,5 @@ Status procces_kb_input() {
 		gui.removeVoxel = !gui.removeVoxel;
 	}
 
-	if (IsKeyPressed(KEY_S) && IsKeyDown(KEY_LEFT_CONTROL)) save_scene_to_file(ren.fileName);
-
 	return SUCCESS;
 }

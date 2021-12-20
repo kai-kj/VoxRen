@@ -3,7 +3,7 @@
 int _mouse_on_window(Window *w) {
 	Grid grid = (*_get_component(w->grid)).data.grid;
 	int width = grid.cellWidth * grid.cols;
-	int height = grid.cellHeight * grid.rows;
+	int height = w->collapsed ? 0 : grid.cellHeight * grid.rows;
 	if (_mouse_in_area(w->x, w->y, width, height + kGS.settings.titleBarHeight))
 		return 1;
 	else
@@ -50,6 +50,7 @@ ComponentID create_window(int x, int y, int cols, int rows, int cellWidth, int c
 	w.y = y;
 	w.title = malloc(strlen(title) + 1);
 	w.dragging = 0;
+	w.collapsed = 0;
 	w.grid = kGS.componentCount - 1;
 	memcpy(w.title, title, strlen(title) + 1);
 
@@ -73,13 +74,29 @@ void _draw_window(Window *w) {
 			 w->y + kGS.settings.titleBarHeight / 2 - kGS.settings.fontSize / 2, kGS.settings.fontSize,
 			 kGS.settings.fontColor);
 
-	// main body
-	Rectangle mainRect = (Rectangle){w->x, w->y + kGS.settings.titleBarHeight - kGS.settings.borderSize, width, height};
-	_draw_rectangle(mainRect, kGS.settings.windowColor);
-	DrawRectangleLinesEx(mainRect, kGS.settings.borderSize, kGS.settings.borderColor);
+	int buttonSize = kGS.settings.titleBarHeight - kGS.settings.borderSize * 4;
+	int left = w->x + width - buttonSize - kGS.settings.borderSize * 2;
+	int right = w->x + width - kGS.settings.borderSize * 2;
+	int top = w->y + kGS.settings.borderSize * 2;
+	int bottom = w->y + kGS.settings.borderSize * 2 + buttonSize;
 
-	_draw_component(w->grid, w->x + kGS.settings.borderSize,
-					w->y + kGS.settings.borderSize + kGS.settings.titleBarHeight);
+	if (w->collapsed)
+		DrawTriangle((Vector2){left, top}, (Vector2){(right + left) / 2, bottom}, (Vector2){right, top},
+					 kGS.settings.borderColor);
+	else
+		DrawTriangle((Vector2){left, bottom}, (Vector2){right, bottom}, (Vector2){(right + left) / 2, top},
+					 kGS.settings.borderColor);
+
+	// main body
+	if (!w->collapsed) {
+		Rectangle mainRect =
+			(Rectangle){w->x, w->y + kGS.settings.titleBarHeight - kGS.settings.borderSize, width, height};
+		_draw_rectangle(mainRect, kGS.settings.windowColor);
+		DrawRectangleLinesEx(mainRect, kGS.settings.borderSize, kGS.settings.borderColor);
+
+		_draw_component(w->grid, w->x + kGS.settings.borderSize,
+						w->y + kGS.settings.borderSize + kGS.settings.titleBarHeight);
+	}
 }
 
 void _process_window(Window *w) {
@@ -88,7 +105,7 @@ void _process_window(Window *w) {
 	int height = grid.cellHeight * grid.rows;
 
 	int mouseOnTitleBar = _mouse_in_area(w->x, w->y, width, kGS.settings.titleBarHeight);
-	int mouseOnWindow = _mouse_in_area(w->x, w->y, width, height + kGS.settings.titleBarHeight);
+	int mouseOnWindow = w->dragging ? 0 : _mouse_in_area(w->x, w->y, width, height + kGS.settings.titleBarHeight);
 
 	if (w->dragging) {
 		w->x += GetMouseX() - kGS.prevMouseX;
@@ -106,7 +123,9 @@ void _process_window(Window *w) {
 		_move_window_to_front(w);
 	}
 
-	if (clickable)
+	if (clickable) {
+		if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) w->collapsed = !w->collapsed;
 		_process_component(w->grid, w->x + kGS.settings.borderSize,
 						   w->y + kGS.settings.borderSize + kGS.settings.titleBarHeight);
+	}
 }

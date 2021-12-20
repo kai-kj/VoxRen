@@ -344,7 +344,7 @@ kernel void pathtracer(int2 imageSize, global float3 *image, int voxelCount, glo
 		if (cast_ray(&r, get_first_ray(&r, id, false), &hitPos, &normal, &voxel)) {
 			lookingAt[0] = voxel.pos;
 			lookingAt[1] = normal;
-			lookingAt[2].z = (int)(distance(camera.pos.x, hitPos) * 100);
+			lookingAt[2].z = (int)(distance(camera.pos, hitPos) * 100);
 		} else {
 			lookingAt[2].z = -1;
 		}

@@ -44,7 +44,7 @@ SRC := src
 default: clean $(BIN)
 
 run: clean $(BIN)
-	./$(BIN) g data/scenes/car
+	./$(BIN) g data/scenes/car 854 480
 
 debug: CC += -g
 debug: clean $(BIN)

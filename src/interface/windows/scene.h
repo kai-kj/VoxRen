@@ -77,7 +77,7 @@ void _set_bg_brightness(char *text) {
 }
 
 void _create_scene_window() {
-	ComponentID w = create_window(250 * 2 + 60, 20, 1, 18, 250, 40, "Settings");
+	ComponentID w = create_window(GetScreenWidth() - 250 - 40, 20, 1, 18, 250, 40, "Scene");
 	ComponentID g;
 
 	add_component(w, 0, 0, create_label("Camera"));

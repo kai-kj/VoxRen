@@ -60,9 +60,8 @@ typedef struct Component {
 typedef struct Window {
 	int x, y;
 	char *title;
-
 	int dragging;
-
+	int collapsed;
 	ComponentID grid;
 } Window;
 

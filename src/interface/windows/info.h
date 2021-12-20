@@ -15,7 +15,7 @@ void _draw_mode_indicator(int x, int y) {
 }
 
 void _create_info_window() {
-	ComponentID w = create_window(250 + 40, 20, 1, 12, 250, 40, "Info");
+	ComponentID w = create_window(20, 400 + 40 + 40, 1, 12, 250, 40, "Info");
 
 	add_component(w, 0, 0, create_label("Mode"));
 	add_component(w, 0, 1, create_custom_component(_draw_mode_indicator));
@@ -29,7 +29,7 @@ void _create_info_window() {
 	gui.components.lookingAtDistance = add_component(w, 0, 9, create_label("  Distance:"));
 	add_component(w, 0, 10, create_label("Render Image"));
 	ComponentID l = add_component(w, 0, 11, create_label("  000x000 px"));
-	change_component_text(l, "  %dx%d px", ren.image.size.x, ren.image.size.x);
+	change_component_text(l, "  %dx%d px", ren.image.size.x, ren.image.size.y);
 }
 
 void _update_info_window() {

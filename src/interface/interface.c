@@ -1,4 +1,6 @@
 #include "interface.h"
+
+#include "windows/file.h"
 #include "windows/info.h"
 #include "windows/material.h"
 #include "windows/scene.h"
@@ -47,7 +49,7 @@ Status initialise_interface() {
 	HideCursor();
 
 	// init gui state
-	Image tmpImg = GenImageColor(ren.image.size.x, ren.image.size.x, BLACK);
+	Image tmpImg = GenImageColor(ren.image.size.x, ren.image.size.y, BLACK);
 	gui.renderTexture = LoadTextureFromImage(tmpImg);
 	UnloadImage(tmpImg);
 
@@ -75,6 +77,7 @@ Status create_interface() {
 	_create_material_window();
 	_create_info_window();
 	_create_scene_window();
+	_create_file_window();
 	return SUCCESS;
 }
 

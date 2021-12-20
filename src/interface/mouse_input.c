@@ -33,7 +33,7 @@ Status procces_mouse_input() {
 		}
 	}
 
-	float scale = min(GetScreenWidth() / ren.image.size.x, GetScreenHeight() / ren.image.size.y);
+	float scale = min((float)GetScreenWidth() / ren.image.size.x, (float)GetScreenHeight() / ren.image.size.y);
 	gui.renderMousePosX = (GetMouseX() - (GetScreenWidth() - ren.image.size.x * scale) / 2) / scale;
 	gui.renderMousePosY = (GetMouseY() - (GetScreenHeight() - ren.image.size.y * scale) / 2) / scale;
 

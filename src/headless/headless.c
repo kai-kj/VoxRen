@@ -39,12 +39,14 @@ Status render_image(int samples, char *fileName) {
 
 	setup_renderer_args();
 
+	printf("\e[?25l"); // hide cursor
+
 	for (int i = 0; i < samples; i++) {
 		render_frame(i);
-
 		printf("\r      > Rendering frame [%d/%d] (%02.2f%%)", i, samples, (float)i / (float)samples * 100.0);
-		fflush(stdout);
 	}
+
+	printf("\e[?25h"); // show cursor
 
 	printf("\n");
 

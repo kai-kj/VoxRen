@@ -16,6 +16,9 @@
   VoxRen g [file name] [width] [height]
 - headless mode
   VoxRen h [file name] [width] [height] [render samples] [output file]
+
+- resolutions:
+  - 4k: 3840 2160
 */
 
 void load_scene(int argc, char **argv) {

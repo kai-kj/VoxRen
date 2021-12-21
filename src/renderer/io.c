@@ -86,7 +86,11 @@ Status load_scene_from_file(char *fileName) {
 
 		Voxel *tmp = malloc(sizeof(Voxel) * voxCount);
 
+		printf("\e[?25l"); // hide cursor
+
 		for (int i = 0; i < voxCount; i++) {
+			printf("\r      > Reading voxel [%d/%d] (%02.2f%%)", i, voxCount, (float)i / (float)voxCount * 100.0);
+
 			Voxel *v = &tmp[i];
 			fread(&v->pos.x, sizeof(int), 1, fp);
 			fread(&v->pos.y, sizeof(int), 1, fp);
@@ -103,12 +107,20 @@ Status load_scene_from_file(char *fileName) {
 			fread(&v->material.v3, sizeof(float), 1, fp);
 		}
 
+		printf("\n");
+
 		ren.scene.voxelCount = 0;
 		ren.scene.chunkCount = 0;
 
 		for (int i = 0; i < voxCount; i++) {
+			printf("\r      > Adding voxel [%d/%d] (%02.2f%%)", i, voxCount, (float)i / (float)voxCount * 100.0);
+
 			add_voxel(tmp[i].pos.x, tmp[i].pos.y, tmp[i].pos.z, tmp[i].material);
 		}
+
+		printf("\n");
+
+		printf("\e[?25h"); // show cursor
 
 		free(tmp);
 		fclose(fp);

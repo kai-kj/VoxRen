@@ -48,6 +48,61 @@ void _set_b(char *text) {
 	gui.selectedMaterial.color.z = color > 1 ? 1 : color < 0 ? 0 : color;
 }
 
+void _next_material() {
+	gui.selectedMaterial.type++;
+	if (gui.selectedMaterial.type > 4) gui.selectedMaterial.type = 1;
+}
+
+void _prev_material() {
+	gui.selectedMaterial.type++;
+	if (gui.selectedMaterial.type < 1) gui.selectedMaterial.type = 4;
+}
+
+void _set_v1(char *text) {
+	switch (gui.selectedMaterial.type) {
+		case 1:
+			gui.selectedMaterial.v1 = max(0, atof(text));
+			break;
+		case 2:
+			break;
+		case 3:
+			gui.selectedMaterial.v1 = min(max(0, atof(text)), 1);
+			break;
+		case 4:
+			gui.selectedMaterial.v1 = min(max(0, atof(text)), 1);
+			break;
+	}
+}
+
+void _set_v2(char *text) {
+	switch (gui.selectedMaterial.type) {
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			gui.selectedMaterial.v2 = min(max(0, atof(text)), 1);
+			break;
+		case 4:
+			gui.selectedMaterial.v2 = min(max(0, atof(text)), 1);
+			break;
+	}
+}
+
+void _set_v3(char *text) {
+	switch (gui.selectedMaterial.type) {
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		case 4:
+			gui.selectedMaterial.v3 = min(max(0, atof(text)), 1);
+			break;
+	}
+}
+
 void _draw_color_indicator(int x, int y) {
 	int r = gui.selectedMaterial.color.x * 255;
 	int g = gui.selectedMaterial.color.y * 255;
@@ -85,29 +140,23 @@ void _create_material_window() {
 	add_component(w, 0, 4, create_label("Type"));
 
 	g = add_component(w, 0, 5, create_grid(4, 1, 60, 20));
-	add_component(g, 0, 0, create_button(50, 25, "<", NULL));
-	gui.components.material = add_component(g, 1, 0, create_textbox(110, 25, "Lambert", NULL));
-	add_component(g, 3, 0, create_button(50, 25, ">", NULL));
+	add_component(g, 0, 0, create_button(50, 25, "<", _prev_material));
+	gui.components.material = add_component(g, 1, 0, create_label("Lambert"));
+	add_component(g, 3, 0, create_button(50, 25, ">", _next_material));
 
 	add_component(w, 0, 6, create_label("Properties"));
 
-	g = add_component(w, 0, 7, create_grid(4, 1, 60, 20));
-	add_component(g, 0, 0, create_label("  v1:"));
-	add_component(g, 1, 0, create_button(50, 25, "-", NULL));
-	gui.components.v1 = add_component(g, 2, 0, create_textbox(50, 25, "0.0", NULL));
-	add_component(g, 3, 0, create_button(50, 25, "+", NULL));
+	g = add_component(w, 0, 7, create_grid(2, 1, 150, 20));
+	gui.components.v1Tag = add_component(g, 0, 0, create_label("  v1:"));
+	gui.components.v1 = add_component(g, 1, 0, create_textbox(80, 25, "0.0", _set_v1));
 
-	g = add_component(w, 0, 8, create_grid(4, 1, 60, 20));
-	add_component(g, 0, 0, create_label("  v2:"));
-	add_component(g, 1, 0, create_button(50, 25, "-", NULL));
-	gui.components.v2 = add_component(g, 2, 0, create_textbox(50, 25, "0.0", NULL));
-	add_component(g, 3, 0, create_button(50, 25, "+", NULL));
+	g = add_component(w, 0, 8, create_grid(2, 1, 150, 20));
+	gui.components.v2Tag = add_component(g, 0, 0, create_label("  v2:"));
+	gui.components.v2 = add_component(g, 1, 0, create_textbox(80, 25, "0.0", _set_v2));
 
-	g = add_component(w, 0, 9, create_grid(4, 1, 60, 20));
-	add_component(g, 0, 0, create_label("  v3:"));
-	add_component(g, 1, 0, create_button(50, 25, "-", NULL));
-	gui.components.v3 = add_component(g, 2, 0, create_textbox(50, 25, "0.0", NULL));
-	add_component(g, 3, 0, create_button(50, 25, "+", NULL));
+	g = add_component(w, 0, 9, create_grid(2, 1, 150, 20));
+	gui.components.v3Tag = add_component(g, 0, 0, create_label("  v3:"));
+	gui.components.v3 = add_component(g, 1, 0, create_textbox(80, 25, "0.0", _set_v3));
 }
 
 void _update_material_window() {
@@ -117,21 +166,47 @@ void _update_material_window() {
 	switch (gui.selectedMaterial.type) {
 		case 1:
 			change_component_text(gui.components.material, "%s", "light");
+
+			change_component_text(gui.components.v1Tag, "  brightness:");
+			change_component_text(gui.components.v2Tag, "");
+			change_component_text(gui.components.v3Tag, "");
+
+			change_component_text(gui.components.v1, "%.02f", gui.selectedMaterial.v1);
+			change_component_text(gui.components.v2, "--");
+			change_component_text(gui.components.v3, "--");
 			break;
 		case 2:
 			change_component_text(gui.components.material, "%s", "lambert");
+
+			change_component_text(gui.components.v1Tag, "");
+			change_component_text(gui.components.v2Tag, "");
+			change_component_text(gui.components.v3Tag, "");
+
+			change_component_text(gui.components.v1, "--");
+			change_component_text(gui.components.v2, "--");
+			change_component_text(gui.components.v3, "--");
 			break;
 		case 3:
 			change_component_text(gui.components.material, "%s", "metal");
+
+			change_component_text(gui.components.v1Tag, "  tint:");
+			change_component_text(gui.components.v2Tag, "  fuzz:");
+			change_component_text(gui.components.v3Tag, "");
+
+			change_component_text(gui.components.v1, "%.02f", gui.selectedMaterial.v1);
+			change_component_text(gui.components.v2, "%.02f", gui.selectedMaterial.v2);
+			change_component_text(gui.components.v3, "--");
 			break;
 		case 4:
 			change_component_text(gui.components.material, "%s", "glass");
-			break;
 
-		default:
+			change_component_text(gui.components.v1Tag, "  tint:");
+			change_component_text(gui.components.v2Tag, "  fuzz:");
+			change_component_text(gui.components.v3Tag, "  refIdx:");
+
+			change_component_text(gui.components.v1, "%.02f", gui.selectedMaterial.v1);
+			change_component_text(gui.components.v2, "%.02f", gui.selectedMaterial.v2);
+			change_component_text(gui.components.v3, "%.02f", gui.selectedMaterial.v3);
 			break;
 	}
-	change_component_text(gui.components.v1, "%.02f", gui.selectedMaterial.v1);
-	change_component_text(gui.components.v2, "%.02f", gui.selectedMaterial.v2);
-	change_component_text(gui.components.v3, "%.02f", gui.selectedMaterial.v3);
 }

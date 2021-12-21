@@ -22,7 +22,7 @@ typedef struct CLImage {
 } CLImage;
 
 typedef struct VoxMaterial {
-	cl_uchar type;
+	cl_int type;
 	cl_float3 color;
 
 	cl_float v1;

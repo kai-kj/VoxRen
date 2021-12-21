@@ -6,27 +6,43 @@ Status save_scene_to_file(char *fileName) {
 	FILE *fp = fopen(fileName, "wb");
 
 	// camera
-	fwrite(&ren.camera.pos.x, sizeof(cl_float), 1, fp);
-	fwrite(&ren.camera.pos.y, sizeof(cl_float), 1, fp);
-	fwrite(&ren.camera.pos.z, sizeof(cl_float), 1, fp);
+	fwrite(&ren.camera.pos.x, sizeof(float), 1, fp);
+	fwrite(&ren.camera.pos.y, sizeof(float), 1, fp);
+	fwrite(&ren.camera.pos.z, sizeof(float), 1, fp);
 
-	fwrite(&ren.camera.rot.x, sizeof(cl_float), 1, fp);
-	fwrite(&ren.camera.rot.y, sizeof(cl_float), 1, fp);
+	fwrite(&ren.camera.rot.x, sizeof(float), 1, fp);
+	fwrite(&ren.camera.rot.y, sizeof(float), 1, fp);
 
-	fwrite(&ren.camera.sensorWidth, sizeof(cl_float), 1, fp);
-	fwrite(&ren.camera.focalLength, sizeof(cl_float), 1, fp);
-	fwrite(&ren.camera.aperture, sizeof(cl_float), 1, fp);
-	fwrite(&ren.camera.exposure, sizeof(cl_float), 1, fp);
+	fwrite(&ren.camera.sensorWidth, sizeof(float), 1, fp);
+	fwrite(&ren.camera.focalLength, sizeof(float), 1, fp);
+	fwrite(&ren.camera.aperture, sizeof(float), 1, fp);
+	fwrite(&ren.camera.exposure, sizeof(float), 1, fp);
 
 	// bg color
-	fwrite(&ren.scene.bgColor.x, sizeof(cl_float), 1, fp);
-	fwrite(&ren.scene.bgColor.y, sizeof(cl_float), 1, fp);
-	fwrite(&ren.scene.bgColor.z, sizeof(cl_float), 1, fp);
-	fwrite(&ren.scene.bgBrightness, sizeof(cl_float), 1, fp);
+	fwrite(&ren.scene.bgColor.x, sizeof(float), 1, fp);
+	fwrite(&ren.scene.bgColor.y, sizeof(float), 1, fp);
+	fwrite(&ren.scene.bgColor.z, sizeof(float), 1, fp);
+	fwrite(&ren.scene.bgBrightness, sizeof(float), 1, fp);
 
-	// voxles
-	fwrite(&ren.scene.voxelCount, sizeof(cl_int), 1, fp);
-	fwrite(ren.scene.voxels, sizeof(Voxel), ren.scene.voxelCount, fp);
+	// voxels
+	fwrite(&ren.scene.voxelCount, sizeof(int), 1, fp);
+
+	for (int i = 0; i < ren.scene.voxelCount; i++) {
+		Voxel *v = &ren.scene.voxels[i];
+		fwrite(&v->pos.x, sizeof(int), 1, fp);
+		fwrite(&v->pos.y, sizeof(int), 1, fp);
+		fwrite(&v->pos.z, sizeof(int), 1, fp);
+
+		fwrite(&v->material.type, sizeof(int), 1, fp);
+
+		fwrite(&v->material.color.x, sizeof(float), 1, fp);
+		fwrite(&v->material.color.y, sizeof(float), 1, fp);
+		fwrite(&v->material.color.z, sizeof(float), 1, fp);
+
+		fwrite(&v->material.v1, sizeof(float), 1, fp);
+		fwrite(&v->material.v2, sizeof(float), 1, fp);
+		fwrite(&v->material.v3, sizeof(float), 1, fp);
+	}
 
 	fclose(fp);
 
@@ -42,34 +58,50 @@ Status load_scene_from_file(char *fileName) {
 	if (fp != NULL) {
 
 		// camera
-		fread(&ren.camera.pos.x, sizeof(cl_float), 1, fp);
-		fread(&ren.camera.pos.y, sizeof(cl_float), 1, fp);
-		fread(&ren.camera.pos.z, sizeof(cl_float), 1, fp);
+		fread(&ren.camera.pos.x, sizeof(float), 1, fp);
+		fread(&ren.camera.pos.y, sizeof(float), 1, fp);
+		fread(&ren.camera.pos.z, sizeof(float), 1, fp);
 
 		float rx, ry;
-		fread(&rx, sizeof(cl_float), 1, fp);
-		fread(&ry, sizeof(cl_float), 1, fp);
+		fread(&rx, sizeof(float), 1, fp);
+		fread(&ry, sizeof(float), 1, fp);
 
 		set_camera_pos(ren.camera.pos.x, ren.camera.pos.y, ren.camera.pos.z, rx, ry);
 
-		fread(&ren.camera.sensorWidth, sizeof(cl_float), 1, fp);
-		fread(&ren.camera.focalLength, sizeof(cl_float), 1, fp);
-		fread(&ren.camera.aperture, sizeof(cl_float), 1, fp);
-		fread(&ren.camera.exposure, sizeof(cl_float), 1, fp);
+		fread(&ren.camera.sensorWidth, sizeof(float), 1, fp);
+		fread(&ren.camera.focalLength, sizeof(float), 1, fp);
+		fread(&ren.camera.aperture, sizeof(float), 1, fp);
+		fread(&ren.camera.exposure, sizeof(float), 1, fp);
 
 		// bg color
-		fread(&ren.scene.bgColor.x, sizeof(cl_float), 1, fp);
-		fread(&ren.scene.bgColor.y, sizeof(cl_float), 1, fp);
-		fread(&ren.scene.bgColor.z, sizeof(cl_float), 1, fp);
-		fread(&ren.scene.bgBrightness, sizeof(cl_float), 1, fp);
+		fread(&ren.scene.bgColor.x, sizeof(float), 1, fp);
+		fread(&ren.scene.bgColor.y, sizeof(float), 1, fp);
+		fread(&ren.scene.bgColor.z, sizeof(float), 1, fp);
+		fread(&ren.scene.bgBrightness, sizeof(float), 1, fp);
 
 		// voxles
-		cl_int voxCount;
-		fread(&voxCount, sizeof(cl_int), 1, fp);
+		int voxCount;
+		fread(&voxCount, sizeof(int), 1, fp);
 		dbg("Voxel count: %d", voxCount);
 
 		Voxel *tmp = malloc(sizeof(Voxel) * voxCount);
-		fread(tmp, sizeof(Voxel), voxCount, fp);
+
+		for (int i = 0; i < voxCount; i++) {
+			Voxel *v = &tmp[i];
+			fread(&v->pos.x, sizeof(int), 1, fp);
+			fread(&v->pos.y, sizeof(int), 1, fp);
+			fread(&v->pos.z, sizeof(int), 1, fp);
+
+			fread(&v->material.type, sizeof(int), 1, fp);
+
+			fread(&v->material.color.x, sizeof(float), 1, fp);
+			fread(&v->material.color.y, sizeof(float), 1, fp);
+			fread(&v->material.color.z, sizeof(float), 1, fp);
+
+			fread(&v->material.v1, sizeof(float), 1, fp);
+			fread(&v->material.v2, sizeof(float), 1, fp);
+			fread(&v->material.v3, sizeof(float), 1, fp);
+		}
 
 		ren.scene.voxelCount = 0;
 		ren.scene.chunkCount = 0;

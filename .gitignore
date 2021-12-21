@@ -5,3 +5,4 @@ VoxRen
 *.bmp
 log.txt
 .vscode
+data/python/__pycache__

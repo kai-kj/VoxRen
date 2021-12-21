@@ -194,3 +194,26 @@ Status remove_voxel(int x, int y, int z) {
 
 	return SUCCESS;
 }
+
+Status resize_chunks(int chunkSize) {
+	if (chunkSize < 1) return FAILURE;
+
+	ren.scene.chunkSize = chunkSize;
+
+	int voxCount = ren.scene.voxelCount;
+	Voxel *oldVoxels = malloc(sizeof(Voxel) * voxCount);
+	memcpy(oldVoxels, ren.scene.voxels, sizeof(Voxel) * voxCount);
+
+	ren.scene.voxelCount = 0;
+	ren.scene.chunkCount = 0;
+
+	for (int i = 0; i < voxCount; i++) {
+		add_voxel(oldVoxels[i].pos.x, oldVoxels[i].pos.y, oldVoxels[i].pos.z, oldVoxels[i].material);
+	}
+
+	safe_free(oldVoxels);
+
+	ren.restartRender = 1;
+
+	return SUCCESS;
+}

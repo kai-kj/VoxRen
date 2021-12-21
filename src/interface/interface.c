@@ -1,5 +1,6 @@
 #include "interface.h"
 
+#include "windows/chunks.h"
 #include "windows/file.h"
 #include "windows/info.h"
 #include "windows/material.h"
@@ -78,6 +79,7 @@ Status create_interface() {
 	_create_info_window();
 	_create_scene_window();
 	_create_file_window();
+	_create_chunks_window();
 	return SUCCESS;
 }
 
@@ -85,5 +87,6 @@ Status update_interface() {
 	_update_material_window();
 	_update_info_window();
 	_update_scene_window();
+	_update_chunks_window();
 	return SUCCESS;
 }

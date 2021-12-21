@@ -15,7 +15,7 @@ void _draw_mode_indicator(int x, int y) {
 }
 
 void _create_info_window() {
-	ComponentID w = create_window(20, 400 + 40 + 40, 1, 12, 250, 40, "Info");
+	ComponentID w = create_window(20, 400 + 40 + 40, 1, 15, 250, 40, "Info");
 
 	add_component(w, 0, 0, create_label("Mode"));
 	add_component(w, 0, 1, create_custom_component(_draw_mode_indicator));
@@ -30,6 +30,9 @@ void _create_info_window() {
 	add_component(w, 0, 10, create_label("Render Image"));
 	ComponentID l = add_component(w, 0, 11, create_label("  000x000 px"));
 	change_component_text(l, "  %dx%d px", ren.image.size.x, ren.image.size.y);
+	add_component(w, 0, 12, create_label("Voxel / Chunk count:"));
+	gui.components.voxCount = add_component(w, 0, 13, create_label("  Voxels:"));
+	gui.components.chunkCount = add_component(w, 0, 14, create_label("  Chunks:"));
 }
 
 void _update_info_window() {
@@ -42,4 +45,6 @@ void _update_info_window() {
 	change_component_text(gui.components.lookingAtNormal, "  Normal: (%d, %d, %d)", ren.lookingAtNormal.x,
 						  ren.lookingAtNormal.y, ren.lookingAtNormal.z);
 	change_component_text(gui.components.lookingAtDistance, "  Distance: %.02f", ren.lookingAtDistance);
+	change_component_text(gui.components.voxCount, "  Voxels: %d", ren.scene.voxelCount);
+	change_component_text(gui.components.chunkCount, "  Chunks: %d", ren.scene.chunkCount);
 }

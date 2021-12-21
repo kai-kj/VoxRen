@@ -3,7 +3,7 @@
 #define FILE_NAME "data/kernel/pathtracer.cl"
 #define KERNEL_NAME "pathtracer"
 #define ARGS "-Werror -cl-mad-enable -cl-no-signed-zeros -cl-fast-relaxed-math"
-#define CHUNK_SIZE 3
+#define CHUNK_SIZE 10
 
 Status setup_renderer_args() {
 	int imageSize = ren.image.size.x * ren.image.size.y;

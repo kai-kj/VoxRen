@@ -19,7 +19,7 @@ typedef struct Ray {
 } Ray;
 
 typedef struct Material {
-	uchar type;
+	int type;
 	float3 color;
 
 	float v1;
@@ -247,7 +247,8 @@ float3 get_color(Renderer *r, Ray ray, int maxDepth) {
 			switch (material.type) {
 				case MATERIAL_TYPE_LIGHT_SOURCE:
 					// TODO: better lighting
-					color = material.color * mask * material.v1;
+					color = i == 0 ? material.color : material.color * mask * material.v1;
+					// color = (mask + material.color * material.v1) / (material.v1 + 1);
 					returnFlag = true;
 					break;
 

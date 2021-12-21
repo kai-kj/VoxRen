@@ -33,6 +33,7 @@ Status set_output_properties(int width, int height);
 Status set_background_properties(float red, float green, float blue, float brightness);
 Status add_voxel(int x, int y, int z, VoxMaterial material);
 Status remove_voxel(int x, int y, int z);
+Status resize_chunks(int chunkSize);
 
 //--------------------------------------------------------------------------------------------------------------------//
 // camera                                                                                                             //

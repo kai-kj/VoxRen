@@ -8,6 +8,9 @@ typedef struct ComponentsIDs {
 	ComponentID green;
 	ComponentID blue;
 	ComponentID material;
+	ComponentID v1Tag;
+	ComponentID v2Tag;
+	ComponentID v3Tag;
 	ComponentID v1;
 	ComponentID v2;
 	ComponentID v3;
@@ -18,6 +21,8 @@ typedef struct ComponentsIDs {
 	ComponentID lookingAtVoxel;
 	ComponentID lookingAtNormal;
 	ComponentID lookingAtDistance;
+	ComponentID voxCount;
+	ComponentID chunkCount;
 
 	ComponentID cameraX;
 	ComponentID cameraY;
@@ -34,6 +39,8 @@ typedef struct ComponentsIDs {
 	ComponentID bgGreen;
 	ComponentID bgBlue;
 	ComponentID bgBrightness;
+
+	ComponentID chunkSize;
 } ComponentIDs;
 
 typedef struct GUIState {

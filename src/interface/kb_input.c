@@ -26,12 +26,12 @@ Status procces_kb_input() {
 	}
 
 	if (IsKeyDown(KEY_LEFT_CONTROL)) {
-		ren.camera.pos.y += gui.cameraMoveSpeed * GetFrameTime();
+		ren.camera.pos.y -= gui.cameraMoveSpeed * GetFrameTime();
 		ren.restartRender = 1;
 	}
 
 	if (IsKeyDown(KEY_SPACE)) {
-		ren.camera.pos.y -= gui.cameraMoveSpeed * GetFrameTime();
+		ren.camera.pos.y += gui.cameraMoveSpeed * GetFrameTime();
 		ren.restartRender = 1;
 	}
 

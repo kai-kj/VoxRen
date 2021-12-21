@@ -48,7 +48,6 @@ run: clean $(BIN)
 
 debug: CC += -g
 debug: clean $(BIN)
-	gdb $(BIN)
 
 $(BUILD):
 	$(MKDIR) $(BUILD)

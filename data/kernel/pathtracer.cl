@@ -276,7 +276,8 @@ Ray get_first_ray(Renderer *r, int id, bool blur) {
 	float cosY = cos(r->camera.rot.y);
 	float sinY = sin(r->camera.rot.y);
 
-	direction = (float3){direction.x, direction.y * cosY - direction.z * sinY, direction.y * sinY + direction.z * cosY};
+	direction =
+		(float3){direction.x, -direction.y * cosY + direction.z * sinY, direction.y * sinY + direction.z * cosY};
 
 	direction = (float3){
 		direction.x * cosX - direction.z * sinX,

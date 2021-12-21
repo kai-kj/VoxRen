@@ -94,27 +94,12 @@ float3 get_random_unit_vector(ulong *rng) {
 	return (float3){sqrtZ * cos(theta), sqrtZ * sin(theta), z};
 }
 
-#define get_max_idx(t, a, b) (t[a] > t[b] ? a : b)
-#define get_min_idx(t, a, b) (t[a] < t[b] ? a : b)
-
 //--------------------------------------------------------------------------------------------------------------------//
 // math                                                                                                               //
 //--------------------------------------------------------------------------------------------------------------------//
 
-float3 rotate_vector(float3 vec, float3 rot) {
-	float3 nVec;
-
-	nVec.x = vec.x * cos(rot.z) - vec.y * sin(rot.z);
-	nVec.y = vec.x * sin(rot.z) + vec.y * cos(rot.z);
-
-	nVec.x = vec.x * cos(rot.y) + vec.z * sin(rot.y);
-	nVec.z = -vec.x * sin(rot.y) + vec.z * cos(rot.y);
-
-	nVec.y = vec.y * cos(rot.x) - vec.z * sin(rot.x);
-	nVec.z = vec.y * sin(rot.x) + vec.z * cos(rot.x);
-
-	return nVec;
-}
+#define get_max_idx(t, a, b) (t[a] > t[b] ? a : b)
+#define get_min_idx(t, a, b) (t[a] < t[b] ? a : b)
 
 float3 get_reflection_dir(float3 in, float3 normal) {
 	return in - normal * 2 * dot(in, normal);
@@ -147,9 +132,6 @@ bool ray_voxel(Ray ray, global Voxel *voxel, float3 dirFrac, float *tMin) {
 
 	return tMax > *tMin && tMax >= 0;
 }
-
-// constant int3 returnValues[6] = {(int3){-1, 0, 0}, (int3){1, 0, 0},	 (int3){0, -1, 0},
-// 								 (int3){0, 1, 0},  (int3){0, 0, -1}, (int3){0, 0, 1}};
 
 int3 get_ray_voxel_normal(Ray ray, global Voxel *voxel, float3 dirFrac) {
 	int3 returnValues[6] = {(int3){-1, 0, 0}, (int3){1, 0, 0},	(int3){0, -1, 0},
@@ -199,11 +181,8 @@ bool cast_ray(Renderer *r, Ray ray, float3 *hitPos, int3 *normal, Voxel *voxel) 
 
 	for (uint i = 0; i < r->chunkCount; i++) {
 		global Chunk *chunk = &r->chunks[i];
-
 		if (ray_chunk(ray, chunk, r->chunkSize, dirFrac)) {
-			int lastVoxel = chunk->firstVoxel + chunk->voxelCount;
-
-			for (uint j = chunk->firstVoxel; j < lastVoxel; j++) {
+			for (uint j = chunk->firstVoxel; j < chunk->firstVoxel + chunk->voxelCount; j++) {
 				float t;
 				if (ray_voxel(ray, &r->voxels[j], dirFrac, &t)) {
 					if (!hit || t < minDist) {
@@ -226,29 +205,23 @@ bool cast_ray(Renderer *r, Ray ray, float3 *hitPos, int3 *normal, Voxel *voxel) 
 }
 
 float3 get_color(Renderer *r, Ray ray, int maxDepth) {
-	// TODO: maxDepth
-	// TODO: russian rulette
-
 	int returnFlag = false;
 	float3 mask = 1;
 	float3 color = 0;
 
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 5 && !returnFlag; i++) {
 		float3 hitPos;
 		int3 iNormal;
 		Voxel voxel;
 
 		if (cast_ray(r, ray, &hitPos, &iNormal, &voxel)) {
 			Material material = voxel.material;
-			float3 fNormal = convert_float3(iNormal);
+			float3 fNormal = (float3){iNormal.x, iNormal.y, iNormal.z};
 			hitPos += fNormal * SMALL_NUM;
 
-			// TODO: dielectric material
 			switch (material.type) {
 				case MATERIAL_TYPE_LIGHT_SOURCE:
-					// TODO: better lighting
 					color = i == 0 ? material.color : material.color * mask * material.v1;
-					// color = (mask + material.color * material.v1) / (material.v1 + 1);
 					returnFlag = true;
 					break;
 
@@ -266,17 +239,12 @@ float3 get_color(Renderer *r, Ray ray, int maxDepth) {
 
 				case MATERIAL_TYPE_DIELECTRIC:
 					break;
-
-				default:
-					break;
 			}
 
 		} else {
-			color = mask * r->bgColor * r->bgBrightness;
+			color = i == 0 ? r->bgColor : r->bgColor * mask * r->bgBrightness;
 			returnFlag = true;
 		}
-
-		if (returnFlag) break;
 	}
 
 	return color;

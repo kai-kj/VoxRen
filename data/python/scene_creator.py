@@ -33,8 +33,12 @@ class Scene:
 	def rotateCamera(self, rot: (float, float)):
 		self.camera.rot = rot
 	
-	def setProperties(self, sensorWidth: float, focalLength: float, aperture: float, exposure: float):
+	def setCameraProperties(self, sensorWidth: float, focalLength: float, aperture: float, exposure: float):
 		self.camera.properties = (sensorWidth, focalLength, aperture, exposure)
+	
+	def setBackground(self, color: (float, float, float), brightness: float):
+		self.bgColor = color
+		self.bgBrightness = brightness
 	
 	def read(self, fileName: str):
 		f = open(fileName, "rb")

@@ -73,7 +73,7 @@ void _draw_component(ComponentID compID, int x, int y) {
 		case 3:
 			_draw_textbox(&component->data.textbox, x, y);
 			break;
-		case 5:
+		case 4:
 			_draw_custom_component(&component->data.customComponent, x, y);
 			break;
 	}
@@ -92,9 +92,6 @@ void _process_component(ComponentID compID, int x, int y) {
 			break;
 		case 3:
 			_process_textbox(&component->data.textbox, x, y);
-			break;
-		case 4:
-			_process_pos_tracker(&component->data.posTracker, x, y);
 			break;
 	}
 }

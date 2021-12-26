@@ -31,6 +31,7 @@ Status render_frame(int sampleNumber);
 
 Status set_output_properties(int width, int height);
 Status set_background_properties(float red, float green, float blue, float brightness);
+Status pre_allocate_space_for_voxels(int additionalSpaces);
 Status add_voxel(int x, int y, int z, VoxMaterial material);
 Status remove_voxel(int x, int y, int z);
 Status resize_chunks(int chunkSize);

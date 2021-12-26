@@ -27,7 +27,13 @@ Status save_scene_to_file(char *fileName) {
 	// voxels
 	fwrite(&ren.scene.voxelCount, sizeof(int), 1, fp);
 
+	fflush(stdout);
+	printf("\e[?25l"); // hide cursor
+
 	for (int i = 0; i < ren.scene.voxelCount; i++) {
+		printf("\r      > Writing voxel [%d/%d] (%02.2f%%)", i + 1, ren.scene.voxelCount,
+			   100.0 * (i + 1) / ren.scene.voxelCount);
+
 		Voxel *v = &ren.scene.voxels[i];
 		fwrite(&v->pos.x, sizeof(int), 1, fp);
 		fwrite(&v->pos.y, sizeof(int), 1, fp);
@@ -43,6 +49,8 @@ Status save_scene_to_file(char *fileName) {
 		fwrite(&v->material.v2, sizeof(float), 1, fp);
 		fwrite(&v->material.v3, sizeof(float), 1, fp);
 	}
+
+	printf("\n\e[?25h"); // show cursor
 
 	fclose(fp);
 
@@ -82,14 +90,13 @@ Status load_scene_from_file(char *fileName) {
 		// voxles
 		int voxCount;
 		fread(&voxCount, sizeof(int), 1, fp);
-		dbg("Voxel count: %d", voxCount);
 
 		Voxel *tmp = malloc(sizeof(Voxel) * voxCount);
 
 		printf("\e[?25l"); // hide cursor
 
 		for (int i = 0; i < voxCount; i++) {
-			printf("\r      > Reading voxel [%d/%d] (%02.2f%%)", i, voxCount, (float)i / (float)voxCount * 100.0);
+			printf("\r      > Reading voxel [%d/%d] (%02.2f%%)", i + 1, voxCount, 100.0 * (i + 1) / voxCount);
 
 			Voxel *v = &tmp[i];
 			fread(&v->pos.x, sizeof(int), 1, fp);
@@ -110,17 +117,18 @@ Status load_scene_from_file(char *fileName) {
 		printf("\n");
 
 		ren.scene.voxelCount = 0;
+		ren.scene.allocationSize = 0;
 		ren.scene.chunkCount = 0;
 
+		pre_allocate_space_for_voxels(voxCount);
+
 		for (int i = 0; i < voxCount; i++) {
-			printf("\r      > Adding voxel [%d/%d] (%02.2f%%)", i, voxCount, (float)i / (float)voxCount * 100.0);
+			printf("\r      > Adding voxel [%d/%d] (%02.2f%%)", i + 1, voxCount, 100.0 * (i + 1) / voxCount);
 
 			add_voxel(tmp[i].pos.x, tmp[i].pos.y, tmp[i].pos.z, tmp[i].material);
 		}
 
-		printf("\n");
-
-		printf("\e[?25h"); // show cursor
+		printf("\n\e[?25h"); // show cursor
 
 		free(tmp);
 		fclose(fp);
@@ -131,6 +139,7 @@ Status load_scene_from_file(char *fileName) {
 		ren.scene.bgBrightness = 0.5;
 
 		ren.scene.voxelCount = 0;
+		ren.scene.allocationSize = 0;
 		ren.scene.chunkCount = 0;
 	}
 

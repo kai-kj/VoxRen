@@ -43,6 +43,7 @@ typedef struct Chunk {
 } Chunk;
 
 typedef struct Scene {
+	int allocationSize;
 	cl_int voxelCount;
 	Voxel *voxels;
 

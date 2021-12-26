@@ -18,7 +18,10 @@
   VoxRen h [file name] [width] [height] [render samples] [output file]
 
 - resolutions:
-  - 4k: 3840 2160
+  - 854 x 480 (FWVGA)
+  - 1280 x 720 (HD)
+  - 1920 x 1080 (FHD)
+  - 3840 x 2160 (UHD)
 */
 
 void load_scene(int argc, char **argv) {

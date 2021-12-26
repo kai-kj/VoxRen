@@ -110,6 +110,7 @@ Status create_renderer() {
 	srand(time(NULL));
 
 	ren.scene.voxelCount = 0;
+	ren.scene.allocationSize = 0;
 	ren.scene.chunkCount = 0;
 	ren.program.voxelBuff = NULL;
 	ren.program.imageBuff = NULL;

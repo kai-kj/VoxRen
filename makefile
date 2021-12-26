@@ -18,7 +18,7 @@ LIBS := -lOpenCL -lm -pthread -lraylib -lGL -ldl -lrt -lX11
 FLAGS := -Wall -Wno-missing-braces 
 
 # defines
-DEFS := -D CL_TARGET_OPENCL_VERSION=300 -D K_UTIL_DEBUG
+DEFS := -D CL_TARGET_OPENCL_VERSION=300 -D K_UTIL_DEBUG -D RAY_DEBUG
 #------------------------------------------------------------------------------#
 # other variables                                                              #
 #------------------------------------------------------------------------------#
@@ -80,8 +80,7 @@ $(BIN): $(BUILD)
 	$(CC) -c $(SRC)/kGui/c01_label.c -o $(BUILD)/kGui/c01_label.a
 	$(CC) -c $(SRC)/kGui/c02_button.c -o $(BUILD)/kGui/c02_button.a
 	$(CC) -c $(SRC)/kGui/c03_textbox.c -o $(BUILD)/kGui/c03_textbox.a
-	$(CC) -c $(SRC)/kGui/c04_pos_tracker.c -o $(BUILD)/kGui/c04_pos_tracker.a
-	$(CC) -c $(SRC)/kGui/c05_custom_component.c -o $(BUILD)/kGui/c05_custom_component.a
+	$(CC) -c $(SRC)/kGui/c04_custom_component.c -o $(BUILD)/kGui/c04_custom_component.a
 
 	$(CC) -c $(SRC)/headless/headless.c -o $(BUILD)/headless/headless.a
 

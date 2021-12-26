@@ -35,11 +35,6 @@ typedef struct Textbox {
 	int mouseInBounds;
 } Textbox;
 
-typedef struct PositionTracker {
-	int x;
-	int y;
-} PositionTracker;
-
 typedef struct CustomComponent {
 	void (*fn)(int, int);
 } CustomComponent;
@@ -52,7 +47,6 @@ typedef struct Component {
 		Label label;
 		Button button;
 		Textbox textbox;
-		PositionTracker posTracker;
 		CustomComponent customComponent;
 	} data;
 } Component;

@@ -2,7 +2,7 @@
 
 Component create_custom_component(void (*fn)(int, int)) {
 	Component component;
-	component.type = 5;
+	component.type = 4;
 	component.data.customComponent.fn = fn;
 	return component;
 }

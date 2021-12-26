@@ -60,12 +60,6 @@ void _draw_textbox(Textbox *textbox, int x, int y);
 void _process_textbox(Textbox *textbox, int x, int y);
 void _manage_textboxes();
 
-// posTracker
-Component create_pos_tracker();
-int get_pos_tracker_x(ComponentID id);
-int get_pos_tracker_y(ComponentID id);
-void _process_pos_tracker(PositionTracker *tracker, int x, int y);
-
 // customComponent
 Component create_custom_component(void (*fn)(int, int));
 void _draw_custom_component(CustomComponent *customComponent, int x, int y);

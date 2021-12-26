@@ -7,7 +7,7 @@
 #include "windows/scene.h"
 
 void _ray_log(int msgType, const char *text, va_list args) {
-#ifndef K_UTIL_DEBUG
+#ifndef RAY_DEBUG
 	if (msgType != LOG_INFO && msgType != LOG_DEBUG) {
 #endif
 
@@ -33,7 +33,7 @@ void _ray_log(int msgType, const char *text, va_list args) {
 		vprintf(text, args);
 		printf("\n");
 
-#ifndef K_UTIL_DEBUG
+#ifndef RAY_DEBUG
 	}
 #endif
 }
@@ -55,7 +55,7 @@ Status initialise_interface() {
 	UnloadImage(tmpImg);
 
 	gui.removeVoxel = 0;
-	gui.cameraMoveSpeed = 4;
+	gui.cameraMoveSpeed = 10;
 	gui.cameraLookSpeed = 0.1;
 	gui.selectedMaterial = (VoxMaterial){2, (cl_float3){0.5, 0.5, 0.5}, 0, 0, 0};
 

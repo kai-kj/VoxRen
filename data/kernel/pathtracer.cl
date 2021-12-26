@@ -1,7 +1,7 @@
 // built-in opencl constants don't seem to work
 #define PI 3.14159265359f
 #define BIG_NUM 2147483647.0f
-#define SMALL_NUM 0.00001f
+#define SMALL_NUM 0.0001f
 
 #define MATERIAL_TYPE_EMPTY 0
 #define MATERIAL_TYPE_LIGHT_SOURCE 1

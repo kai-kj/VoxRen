@@ -60,46 +60,28 @@ void _prev_material() {
 
 void _set_v1(char *text) {
 	switch (gui.selectedMaterial.type) {
-		case 1:
-			gui.selectedMaterial.v1 = max(0, atof(text));
-			break;
-		case 2:
-			break;
-		case 3:
-			gui.selectedMaterial.v1 = min(max(0, atof(text)), 1);
-			break;
-		case 4:
-			gui.selectedMaterial.v1 = min(max(0, atof(text)), 1);
-			break;
+		case 1: gui.selectedMaterial.v1 = max(0, atof(text)); break;
+		case 2: break;
+		case 3: gui.selectedMaterial.v1 = min(max(0, atof(text)), 1); break;
+		case 4: gui.selectedMaterial.v1 = min(max(0, atof(text)), 1); break;
 	}
 }
 
 void _set_v2(char *text) {
 	switch (gui.selectedMaterial.type) {
-		case 1:
-			break;
-		case 2:
-			break;
-		case 3:
-			gui.selectedMaterial.v2 = min(max(0, atof(text)), 1);
-			break;
-		case 4:
-			gui.selectedMaterial.v2 = min(max(0, atof(text)), 1);
-			break;
+		case 1: break;
+		case 2: break;
+		case 3: gui.selectedMaterial.v2 = min(max(0, atof(text)), 1); break;
+		case 4: gui.selectedMaterial.v2 = min(max(0, atof(text)), 1); break;
 	}
 }
 
 void _set_v3(char *text) {
 	switch (gui.selectedMaterial.type) {
-		case 1:
-			break;
-		case 2:
-			break;
-		case 3:
-			break;
-		case 4:
-			gui.selectedMaterial.v3 = min(max(0, atof(text)), 1);
-			break;
+		case 1: break;
+		case 2: break;
+		case 3: break;
+		case 4: gui.selectedMaterial.v3 = min(max(0, atof(text)), 1); break;
 	}
 }
 
@@ -166,44 +148,36 @@ void _update_material_window() {
 	switch (gui.selectedMaterial.type) {
 		case 1:
 			change_component_text(gui.components.material, "%s", "light");
-
 			change_component_text(gui.components.v1Tag, "  brightness:");
 			change_component_text(gui.components.v2Tag, "");
 			change_component_text(gui.components.v3Tag, "");
-
 			change_component_text(gui.components.v1, "%.02f", gui.selectedMaterial.v1);
 			change_component_text(gui.components.v2, "--");
 			change_component_text(gui.components.v3, "--");
 			break;
 		case 2:
 			change_component_text(gui.components.material, "%s", "lambert");
-
 			change_component_text(gui.components.v1Tag, "");
 			change_component_text(gui.components.v2Tag, "");
 			change_component_text(gui.components.v3Tag, "");
-
 			change_component_text(gui.components.v1, "--");
 			change_component_text(gui.components.v2, "--");
 			change_component_text(gui.components.v3, "--");
 			break;
 		case 3:
 			change_component_text(gui.components.material, "%s", "metal");
-
 			change_component_text(gui.components.v1Tag, "  tint:");
 			change_component_text(gui.components.v2Tag, "  fuzz:");
 			change_component_text(gui.components.v3Tag, "");
-
 			change_component_text(gui.components.v1, "%.02f", gui.selectedMaterial.v1);
 			change_component_text(gui.components.v2, "%.02f", gui.selectedMaterial.v2);
 			change_component_text(gui.components.v3, "--");
 			break;
 		case 4:
 			change_component_text(gui.components.material, "%s", "glass");
-
 			change_component_text(gui.components.v1Tag, "  tint:");
 			change_component_text(gui.components.v2Tag, "  fuzz:");
 			change_component_text(gui.components.v3Tag, "  refIdx:");
-
 			change_component_text(gui.components.v1, "%.02f", gui.selectedMaterial.v1);
 			change_component_text(gui.components.v2, "%.02f", gui.selectedMaterial.v2);
 			change_component_text(gui.components.v3, "%.02f", gui.selectedMaterial.v3);

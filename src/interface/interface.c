@@ -10,24 +10,14 @@ void _ray_log(int msgType, const char *text, va_list args) {
 #ifndef RAY_DEBUG
 	if (msgType != LOG_INFO && msgType != LOG_DEBUG) {
 #endif
-
 		printf("[\e[1m\e[34mRAY\e[0m] ");
 
 		switch (msgType) {
-			case LOG_INFO:
-				printf("[\e[1m\e[33mDBG\e[0m] ");
-				break;
-			case LOG_ERROR:
-				printf("[\e[1m\e[31mERR\e[0m] ");
-				break;
-			case LOG_WARNING:
-				printf("[\e[1m\e[32mMSG\e[0m] ");
-				break;
-			case LOG_DEBUG:
-				printf("[\e[1m\e[33mDBG\e[0m] ");
-				break;
-			default:
-				break;
+			case LOG_INFO: printf("[\e[1m\e[33mDBG\e[0m] "); break;
+			case LOG_ERROR: printf("[\e[1m\e[31mERR\e[0m] "); break;
+			case LOG_WARNING: printf("[\e[1m\e[32mMSG\e[0m] "); break;
+			case LOG_DEBUG: printf("[\e[1m\e[33mDBG\e[0m] "); break;
+			default: break;
 		}
 
 		vprintf(text, args);

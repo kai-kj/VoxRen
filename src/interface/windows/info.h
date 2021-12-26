@@ -16,7 +16,6 @@ void _draw_mode_indicator(int x, int y) {
 
 void _create_info_window() {
 	ComponentID w = create_window(20, 400 + 40 + 40, 1, 15, 250, 40, "Info");
-
 	add_component(w, 0, 0, create_label("Mode"));
 	add_component(w, 0, 1, create_custom_component(_draw_mode_indicator));
 	add_component(w, 0, 2, create_label("Performance"));
@@ -38,12 +37,18 @@ void _create_info_window() {
 void _update_info_window() {
 	change_component_text(gui.components.fps, "  FPS: %03d", (int)(GetFPS()));
 	change_component_text(gui.components.rps, "  RPS: %03d", (int)(1.0 / ren.dt));
-	change_component_text(gui.components.lookingAtPixel, "  Pixel:  (%d, %d)", gui.renderMousePosX,
-						  gui.renderMousePosY);
-	change_component_text(gui.components.lookingAtVoxel, "  Voxel:  (%d, %d, %d)", ren.lookingAtPos.x,
-						  ren.lookingAtPos.y, ren.lookingAtPos.z);
-	change_component_text(gui.components.lookingAtNormal, "  Normal: (%d, %d, %d)", ren.lookingAtNormal.x,
-						  ren.lookingAtNormal.y, ren.lookingAtNormal.z);
+	change_component_text(
+		gui.components.lookingAtPixel, "  Pixel:  (%d, %d)", gui.renderMousePosX, gui.renderMousePosY);
+	change_component_text(gui.components.lookingAtVoxel,
+						  "  Voxel:  (%d, %d, %d)",
+						  ren.lookingAtPos.x,
+						  ren.lookingAtPos.y,
+						  ren.lookingAtPos.z);
+	change_component_text(gui.components.lookingAtNormal,
+						  "  Normal: (%d, %d, %d)",
+						  ren.lookingAtNormal.x,
+						  ren.lookingAtNormal.y,
+						  ren.lookingAtNormal.z);
 	change_component_text(gui.components.lookingAtDistance, "  Distance: %.02f", ren.lookingAtDistance);
 	change_component_text(gui.components.voxCount, "  Voxels: %d", ren.scene.voxelCount);
 	change_component_text(gui.components.chunkCount, "  Chunks: %d", ren.scene.chunkCount);

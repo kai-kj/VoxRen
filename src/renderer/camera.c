@@ -18,17 +18,13 @@ Status set_camera_pos(float x, float y, float z, float rx, float ry) {
 	ren.camera.rot = (cl_float2){.x = rx, .y = ry};
 
 	while (1) {
-		if (abs(ren.camera.rot.x) > 2 * M_PI)
-			ren.camera.rot.x -= 2 * M_PI * sign(ren.camera.rot.x);
-		else
-			break;
+		if (abs(ren.camera.rot.x) > 2 * M_PI) ren.camera.rot.x -= 2 * M_PI * sign(ren.camera.rot.x);
+		else break;
 	}
 
 	while (1) {
-		if (abs(ren.camera.rot.y) > 2 * M_PI)
-			ren.camera.rot.y -= 2 * M_PI * sign(ren.camera.rot.y);
-		else
-			break;
+		if (abs(ren.camera.rot.y) > 2 * M_PI) ren.camera.rot.y -= 2 * M_PI * sign(ren.camera.rot.y);
+		else break;
 	}
 
 	if (ren.camera.rot.y < -M_PI / 2) ren.camera.rot.y = -M_PI / 2;
@@ -77,14 +73,10 @@ Status add_voxel_at_mouse(VoxMaterial material) {
 }
 
 Status remove_voxel_at_mouse(VoxMaterial material) {
-	if (ren.lookingAtPos.x == -1) return FAILURE;
-
-	int x = ren.lookingAtPos.x;
-	int y = ren.lookingAtPos.y;
-	int z = ren.lookingAtPos.z;
-
-	dbg("Removing voxel (%d, %d, %d)", x, y, z);
-	remove_voxel(x, y, z);
+	if (ren.lookingAt) {
+		dbg("Removing voxel (%d, %d, %d)", ren.lookingAtPos.x, ren.lookingAtPos.y, ren.lookingAtPos.z);
+		remove_voxel(ren.lookingAtPos.x, ren.lookingAtPos.y, ren.lookingAtPos.z);
+	}
 
 	return SUCCESS;
 }

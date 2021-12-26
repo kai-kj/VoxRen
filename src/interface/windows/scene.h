@@ -150,7 +150,6 @@ void _create_scene_window() {
 void _update_scene_window() {
 	float pitch = ren.camera.rot.x * 180 / PI;
 	float yaw = ren.camera.rot.y * 180 / PI;
-
 	change_component_text(gui.components.cameraX, "%.01f", ren.camera.pos.x);
 	change_component_text(gui.components.cameraY, "%.01f", ren.camera.pos.y);
 	change_component_text(gui.components.cameraZ, "%.01f", ren.camera.pos.z);

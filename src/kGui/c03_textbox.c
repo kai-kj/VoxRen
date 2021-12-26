@@ -24,14 +24,15 @@ Component create_numbox(int width, int height, char *text, void (*fn)(char *)) {
 void _draw_textbox(Textbox *textbox, int x, int y) {
 	Rectangle btnRect = (Rectangle){x, y, textbox->width, textbox->height};
 
-	if (textbox->editing)
-		_draw_rectangle(btnRect, kGS.settings.textboxPressedColor);
-	else
-		_draw_rectangle(btnRect, kGS.settings.textboxReleasedColor);
+	if (textbox->editing) _draw_rectangle(btnRect, kGS.settings.textboxPressedColor);
+	else _draw_rectangle(btnRect, kGS.settings.textboxReleasedColor);
 
 	DrawRectangleLinesEx(btnRect, kGS.settings.textboxBorderSize, kGS.settings.borderColor);
 
-	DrawText(textbox->text, x + kGS.settings.padding, y + kGS.settings.padding, kGS.settings.fontSize,
+	DrawText(textbox->text,
+			 x + kGS.settings.padding,
+			 y + kGS.settings.padding,
+			 kGS.settings.fontSize,
 			 kGS.settings.fontColor);
 }
 
@@ -85,8 +86,6 @@ void _manage_textbox(Textbox *textbox) {
 
 void _manage_textboxes() {
 	for (int i = 0; i < kGS.componentCount; i++) {
-		if (kGS.components[i].type == 3) {
-			_manage_textbox(&kGS.components[i].data.textbox);
-		}
+		if (kGS.components[i].type == 3) _manage_textbox(&kGS.components[i].data.textbox);
 	}
 }

@@ -2,7 +2,8 @@
 
 void _process_all_components() {
 	for (int i = 0; i < kGS.windowCount; i++) {
-		_process_component(kGS.windows[i].grid, kGS.windows[i].x + kGS.settings.borderSize,
+		_process_component(kGS.windows[i].grid,
+						   kGS.windows[i].x + kGS.settings.borderSize,
 						   kGS.windows[i].y + kGS.settings.borderSize + kGS.settings.titleBarHeight);
 	}
 }
@@ -25,21 +26,13 @@ ComponentID add_component(ComponentID destId, int x, int y, Component component)
 void change_component_text(ComponentID compId, char *format, ...) {
 	char *dest;
 
+	if (kGS.components[compId].type == 3 && kGS.components[compId].data.textbox.editing) return;
+
 	switch (kGS.components[compId].type) {
-		case 1:
-			dest = kGS.components[compId].data.label.text;
-			break;
-		case 2:
-			dest = kGS.components[compId].data.button.text;
-			break;
-		case 3:
-			if (kGS.components[compId].data.textbox.editing)
-				return;
-			else
-				dest = kGS.components[compId].data.textbox.text;
-			break;
-		default:
-			return;
+		case 1: dest = kGS.components[compId].data.label.text; break;
+		case 2: dest = kGS.components[compId].data.button.text; break;
+		case 3: dest = kGS.components[compId].data.textbox.text; break;
+		default: return;
 	}
 
 	char buff[MAX_TEXT_LENGTH];
@@ -61,21 +54,11 @@ void _draw_component(ComponentID compID, int x, int y) {
 	Component *component = _get_component(compID);
 
 	switch (component->type) {
-		case 0:
-			_draw_grid(&component->data.grid, x, y);
-			break;
-		case 1:
-			_draw_label(&component->data.label, x, y);
-			break;
-		case 2:
-			_draw_button(&component->data.button, x, y);
-			break;
-		case 3:
-			_draw_textbox(&component->data.textbox, x, y);
-			break;
-		case 4:
-			_draw_custom_component(&component->data.customComponent, x, y);
-			break;
+		case 0: _draw_grid(&component->data.grid, x, y); break;
+		case 1: _draw_label(&component->data.label, x, y); break;
+		case 2: _draw_button(&component->data.button, x, y); break;
+		case 3: _draw_textbox(&component->data.textbox, x, y); break;
+		case 4: _draw_custom_component(&component->data.customComponent, x, y); break;
 	}
 }
 
@@ -84,15 +67,9 @@ void _process_component(ComponentID compID, int x, int y) {
 	Component *component = _get_component(compID);
 
 	switch (component->type) {
-		case 0:
-			_process_grid(&component->data.grid, x, y);
-			break;
-		case 2:
-			_process_button(&component->data.button, x, y);
-			break;
-		case 3:
-			_process_textbox(&component->data.textbox, x, y);
-			break;
+		case 0: _process_grid(&component->data.grid, x, y); break;
+		case 2: _process_button(&component->data.button, x, y); break;
+		case 3: _process_textbox(&component->data.textbox, x, y); break;
 	}
 }
 

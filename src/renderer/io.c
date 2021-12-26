@@ -28,10 +28,12 @@ Status save_scene_to_file(char *fileName) {
 	fwrite(&ren.scene.voxelCount, sizeof(int), 1, fp);
 
 	fflush(stdout);
-	printf("\e[?25l"); // hide cursor
+	printf("\e[?25l");
 
 	for (int i = 0; i < ren.scene.voxelCount; i++) {
-		printf("\r      > Writing voxel [%d/%d] (%02.2f%%)", i + 1, ren.scene.voxelCount,
+		printf("\r      > Writing voxel [%d/%d] (%02.2f%%)",
+			   i + 1,
+			   ren.scene.voxelCount,
 			   100.0 * (i + 1) / ren.scene.voxelCount);
 
 		Voxel *v = &ren.scene.voxels[i];
@@ -50,7 +52,7 @@ Status save_scene_to_file(char *fileName) {
 		fwrite(&v->material.v3, sizeof(float), 1, fp);
 	}
 
-	printf("\n\e[?25h"); // show cursor
+	printf("\n\e[?25h");
 
 	fclose(fp);
 
@@ -64,7 +66,6 @@ Status load_scene_from_file(char *fileName) {
 	FILE *fp = fopen(fileName, "rb");
 
 	if (fp != NULL) {
-
 		// camera
 		fread(&ren.camera.pos.x, sizeof(float), 1, fp);
 		fread(&ren.camera.pos.y, sizeof(float), 1, fp);
@@ -93,7 +94,7 @@ Status load_scene_from_file(char *fileName) {
 
 		Voxel *tmp = malloc(sizeof(Voxel) * voxCount);
 
-		printf("\e[?25l"); // hide cursor
+		printf("\e[?25l");
 
 		for (int i = 0; i < voxCount; i++) {
 			printf("\r      > Reading voxel [%d/%d] (%02.2f%%)", i + 1, voxCount, 100.0 * (i + 1) / voxCount);
@@ -124,11 +125,10 @@ Status load_scene_from_file(char *fileName) {
 
 		for (int i = 0; i < voxCount; i++) {
 			printf("\r      > Adding voxel [%d/%d] (%02.2f%%)", i + 1, voxCount, 100.0 * (i + 1) / voxCount);
-
 			add_voxel(tmp[i].pos.x, tmp[i].pos.y, tmp[i].pos.z, tmp[i].material);
 		}
 
-		printf("\n\e[?25h"); // show cursor
+		printf("\n\e[?25h");
 
 		free(tmp);
 		fclose(fp);

@@ -8,20 +8,16 @@
 Status setup_renderer_args() {
 	int imageSize = ren.image.size.x * ren.image.size.y;
 
-	cl_destroy_buffer(ren.program.imageBuff);
-	ren.program.imageBuff = cl_create_buffer(ren.program.context, sizeof(cl_float3) * imageSize, CL_MEM_READ_WRITE);
+	cl_destroy_buff(ren.program.imageBuff);
+	ren.program.imageBuff = cl_create_buff(ren.program.context, sizeof(cl_float3) * imageSize, CL_MEM_READ_WRITE);
 
-	cl_destroy_buffer(ren.program.voxelBuff);
-	ren.program.voxelBuff =
-		cl_create_buffer(ren.program.context, sizeof(Voxel) * ren.scene.voxelCount, CL_MEM_READ_ONLY);
-	clEnqueueWriteBuffer(ren.program.queue, ren.program.voxelBuff, CL_TRUE, 0, sizeof(Voxel) * ren.scene.voxelCount,
-						 ren.scene.voxels, 0, NULL, NULL);
+	cl_destroy_buff(ren.program.voxelBuff);
+	ren.program.voxelBuff = cl_create_buff(ren.program.context, sizeof(Voxel) * ren.scene.voxelCount, CL_MEM_READ_ONLY);
+	cl_write_buff(ren.program.queue, ren.program.voxelBuff, sizeof(Voxel) * ren.scene.voxelCount, ren.scene.voxels);
 
-	cl_destroy_buffer(ren.program.chunkBuff);
-	ren.program.chunkBuff =
-		cl_create_buffer(ren.program.context, sizeof(Chunk) * ren.scene.chunkCount, CL_MEM_READ_ONLY);
-	clEnqueueWriteBuffer(ren.program.queue, ren.program.chunkBuff, CL_TRUE, 0, sizeof(Chunk) * ren.scene.chunkCount,
-						 ren.scene.chunks, 0, NULL, NULL);
+	cl_destroy_buff(ren.program.chunkBuff);
+	ren.program.chunkBuff = cl_create_buff(ren.program.context, sizeof(Chunk) * ren.scene.chunkCount, CL_MEM_READ_ONLY);
+	cl_write_buff(ren.program.queue, ren.program.chunkBuff, sizeof(Chunk) * ren.scene.chunkCount, ren.scene.chunks);
 
 	cl_set_kernel_arg(ren.program.kernel, 0, sizeof(cl_int2), &ren.image.size);
 	cl_set_kernel_arg(ren.program.kernel, 1, sizeof(cl_mem), &ren.program.imageBuff);
@@ -39,14 +35,11 @@ Status setup_renderer_args() {
 
 Status render_frame(int sampleNumber) {
 	cl_ulong seed = rand();
-
-	// non-constant arguments
 	cl_int3 lookingAt[3] = {ren.lookingAtPos, ren.lookingAtNormal, (cl_int3){ren.mousePos.x, ren.mousePos.y, 0}};
 
-	cl_destroy_buffer(ren.program.lookingAtBuff);
-	ren.program.lookingAtBuff = cl_create_buffer(ren.program.context, sizeof(cl_int3) * 3, CL_MEM_READ_WRITE);
-	clEnqueueWriteBuffer(ren.program.queue, ren.program.lookingAtBuff, CL_TRUE, 0, sizeof(cl_int3) * 3, lookingAt, 0,
-						 NULL, NULL);
+	cl_destroy_buff(ren.program.lookingAtBuff);
+	ren.program.lookingAtBuff = cl_create_buff(ren.program.context, sizeof(cl_int3) * 3, CL_MEM_READ_WRITE);
+	cl_write_buff(ren.program.queue, ren.program.lookingAtBuff, sizeof(cl_int3) * 3, lookingAt);
 
 	cl_set_kernel_arg(ren.program.kernel, 10, sizeof(cl_mem), &ren.program.lookingAtBuff);
 	cl_set_kernel_arg(ren.program.kernel, 11, sizeof(cl_int), &sampleNumber);
@@ -59,11 +52,13 @@ Status render_frame(int sampleNumber) {
 		return FAILURE;
 	}
 
-	cl_read_buffer(ren.program.queue, ren.program.imageBuff, 0, sizeof(cl_float3) * ren.image.size.x * ren.image.size.y,
-				   ren.image.data);
+	cl_read_buff(ren.program.queue,
+				 ren.program.imageBuff,
+				 sizeof(cl_float3) * ren.image.size.x * ren.image.size.y,
+				 ren.image.data);
 
 	cl_int3 data[3];
-	cl_read_buffer(ren.program.queue, ren.program.lookingAtBuff, 0, sizeof(cl_int3) * 3, data);
+	cl_read_buff(ren.program.queue, ren.program.lookingAtBuff, sizeof(cl_int3) * 3, data);
 
 	if (data[2].z == -1) {
 		ren.lookingAt = 0;
@@ -96,7 +91,6 @@ static void *_start_renderer_loop() {
 		}
 
 		if (render_frame(i) == FAILURE) panic("Failed to run kernel");
-
 		i++;
 	}
 
@@ -139,7 +133,6 @@ Status create_renderer() {
 	}
 
 	ren.program.program = clCreateProgramWithSource(ren.program.context, 1, (const char **)&source, NULL, NULL);
-
 	free(source);
 
 	if (clBuildProgram(ren.program.program, 0, NULL, ARGS, NULL, NULL) != CL_SUCCESS) {
@@ -149,7 +142,6 @@ Status create_renderer() {
 	}
 
 	ren.program.kernel = clCreateKernel(ren.program.program, KERNEL_NAME, NULL);
-
 	return SUCCESS;
 }
 
@@ -158,10 +150,10 @@ Status destroy_renderer() {
 
 	safe_free(ren.scene.voxels);
 	safe_free(ren.image.data);
-	cl_destroy_buffer(ren.program.voxelBuff);
-	cl_destroy_buffer(ren.program.imageBuff);
-	cl_destroy_buffer(ren.program.chunkBuff);
-	cl_destroy_buffer(ren.program.lookingAtBuff);
+	cl_destroy_buff(ren.program.voxelBuff);
+	cl_destroy_buff(ren.program.imageBuff);
+	cl_destroy_buff(ren.program.chunkBuff);
+	cl_destroy_buff(ren.program.lookingAtBuff);
 	clReleaseProgram(ren.program.program);
 	clReleaseKernel(ren.program.kernel);
 	clReleaseContext(ren.program.context);

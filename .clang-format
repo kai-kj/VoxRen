@@ -5,7 +5,11 @@ IndentWidth: 4
 TabWidth: 4
 IndentCaseLabels: true
 AllowShortBlocksOnASingleLine: Never
-AllowShortFunctionsOnASingleLine: None
-AllowShortIfStatementsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLoopsOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: false
 AlignOperands: false
 BreakBeforeTernaryOperators: false
+BinPackArguments: false

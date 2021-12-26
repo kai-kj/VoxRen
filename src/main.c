@@ -55,6 +55,5 @@ void load_scene(int argc, char **argv) {
 int main(int argc, char **argv) {
 	if (create_renderer() != SUCCESS) exit(-1);
 	load_scene(argc, argv);
-
 	return 0;
 }

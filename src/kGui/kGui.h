@@ -9,14 +9,6 @@
 #include "structs.h"
 
 #define MAX_TEXT_LENGTH 256
-#define EMPTY_COMPONENT                                                                                                \
-	(Component) {                                                                                                      \
-		0, 0, -1                                                                                                       \
-	}
-
-#define KGS_LEFT_ALIGNED 0
-#define KGS_CENTER_ALIGNED 1
-#define KGS_RIGHT_ALIGNED 2
 
 extern KGuiState kGS;
 

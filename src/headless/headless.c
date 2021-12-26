@@ -24,32 +24,26 @@ static char *_get_file_ext(const char *filename) {
 static void _write_image(char *image, char *fileName) {
 	char *format = _get_file_ext(fileName);
 
-	if (strcmp(format, "png") == 0)
-		stbi_write_png(fileName, ren.image.size.x, ren.image.size.y, 3, image, 0);
+	int w = ren.image.size.x;
+	int h = ren.image.size.y;
 
-	else if (strcmp(format, "bmp") == 0)
-		stbi_write_bmp(fileName, ren.image.size.x, ren.image.size.y, 3, image);
-
-	else if (strcmp(format, "jpg") == 0 || strcmp(format, "jpeg") == 0)
-		stbi_write_jpg(fileName, ren.image.size.x, ren.image.size.y, 3, image, 95);
+	if (strcmp(format, "png") == 0) stbi_write_png(fileName, w, h, 3, image, 0);
+	else if (strcmp(format, "bmp") == 0) stbi_write_bmp(fileName, w, h, 3, image);
+	else if (strcmp(format, "jpg") == 0 || strcmp(format, "jpeg") == 0) stbi_write_jpg(fileName, w, h, 3, image, 95);
 }
 
 Status render_image(int samples, char *fileName) {
-	msg("Rendering %d samples to %s", samples, fileName);
-
 	setup_renderer_args();
 
-	printf("\e[?25l"); // hide cursor
+	msg("Rendering %d samples to %s", samples, fileName);
+	printf("\e[?25l");
 
 	for (int i = 0; i < samples; i++) {
 		render_frame(i);
 		printf("\r      > Rendering frame [%d/%d] (%02.2f%%)", i + 1, samples, 100.0 * (i + 1) / samples);
 		fflush(stdout);
 	}
-
-	printf("\e[?25h"); // show cursor
-
-	printf("\n");
+	printf("\e[?25h\n");
 
 	char *image = _get_stb_image();
 	_write_image(image, fileName);
